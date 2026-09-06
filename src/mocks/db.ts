@@ -9,7 +9,7 @@
  */
 const STORAGE_KEY = 'pli_demo_db';
 /** Bump when seed shapes change so stale snapshots are discarded. */
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2;
 const PERSIST_DEBOUNCE_MS = 150;
 
 interface Snapshot {

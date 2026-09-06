@@ -8,13 +8,13 @@ import { API_BASE as BASE } from '../mock-origin';
 const maquettes = db.collection('maquettes', [
   { id: 1, nom: 'ACCUSE RECEPTION',              type: 'AR',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/1/download` },
   { id: 2, nom: 'AR SMS',                         type: 'AR',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/2/download` },
-  { id: 3, nom: 'Artsoft : ACCUSE RECEPTION',     type: 'AR',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/3/download` },
-  { id: 4, nom: 'Artsoft : MAIL CREATION COMPTE', type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/4/download` },
-  { id: 5, nom: 'Artsoft : MAIL ECHANGE CLIENT',  type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/5/download` },
-  { id: 6, nom: 'Artsoft : REPONSE DE CLOTURE',   type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/6/download` },
-  { id: 7, nom: 'Attestation de Travail_salaire',  type: 'ML',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/7/download` },
-  { id: 8, nom: 'BBO_Etiquette1 OK',               type: 'ML',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/8/download` },
-  { id: 9, nom: 'Bordereau ECHANGE CLI',            type: 'BOR', extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/9/download` },
+  { id: 3, nom: 'AR — Réclamation',              type: 'AR',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/3/download` },
+  { id: 4, nom: 'Mail — Création de compte',      type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/4/download` },
+  { id: 5, nom: 'Mail — Échange avec l’usager',  type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/5/download` },
+  { id: 6, nom: 'Réponse de clôture',            type: 'REP', extension: '.docx', acces: 'SERVICE', serviceNom: 'Direction de la Demande', personnelNom: null, fileUrl: `${BASE}/maquettes/6/download` },
+  { id: 7, nom: 'Attestation de travail',          type: 'ML',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/7/download` },
+  { id: 8, nom: 'Étiquettes de publipostage',      type: 'ML',  extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/8/download` },
+  { id: 9, nom: 'Bordereau de transmission',       type: 'BOR', extension: '.docx', acces: 'PUBLIC',  serviceNom: null, personnelNom: null, fileUrl: `${BASE}/maquettes/9/download` },
 ]);
 
 const maintenanceLogs = db.collection('maintenance-logs', [
