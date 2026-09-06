@@ -4,7 +4,7 @@
 > **aucun serveur, aucune base de données, aucune inscription**. Toutes les données sont
 > simulées dans votre navigateur.
 
-[![CI](https://github.com/FBO-ui/pli-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/FBO-ui/pli-demo/actions/workflows/ci.yml)
+[![CI](https://github.com/modern-business-app-angular/pli-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/modern-business-app-angular/pli-demo/actions/workflows/ci.yml)
 [![Angular 21](https://img.shields.io/badge/Angular-21-dd0031?logo=angular&logoColor=white)](https://angular.dev)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green.svg)](LICENSE)
 

@@ -17,7 +17,7 @@ export const DEMO_CONFIG = {
   tagline: 'Gestion du courrier et des demandes pour les collectivités',
   version: '1.0.0-demo',
   links: {
-    github: 'https://github.com/FBO-ui/pli-demo',
+    github: 'https://github.com/modern-business-app-angular/pli-demo',
     live: 'https://pli-demo.pages.dev',
     /** À compléter avec l'URL du profil Malt. */
     malt: 'https://www.malt.fr/',
