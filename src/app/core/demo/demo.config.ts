@@ -20,7 +20,7 @@ export const DEMO_CONFIG = {
     github: 'https://github.com/modern-business-app-angular/pli-demo',
     live: 'https://pli-demo.pages.dev',
     /** À compléter avec l'URL du profil Malt. */
-    malt: 'https://www.malt.fr/',
+    malt: 'https://www.malt.com/profile/faroukbouterfass',
   },
   personas: [
     {
