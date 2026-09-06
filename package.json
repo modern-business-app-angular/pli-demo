@@ -10,6 +10,7 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
+    "build:gh-pages": "ng build --configuration production,gh-pages && node scripts/postbuild-gh-pages.mjs",
     "watch": "ng build --watch --configuration development",
     "preview": "node scripts/serve-dist.mjs",
     "lint": "eslint .",

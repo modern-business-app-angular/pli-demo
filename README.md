@@ -8,7 +8,7 @@
 [![Angular 21](https://img.shields.io/badge/Angular-21-dd0031?logo=angular&logoColor=white)](https://angular.dev)
 [![Licence MIT](https://img.shields.io/badge/licence-MIT-green.svg)](LICENSE)
 
-**🔗 Démo en ligne : [pli-demo.pages.dev](https://pli-demo.pages.dev)**
+**🔗 Démo en ligne : [pli-demo.pages.dev](https://pli-demo.pages.dev)** · miroir GitHub Pages : [modern-business-app-angular.github.io/pli-demo](https://modern-business-app-angular.github.io/pli-demo/)
 
 | Profil | Identifiant | Mot de passe | Droits |
 |---|---|---|---|
@@ -147,7 +147,8 @@ Astuce : ajoutez `?latency=0` à l'URL pour désactiver la latence simulée.
    le cache immuable des fichiers hachés et quelques en-têtes de sécurité.
 
 La CI GitHub (`.github/workflows/ci.yml`) exécute lint, vérification des icônes, tests et
-build à chaque *push* et *pull request*.
+build à chaque *push* et *pull request*. Un second workflow (`deploy-gh-pages.yml`) publie un
+miroir sur GitHub Pages (`npm run build:gh-pages` : base href `/pli-demo/`, `404.html` de repli).
 
 ## Limites connues
 
