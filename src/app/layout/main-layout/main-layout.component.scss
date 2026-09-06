@@ -1,0 +1,78 @@
+@import 'styles/tokens';
+
+// ── Root: lock to viewport height ────────────────────────────
+// display: block so pli-command-palette (sibling) doesn't affect layout.
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+// ── App shell (sidebar + main area, full viewport) ────────────
+.pli-app-layout {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+
+  // NZ-ZORRO sider: must be full-height, self-contained scroll
+  ::ng-deep .ant-layout-sider {
+    height: 100% !important;
+    overflow: hidden;
+
+    .ant-layout-sider-children {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+}
+
+// ── Right side: topbar + page content stacked vertically ──────
+.pli-main-area {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+// ── Content column (topbar is flex-shrink: 0, page area fills rest) ──
+.pli-app-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  background: $surface-body;
+}
+
+// ── Scrollable page area ──────────────────────────────────────
+// Breadcrumb (:host position: sticky) sits above this as a flex sibling.
+// This div is the ONLY scroll container for page content.
+.pli-page-wrapper {
+  flex: 1;
+  min-height: 0;
+  padding: $layout-content-padding;  // 24px — matches prototype
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+
+  // Thin custom scrollbar
+  scrollbar-width: thin;
+  scrollbar-color: $color-neutral-300 transparent;
+
+  &::-webkit-scrollbar        { width: 6px; }
+  &::-webkit-scrollbar-track  { background: transparent; }
+  &::-webkit-scrollbar-thumb  {
+    background: $color-neutral-300;
+    border-radius: 3px;
+    &:hover { background: $color-neutral-400; }
+  }
+
+  // Route change fade-in animation
+  > * { animation: pli-fade-in 0.18s ease forwards; }
+}

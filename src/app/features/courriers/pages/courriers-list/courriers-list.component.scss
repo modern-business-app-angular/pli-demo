@@ -1,0 +1,162 @@
+@import 'styles/tokens';
+
+.cl-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $color-neutral-50;
+  overflow: hidden;
+}
+
+// ── Toolbar ──────────────────────────────────────────────────────────────────
+
+.cl-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  padding: $space-3 $space-5;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    flex: 1;
+  }
+
+  &__search {
+    max-width: 360px;
+    :ng-deep .ant-input-affix-wrapper { border-radius: 8px; }
+  }
+
+  &__right {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__filter-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #4f46e5;
+    background: #eef2ff;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  &__new {
+    border-radius: 8px !important;
+    background: #4f46e5 !important;
+    border-color: #4f46e5 !important;
+  }
+}
+
+// ── Count bar ────────────────────────────────────────────────────────────────
+
+.cl-count-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-2 $space-5;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+
+  &__text {
+    font-size: 13px;
+    color: $color-text-secondary;
+    strong { color: $color-text-primary; font-weight: $font-weight-semibold; }
+  }
+
+  &__export { font-size: 12px !important; border-radius: 6px !important; }
+}
+
+// ── Table ────────────────────────────────────────────────────────────────────
+
+.cl-table-wrap {
+  flex: 1;
+  overflow: auto;
+  padding: $space-4 $space-5;
+}
+
+.cl-table {
+  :ng-deep .ant-table {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid $surface-border;
+    background: $surface-card;
+    font-size: 13px;
+  }
+
+  :ng-deep .ant-table-thead > tr > th {
+    background: $color-neutral-50;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: $color-text-secondary;
+    padding: 10px 12px;
+    border-bottom: 1px solid $surface-border;
+  }
+
+  :ng-deep .ant-table-tbody > tr > td {
+    padding: 10px 12px;
+    border-bottom: 1px solid $surface-border;
+    vertical-align: middle;
+  }
+
+  :ng-deep .ant-table-tbody > tr:last-child > td { border-bottom: none; }
+  :ng-deep .ant-table-pagination { margin: $space-3 0 0 !important; }
+}
+
+.cl-row {
+  cursor: pointer;
+  transition: background 0.1s;
+  :ng-deep td { background: transparent !important; }
+  &:hover :ng-deep td { background: $color-neutral-50 !important; }
+}
+
+.cl-td--date { white-space: nowrap; color: $color-text-secondary; font-size: 12px; }
+
+.cl-chrono {
+  font-family: $font-family-mono;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: #4f46e5;
+  background: #eef2ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.cl-objet {
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 380px;
+}
+
+.cl-ref { font-size: 10px; color: $color-text-secondary; margin-top: 2px; }
+.cl-contact__name { font-size: 12px; font-weight: $font-weight-medium; color: $color-text-primary; }
+.cl-contact__org { font-size: 10px; color: $color-text-secondary; }
+.cl-statut { font-size: 11px; border-radius: 4px; }
+
+.cl-pj {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  color: $color-text-secondary;
+  cursor: default;
+}
+
+.cl-empty-cell { padding: 48px 24px !important; text-align: center; }

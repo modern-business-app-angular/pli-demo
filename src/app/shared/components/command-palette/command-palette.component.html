@@ -1,0 +1,68 @@
+@if (isOpen()) {
+  <div class="cmd-backdrop" (click)="close()"></div>
+
+  <div class="cmd" role="dialog" aria-modal="true" aria-label="Palette de commandes">
+
+    <div class="cmd__search">
+      <svg class="cmd__search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input
+        class="cmd__input"
+        type="text"
+        placeholder="Rechercher ou créer…"
+        [value]="query()"
+        (input)="onQueryInput($event)"
+        autocomplete="off"
+        spellcheck="false" />
+      <kbd class="cmd__esc-kbd">Esc</kbd>
+    </div>
+
+    <div class="cmd__results">
+      @for (section of filteredGroups; track section.group) {
+        <div class="cmd__group">
+          <div class="cmd__group-label">{{ section.group }}</div>
+          @for (item of section.items; track item.label) {
+            <button class="cmd__item" type="button" (click)="navigate(item)">
+              <span class="cmd__item-icon">
+                @switch (item.icon) {
+                  @case ('mail') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  }
+                  @case ('send') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                  }
+                  @case ('inbox') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                  }
+                  @case ('grid') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  }
+                  @case ('shield') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+                  }
+                  @case ('file') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  }
+                  @case ('users') {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  }
+                  @default {
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  }
+                }
+              </span>
+              <span class="cmd__item-label">{{ item.label }}</span>
+              @if (item.kbd) {
+                <kbd class="cmd__item-kbd">{{ item.kbd }}</kbd>
+              }
+            </button>
+          }
+        </div>
+      }
+
+      @if (filteredGroups.length === 0) {
+        <div class="cmd__empty">Aucun résultat pour "{{ query() }}"</div>
+      }
+    </div>
+
+  </div>
+}

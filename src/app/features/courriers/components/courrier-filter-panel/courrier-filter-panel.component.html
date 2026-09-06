@@ -1,0 +1,299 @@
+<div class="cfp-root">
+  <nz-collapse [nzBordered]="false" class="cfp-collapse">
+
+    <!-- ── Éléments courrier ─────────────────────────────────────── -->
+    <nz-collapse-panel [nzHeader]="elementsHeader" [nzActive]="true" [nzShowArrow]="false">
+      <ng-template #elementsHeader>
+        <div class="cfp-group-hd">
+          <span nz-icon nzType="mail" class="cfp-group-hd__icon cfp-group-hd__icon--elements"></span>
+          <span class="cfp-group-hd__label">Éléments courrier</span>
+          <span nz-icon nzType="down" class="cfp-group-hd__arrow"></span>
+        </div>
+      </ng-template>
+
+      <form [formGroup]="elementsForm" class="cfp-form cfp-form--grid">
+
+        <!-- Row 1: Chrono + ChronoType -->
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Chrono</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="chrono" placeholder="ex. REC-2026-…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Type de chrono</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="chronoTypeIds" nzMode="multiple"
+              nzPlaceHolder="Tous les types" class="cfp-full">
+              @for (ct of store.refData()?.chronoTypes ?? []; track ct.id) {
+                <nz-option [nzValue]="ct.id" [nzLabel]="ct.libelle" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 2: Objet (full width) -->
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>Objet</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="objet" placeholder="Contient…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 3: Référence + Mots-clés -->
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Référence</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="reference" placeholder="REF-…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Mots-clés</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="motsCles" placeholder="Tags, mots…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 4: Nature (full width) -->
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>Nature</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="natureIds" nzMode="multiple"
+              nzPlaceHolder="Toutes les natures" class="cfp-full">
+              @for (n of store.refData()?.natures ?? []; track n.id) {
+                <nz-option [nzValue]="n.id" [nzLabel]="n.libelle" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 5: Date arrivée -->
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>Date arrivée</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker formControlName="dateArrivee" class="cfp-full" nzFormat="dd/MM/yyyy" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 6: Date expédition -->
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>Date expédition</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker formControlName="dateExpedition" class="cfp-full" nzFormat="dd/MM/yyyy" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Row 7: Date limite -->
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>Date limite</nz-form-label>
+          <nz-form-control>
+            <nz-range-picker formControlName="dateLimite" class="cfp-full" nzFormat="dd/MM/yyyy" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Actions -->
+        <div class="cfp-actions cfp-item--full">
+          <button nz-button nzType="primary" nzSize="small" (click)="applyElements()">
+            <span nz-icon nzType="check"></span> Appliquer
+          </button>
+          <button nz-button nzType="default" nzSize="small" (click)="resetElements()">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </nz-collapse-panel>
+
+    <!-- ── Contacts ──────────────────────────────────────────────── -->
+    <nz-collapse-panel [nzHeader]="contactHeader" [nzActive]="false" [nzShowArrow]="false">
+      <ng-template #contactHeader>
+        <div class="cfp-group-hd">
+          <span nz-icon nzType="user" class="cfp-group-hd__icon cfp-group-hd__icon--contact"></span>
+          <span class="cfp-group-hd__label">Contacts</span>
+          <span nz-icon nzType="down" class="cfp-group-hd__arrow"></span>
+        </div>
+      </ng-template>
+
+      <form [formGroup]="contactForm" class="cfp-form cfp-form--grid">
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Expéditeur / Destinataire</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="tripletNom" placeholder="Nom…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Organisme</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="organisme" placeholder="Nom organisme…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Fonction</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="fonction" placeholder="Directeur, DRH…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Ville</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="ville" placeholder="Lyon, Paris…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Code postal</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="cp" placeholder="69000…" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="cfp-actions cfp-item--full">
+          <button nz-button nzType="primary" nzSize="small" (click)="applyContact()">
+            <span nz-icon nzType="check"></span> Appliquer
+          </button>
+          <button nz-button nzType="default" nzSize="small" (click)="resetContact()">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </nz-collapse-panel>
+
+    <!-- ── Workflow (Fiches suiveuses) ───────────────────────────── -->
+    <nz-collapse-panel [nzHeader]="workflowHeader" [nzActive]="false" [nzShowArrow]="false">
+      <ng-template #workflowHeader>
+        <div class="cfp-group-hd">
+          <span nz-icon nzType="apartment" class="cfp-group-hd__icon cfp-group-hd__icon--workflow"></span>
+          <span class="cfp-group-hd__label">Workflow (Fiches suiveuses)</span>
+          <span nz-icon nzType="down" class="cfp-group-hd__arrow"></span>
+        </div>
+      </ng-template>
+
+      <form [formGroup]="workflowForm" class="cfp-form cfp-form--grid">
+
+        <nz-form-item class="cfp-item cfp-item--full">
+          <nz-form-label>État</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="etats" nzMode="multiple"
+              nzPlaceHolder="Tous les états" class="cfp-full">
+              @for (s of statutOptions; track s.value) {
+                <nz-option [nzValue]="s.value" [nzLabel]="s.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Émetteur</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="emetteurId" nzAllowClear
+              nzPlaceHolder="Sélectionner…" class="cfp-full">
+              @for (p of store.refData()?.personnel ?? []; track p.id) {
+                <nz-option [nzValue]="p.id" [nzLabel]="p.displayName" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Destinataire</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="destinataireId" nzAllowClear
+              nzPlaceHolder="Sélectionner…" class="cfp-full">
+              @for (p of store.refData()?.personnel ?? []; track p.id) {
+                <nz-option [nzValue]="p.id" [nzLabel]="p.displayName" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item">
+          <nz-form-label>Action</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="actionId" nzAllowClear
+              nzPlaceHolder="Sélectionner…" class="cfp-full">
+              @for (a of store.refData()?.actions ?? []; track a.id) {
+                <nz-option [nzValue]="a.id" [nzLabel]="a.libelle" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item class="cfp-item cfp-item--inline">
+          <nz-form-label>Originaux seulement</nz-form-label>
+          <nz-form-control>
+            <nz-switch formControlName="original" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="cfp-actions cfp-item--full">
+          <button nz-button nzType="primary" nzSize="small" (click)="applyWorkflow()">
+            <span nz-icon nzType="check"></span> Appliquer
+          </button>
+          <button nz-button nzType="default" nzSize="small" (click)="resetWorkflow()">
+            Réinitialiser
+          </button>
+        </div>
+
+      </form>
+    </nz-collapse-panel>
+
+    <!-- ── Champs spécifiques (dynamic) ─────────────────────────── -->
+    @if (store.refData()?.champsSpec?.length) {
+      <nz-collapse-panel [nzHeader]="champsHeader" [nzActive]="false" [nzShowArrow]="false">
+        <ng-template #champsHeader>
+          <div class="cfp-group-hd">
+            <span nz-icon nzType="setting" class="cfp-group-hd__icon cfp-group-hd__icon--spec"></span>
+            <span class="cfp-group-hd__label">Champs spécifiques</span>
+            <span nz-icon nzType="down" class="cfp-group-hd__arrow"></span>
+          </div>
+        </ng-template>
+
+        @if (champsForm) {
+          <form [formGroup]="champsForm" class="cfp-form cfp-form--grid">
+            @for (c of getChampControls(store.refData()!.champsSpec); track c.nom) {
+              <nz-form-item class="cfp-item" [class.cfp-item--full]="c.type === 'multiligne'">
+                <nz-form-label>{{ c.libelle }}</nz-form-label>
+                <nz-form-control>
+                  @if (c.type === 'date') {
+                    <nz-date-picker [formControlName]="c.nom" class="cfp-full" nzFormat="dd/MM/yyyy" />
+                  } @else if (c.type === 'numerique') {
+                    <nz-input-number [formControlName]="c.nom" class="cfp-full" />
+                  } @else if (c.type === 'liste') {
+                    <nz-select [formControlName]="c.nom" nzAllowClear nzPlaceHolder="Sélectionner…" class="cfp-full">
+                      @for (val of (c.valeurs ?? '').split(','); track val) {
+                        <nz-option [nzValue]="val.trim()" [nzLabel]="val.trim()" />
+                      }
+                    </nz-select>
+                  } @else if (c.type === 'multiligne') {
+                    <textarea nz-input [formControlName]="c.nom" [nzAutosize]="{ minRows: 2, maxRows: 4 }"></textarea>
+                  } @else {
+                    <input nz-input [formControlName]="c.nom" />
+                  }
+                </nz-form-control>
+              </nz-form-item>
+            }
+
+            <div class="cfp-actions cfp-item--full">
+              <button nz-button nzType="primary" nzSize="small" (click)="applySpecifiques()">
+                <span nz-icon nzType="check"></span> Appliquer
+              </button>
+              <button nz-button nzType="default" nzSize="small" (click)="resetSpecifiques()">
+                Réinitialiser
+              </button>
+            </div>
+
+          </form>
+        }
+
+      </nz-collapse-panel>
+    }
+
+  </nz-collapse>
+</div>

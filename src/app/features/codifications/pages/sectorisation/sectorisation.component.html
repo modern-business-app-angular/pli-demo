@@ -1,0 +1,302 @@
+<div class="sec-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header class="sec-header">
+    <div class="sec-header__left">
+      <h1 class="sec-header__title">Sectorisation</h1>
+      <span class="sec-header__count">{{ items().length }} tronçon{{ items().length !== 1 ? 's' : '' }}</span>
+    </div>
+    <div class="sec-header__actions">
+      <nz-input-group [nzPrefix]="searchIcon" nzSize="default" class="sec-search">
+        <input
+          nz-input
+          placeholder="Rechercher une rue, ville…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch($event)"
+        />
+      </nz-input-group>
+      <ng-template #searchIcon><span nz-icon nzType="search"></span></ng-template>
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Nouveau tronçon
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Table ───────────────────────────────────────────────────────── -->
+  <div class="sec-table">
+    <nz-table
+      #secTable
+      [nzData]="items()"
+      [nzLoading]="isLoading()"
+      [nzSize]="'small'"
+      nzTableLayout="fixed"
+      [nzPageSize]="20"
+      [nzShowSizeChanger]="true"
+      [nzPageSizeOptions]="[10, 20, 50]"
+    >
+      <thead>
+        <tr>
+          <th nzWidth="90px">CP</th>
+          <th>Rue</th>
+          <th nzWidth="170px">Plage de numéros</th>
+          <th nzWidth="90px">Parité</th>
+          <th nzWidth="80px" nzAlign="center">Niveaux</th>
+          <th nzWidth="70px" nzAlign="right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of secTable.data; track item.id) {
+          <tr class="sec-row" (dblclick)="openEdit(item)">
+
+            <!-- Code postal + ville -->
+            <td>
+              <span class="sec-cp">{{ item.codePostal }}</span>
+            </td>
+
+            <!-- Rue + mot directeur -->
+            <td>
+              <div class="sec-cell-rue">
+                @if (item.motVoie) {
+                  <span class="sec-mot-voie">{{ item.motVoie }}</span>
+                }
+                <span class="sec-nom-rue">{{ item.nomRue }}</span>
+                <span class="sec-ville">{{ item.ville }}</span>
+              </div>
+            </td>
+
+            <!-- Address range pill -->
+            <td>
+              <div class="sec-range">
+                <span class="sec-range__num">{{ item.numDebut }}</span>
+                @if (typeLabel(item.typeDebut)) {
+                  <span class="sec-range__type">{{ typeLabel(item.typeDebut) }}</span>
+                }
+                <span class="sec-range__arrow">→</span>
+                <span class="sec-range__num">{{ item.numFin }}</span>
+                @if (typeLabel(item.typeFin)) {
+                  <span class="sec-range__type">{{ typeLabel(item.typeFin) }}</span>
+                }
+              </div>
+            </td>
+
+            <!-- Parité badge -->
+            <td>
+              <span
+                class="sec-parite-badge"
+                [class.sec-parite-badge--pair]="item.parite === 'P'"
+                [class.sec-parite-badge--impair]="item.parite === 'I'"
+                [class.sec-parite-badge--tous]="item.parite === 'T'"
+              >{{ pariteLabelShort(item.parite) }}</span>
+            </td>
+
+            <!-- Geo levels count -->
+            <td nzAlign="center">
+              @if (geoCount(item) > 0) {
+                <span class="sec-geo-count" nz-tooltip [nzTooltipTitle]="geoTooltip">
+                  {{ geoCount(item) }}/9
+                </span>
+                <ng-template #geoTooltip>
+                  <div class="sec-geo-tooltip">
+                    @for (key of geoKeys; track key; let i = $index) {
+                      @if ($any(item)[key]) {
+                        <div>{{ niveauLabel(i + 1) }}: {{ $any(item)[key] }}</div>
+                      }
+                    }
+                  </div>
+                </ng-template>
+              } @else {
+                <span class="sec-geo-empty">—</span>
+              }
+            </td>
+
+            <!-- Actions -->
+            <td nzAlign="right">
+              <div class="sec-actions">
+                <button nz-button nzType="text" nzSize="small" nz-tooltip="Modifier" (click)="openEdit(item)">
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+                <button
+                  nz-button nzType="text" nzSize="small"
+                  nz-popconfirm
+                  nzPopconfirmTitle="Supprimer ce tronçon ?"
+                  nzPopconfirmPlacement="left"
+                  (nzOnConfirm)="delete(item)"
+                  class="sec-btn-danger"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </div>
+            </td>
+
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+
+  <!-- ── Drawer ──────────────────────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="drawerVisible()"
+    [nzTitle]="drawerTitle()"
+    nzPlacement="right"
+    [nzWidth]="820"
+    [nzClosable]="true"
+    [nzFooter]="drawerFooter"
+    (nzOnClose)="closeDrawer()"
+  >
+    <ng-container *nzDrawerContent>
+      <div class="sec-form" [formGroup]="form">
+
+        <!-- ── Section 1 — Adresse ─────────────────────────────────── -->
+        <div class="sec-section-head">
+          <span nz-icon nzType="environment" nzTheme="outline"></span>
+          Détail du tronçon
+        </div>
+
+        <div class="sec-grid-3">
+          <nz-form-item>
+            <nz-form-label nzRequired>Code postal</nz-form-label>
+            <nz-form-control nzErrorTip="Requis">
+              <input nz-input formControlName="codePostal" placeholder="75001" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item class="sec-span-2">
+            <nz-form-label nzRequired>Ville</nz-form-label>
+            <nz-form-control nzErrorTip="Requis">
+              <input nz-input formControlName="ville" placeholder="Paris" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Rue</nz-form-label>
+          <nz-form-control nzErrorTip="Requis">
+            <input nz-input formControlName="nomRue" placeholder="Nom de la rue" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="sec-grid-2">
+          <nz-form-item>
+            <nz-form-label>Code Rivoli</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="codeVoie" placeholder="ex: B041" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>Mot directeur</nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="motVoie" placeholder="ex: Rue, Avenue…" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <!-- ── Section 2 — Plage de numérotation ─────────────────── -->
+        <div class="sec-section-head sec-section-head--range">
+          <span nz-icon nzType="number" nzTheme="outline"></span>
+          Plage de numérotation
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Parité</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="parite" class="sec-full">
+              @for (p of parites; track p.value) {
+                <nz-option [nzValue]="p.value" [nzLabel]="p.label"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div class="sec-range-row">
+          <div class="sec-range-group">
+            <span class="sec-range-label">Début</span>
+            <nz-form-item class="sec-range-num">
+              <nz-form-label nzRequired>N°</nz-form-label>
+              <nz-form-control>
+                <nz-input-number formControlName="numDebut" [nzMin]="0" class="sec-full"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="sec-range-type">
+              <nz-form-label>Type</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="typeDebut" class="sec-full">
+                  @for (t of types; track t.value) {
+                    <nz-option [nzValue]="t.value" [nzLabel]="t.label"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <span class="sec-range-separator">→</span>
+
+          <div class="sec-range-group">
+            <span class="sec-range-label">Fin</span>
+            <nz-form-item class="sec-range-num">
+              <nz-form-label nzRequired>N°</nz-form-label>
+              <nz-form-control>
+                <nz-input-number formControlName="numFin" [nzMin]="0" class="sec-full"></nz-input-number>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="sec-range-type">
+              <nz-form-label>Type</nz-form-label>
+              <nz-form-control>
+                <nz-select formControlName="typeFin" class="sec-full">
+                  @for (t of types; track t.value) {
+                    <nz-option [nzValue]="t.value" [nzLabel]="t.label"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+        </div>
+
+        <!-- ── Section 3 — Territoire matrix ────────────────────── -->
+        <div class="sec-section-head sec-section-head--geo">
+          <span nz-icon nzType="apartment" nzTheme="outline"></span>
+          Sectorisations
+          <span class="sec-section-head__hint">Assignez un élément pour chaque niveau de territoire</span>
+        </div>
+
+        <div class="sec-geo-matrix">
+          @for (key of geoKeys; track key; let i = $index) {
+            <div
+              class="sec-geo-card"
+              [class.sec-geo-card--filled]="!!formGeoValue(key)"
+            >
+              <div class="sec-geo-card__niveau">
+                <span class="sec-geo-card__num">{{ padLevel(i + 1) }}</span>
+                <span class="sec-geo-card__name">{{ niveauLabel(i + 1) }}</span>
+              </div>
+              <nz-select
+                [formControlName]="key"
+                nzAllowClear
+                nzPlaceholder="—"
+                class="sec-geo-select"
+              >
+                @for (el of elementsForNiveau(i + 1); track el.id) {
+                  <nz-option [nzValue]="el.cle" [nzLabel]="el.labelCourt + ' — ' + el.labelLong"></nz-option>
+                }
+              </nz-select>
+            </div>
+          }
+        </div>
+
+      </div>
+    </ng-container>
+
+    <ng-template #drawerFooter>
+      <div class="sec-drawer-footer">
+        <button nz-button nzType="default" (click)="closeDrawer()">Annuler</button>
+        <button
+          nz-button nzType="primary"
+          [nzLoading]="isSaving()"
+          [disabled]="form.invalid"
+          (click)="save()"
+        >Enregistrer</button>
+      </div>
+    </ng-template>
+  </nz-drawer>
+
+</div>

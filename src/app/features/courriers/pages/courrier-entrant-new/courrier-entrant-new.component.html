@@ -1,0 +1,565 @@
+<div class="cen-page">
+
+  <!-- ── Page header ───────────────────────────────────────── -->
+  <header class="cen-header">
+    <a routerLink="/courriers/entrant" class="cen-header__back" aria-label="Retour à la liste">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Retour
+    </a>
+    <h1 class="cen-header__title">Nouveau courrier entrant</h1>
+    @if (currentStep() < 4) {
+      <span class="cen-header__step-label">Étape {{ currentStep() + 1 }} sur {{ steps.length }}</span>
+    }
+  </header>
+
+  <!-- ── Success screen ───────────────────────────────────── -->
+  @if (currentStep() === 4) {
+
+    <div class="cen-success">
+      <div class="cen-success__icon" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <p class="cen-success__title">Courrier enregistré</p>
+      <p class="cen-success__chrono">{{ createdCourrier()?.numeroChrono }}</p>
+      <p class="cen-success__sub">Le courrier a été créé et transmis avec succès.</p>
+      <div class="cen-success__actions">
+        <button type="button" class="cen-success__btn-primary" (click)="goToDetail()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Voir le courrier
+        </button>
+        <button type="button" class="cen-success__btn-secondary" (click)="goToList()">
+          Retour à la liste
+        </button>
+      </div>
+    </div>
+
+  } @else {
+
+    <!-- ── Step progress rail ────────────────────────────────── -->
+    <nav class="cen-steps-rail" aria-label="Progression du formulaire">
+      @for (step of steps; track $index) {
+        <div class="cen-step"
+             [class.cen-step--done]="currentStep() > $index"
+             [class.cen-step--active]="currentStep() === $index">
+          <div class="cen-step__circle" [attr.aria-current]="currentStep() === $index ? 'step' : null">
+            @if (currentStep() > $index) {
+              <!-- Done checkmark -->
+              <svg class="cen-step__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            } @else {
+              {{ $index + 1 }}
+            }
+          </div>
+          <span class="cen-step__label">{{ step.title }}</span>
+        </div>
+      }
+    </nav>
+
+    <!-- ── Form card ─────────────────────────────────────────── -->
+    <div class="cen-card">
+
+      <!-- ── STEP 1 — Identification ───────────────────────────────────────── -->
+      @if (currentStep() === 0) {
+        <form nz-form [formGroup]="step1" nzLayout="vertical" class="cen-form">
+
+          <h2 class="cen-section-title">Identification du courrier</h2>
+
+          <div class="cen-row">
+            <!-- Type chronologique -->
+            <nz-form-item class="cen-col-2">
+              <nz-form-label nzRequired>Type de chrono</nz-form-label>
+              <nz-form-control nzErrorTip="Obligatoire">
+                <nz-select
+                  formControlName="chronoTypeId"
+                  nzPlaceHolder="Sélectionner un type…"
+                  nzShowSearch
+                  class="cen-full">
+                  @for (ct of chronoTypes(); track ct.id) {
+                    <nz-option [nzValue]="ct.id" [nzLabel]="ct.libelle" />
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Date d'arrivée -->
+            <nz-form-item class="cen-col-1">
+              <nz-form-label nzRequired>Date d'arrivée</nz-form-label>
+              <nz-form-control nzErrorTip="Obligatoire">
+                <nz-date-picker
+                  formControlName="dateArrivee"
+                  nzFormat="dd/MM/yyyy"
+                  class="cen-full" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Objet — full width, most important field -->
+          <nz-form-item>
+            <nz-form-label nzRequired>Objet</nz-form-label>
+            <nz-form-control nzErrorTip="L'objet est obligatoire">
+              <input
+                nz-input
+                formControlName="objet"
+                placeholder="Décrivez l'objet du courrier en quelques mots…"
+                maxlength="255" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <div class="cen-row">
+            <!-- Référence externe -->
+            <nz-form-item class="cen-col-1">
+              <nz-form-label>Référence externe</nz-form-label>
+              <nz-form-control>
+                <input
+                  nz-input
+                  formControlName="reference"
+                  placeholder="Réf. du document expéditeur…" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Date d'expédition -->
+            <nz-form-item class="cen-col-1">
+              <nz-form-label>Date d'expédition</nz-form-label>
+              <nz-form-control>
+                <nz-date-picker
+                  formControlName="dateExpedition"
+                  nzFormat="dd/MM/yyyy"
+                  class="cen-full" />
+              </nz-form-control>
+            </nz-form-item>
+
+            <!-- Date limite -->
+            <nz-form-item class="cen-col-1">
+              <nz-form-label>Date limite</nz-form-label>
+              <nz-form-control>
+                <nz-date-picker
+                  formControlName="dateLimite"
+                  nzFormat="dd/MM/yyyy"
+                  class="cen-full" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <!-- Nature (conditional) -->
+          @if (showNature()) {
+            <nz-form-item>
+              <nz-form-label>Nature</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  formControlName="natureId"
+                  nzPlaceHolder="Sélectionner une nature…"
+                  [nzAllowClear]="true"
+                  class="cen-full">
+                  @for (n of natures(); track n.id) {
+                    <nz-option [nzValue]="n.id" [nzLabel]="n.libelle" />
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          }
+
+          <!-- Priorité (conditional) -->
+          @if (showPriorite()) {
+            <nz-form-item>
+              <nz-form-label>Priorité</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  formControlName="prioriteId"
+                  nzPlaceHolder="Priorité normale"
+                  [nzAllowClear]="true"
+                  class="cen-full">
+                  @for (p of priorites(); track p.id) {
+                    <nz-option [nzValue]="p.id" [nzLabel]="p.libelle" />
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          }
+
+          <!-- Criticité (conditional) -->
+          @if (showCriticite()) {
+            <nz-form-item>
+              <nz-form-label>Criticité</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  formControlName="criticiteId"
+                  nzPlaceHolder="Sélectionner…"
+                  [nzAllowClear]="true"
+                  class="cen-full">
+                  @for (c of criticites(); track c.id) {
+                    <nz-option [nzValue]="c.id" [nzLabel]="c.libelle" />
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          }
+
+          <!-- Mots-clés -->
+          <nz-form-item>
+            <nz-form-label>Mots-clés</nz-form-label>
+            <nz-form-control>
+              <div class="cen-tags" role="group" aria-label="Mots-clés">
+                @for (tag of tags(); track tag) {
+                  <span class="cen-tag">
+                    {{ tag }}
+                    <button
+                      type="button"
+                      class="cen-tag__remove"
+                      (click)="removeTag(tag)"
+                      [attr.aria-label]="'Supprimer le mot-clé ' + tag"
+                      [attr.title]="'Supprimer ' + tag">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                  </span>
+                }
+                @if (!tagInputVisible()) {
+                  <button type="button" class="cen-tag-add" (click)="tagInputVisible.set(true)">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Ajouter un mot-clé
+                  </button>
+                } @else {
+                  <input
+                    class="cen-tags__input"
+                    nz-input
+                    nzSize="small"
+                    [value]="tagInputValue()"
+                    placeholder="Mot-clé…"
+                    (input)="tagInputValue.set($any($event.target).value)"
+                    (keydown.enter)="addTag(tagInputValue())"
+                    (blur)="addTag(tagInputValue())"
+                    aria-label="Saisir un mot-clé" />
+                }
+              </div>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Commentaire -->
+          <nz-form-item>
+            <nz-form-label>
+              Commentaire
+              <span class="cen-char-count"
+                    [class.cen-char-count--warn]="step1CommentaireLength() > 3500">
+                ({{ step1CommentaireLength() }}&thinsp;/&thinsp;4 000)
+              </span>
+            </nz-form-label>
+            <nz-form-control nzErrorTip="Maximum 4 000 caractères">
+              <textarea
+                nz-input
+                formControlName="commentaire"
+                [nzAutosize]="{ minRows: 3, maxRows: 8 }"
+                placeholder="Notes libres sur ce courrier…"
+                maxlength="4000">
+              </textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Favori -->
+          <div class="cen-favori-row">
+            <label nz-checkbox formControlName="favori">Marquer comme favori</label>
+          </div>
+
+          <!-- Adresse d'intervention -->
+          <p class="cen-subsection-label">Adresse d'intervention <span class="cen-subsection-label__opt">(optionnel)</span></p>
+          <div class="cen-row">
+            <nz-form-item class="cen-col-2">
+              <nz-form-label>Adresse</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="adresse" placeholder="Rue, avenue…" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="cen-col-2">
+              <nz-form-label>Complément d'adresse</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="adresse2" placeholder="Bâtiment, lieu-dit, BP…" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div class="cen-row">
+            <nz-form-item class="cen-col-1">
+              <nz-form-label>Code postal</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="cp" placeholder="75000" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item class="cen-col-1">
+              <nz-form-label>Commune</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="ville" placeholder="Paris" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+        </form>
+      }
+
+      <!-- ── STEP 2 — Expéditeur ───────────────────────────────────────────── -->
+      @if (currentStep() === 1) {
+        <form nz-form [formGroup]="step2" nzLayout="vertical" class="cen-form">
+
+          <h2 class="cen-section-title">Expéditeur</h2>
+          <p class="cen-hint">Recherchez un expéditeur dans le répertoire ou saisissez ses coordonnées manuellement.</p>
+
+          <!-- Toggle: répertoire vs manuel -->
+          <div class="cen-switcher">
+            <span class="cen-switcher__label">Saisie manuelle</span>
+            <nz-switch formControlName="useManual" />
+            @if (!useManualExpediteur()) {
+              <span>Recherche dans le répertoire</span>
+            } @else {
+              <span>Coordonnées libres</span>
+            }
+          </div>
+
+          @if (!useManualExpediteur()) {
+            <!-- Typeahead on existing triplets -->
+            <nz-form-item>
+              <nz-form-label>Rechercher un expéditeur</nz-form-label>
+              <nz-form-control>
+                <nz-select
+                  formControlName="tripletId"
+                  nzPlaceHolder="Nom, organisme, email…"
+                  nzShowSearch
+                  nzServerSearch
+                  [nzLoading]="isLoadingTriplets()"
+                  [nzAllowClear]="true"
+                  class="cen-full"
+                  (nzOnSearch)="onTripletSearch($event)">
+                  @for (t of tripletOptions(); track t.id) {
+                    <nz-option [nzValue]="t.id" [nzCustomContent]="true" [nzLabel]="t.label">
+                      <div class="cen-triplet-option">
+                        <span class="cen-triplet-option__name">{{ t.label }}</span>
+                        <span class="cen-triplet-option__detail">{{ t.details }}</span>
+                      </div>
+                    </nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+
+          } @else {
+            <!-- Manual entry -->
+            <div class="cen-row">
+              <nz-form-item class="cen-col-1">
+                <nz-form-label nzRequired>Nom</nz-form-label>
+                <nz-form-control nzErrorTip="Obligatoire">
+                  <input nz-input formControlName="nom" placeholder="Nom de famille…" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Prénom</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="prenom" placeholder="Prénom…" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="cen-row">
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Organisme</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="organisme" placeholder="Société, administration…" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Fonction</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="libelleFunction" placeholder="Directeur, responsable…" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="cen-row">
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Email</nz-form-label>
+                <nz-form-control nzErrorTip="Adresse email invalide">
+                  <input nz-input formControlName="email" type="email" placeholder="email@exemple.fr" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Téléphone</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="telephone" placeholder="01 23 45 67 89" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="cen-row">
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Ville</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="ville" placeholder="Paris" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item class="cen-col-1">
+                <nz-form-label>Pays</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="pays" placeholder="France" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          }
+
+        </form>
+      }
+
+      <!-- ── STEP 3 — Traitement ───────────────────────────────────────────── -->
+      @if (currentStep() === 2) {
+        <form nz-form [formGroup]="step3" nzLayout="vertical" class="cen-form">
+
+          <h2 class="cen-section-title">Traitement initial</h2>
+          <p class="cen-hint">Définissez l'action à réaliser et le destinataire en charge du traitement.</p>
+
+          <!-- Action -->
+          <nz-form-item>
+            <nz-form-label nzRequired>Action</nz-form-label>
+            <nz-form-control nzErrorTip="L'action est obligatoire">
+              <nz-select
+                formControlName="actionId"
+                nzPlaceHolder="Sélectionner une action…"
+                nzShowSearch
+                class="cen-full">
+                @for (action of actions(); track action.id) {
+                  <nz-option [nzValue]="action.id" [nzLabel]="action.libelle" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Destinataire -->
+          <nz-form-item>
+            <nz-form-label>Destinataire</nz-form-label>
+            <nz-form-control>
+              <nz-select
+                formControlName="personnelId"
+                nzPlaceHolder="Rechercher un agent ou un service…"
+                nzShowSearch
+                nzServerSearch
+                [nzLoading]="isLoadingPersonnel()"
+                [nzDisabled]="!step3.value.actionId"
+                [nzAllowClear]="true"
+                class="cen-full"
+                (nzOnSearch)="onPersonnelSearch($event)">
+                @for (p of personnel(); track p.id) {
+                  <nz-option
+                    [nzValue]="p.id"
+                    [nzLabel]="p.displayName + ' — ' + p.serviceNom" />
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Date limite de traitement -->
+          <nz-form-item>
+            <nz-form-label>Date limite de traitement</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker
+                formControlName="dateLimite"
+                nzFormat="dd/MM/yyyy"
+                class="cen-full" />
+            </nz-form-control>
+          </nz-form-item>
+
+          <!-- Commentaire -->
+          <nz-form-item>
+            <nz-form-label>
+              Commentaire
+              <span class="cen-char-count"
+                    [class.cen-char-count--warn]="step3CommentaireLength() > 3000">
+                ({{ step3CommentaireLength() }}&thinsp;/&thinsp;3 500)
+              </span>
+            </nz-form-label>
+            <nz-form-control nzErrorTip="Maximum 3 500 caractères">
+              <textarea
+                nz-input
+                formControlName="commentaire"
+                [nzAutosize]="{ minRows: 4, maxRows: 10 }"
+                placeholder="Instructions, contexte, éléments importants pour le traitement…"
+                maxlength="3500">
+              </textarea>
+            </nz-form-control>
+          </nz-form-item>
+
+        </form>
+      }
+
+      <!-- ── STEP 4 — Pièces jointes ──────────────────────────────────────── -->
+      @if (currentStep() === 3) {
+        <div class="cen-form">
+          <h2 class="cen-section-title">Pièces jointes</h2>
+          <p class="cen-hint">Ajoutez les documents associés à ce courrier. Cette étape est optionnelle — vous pourrez en ajouter ultérieurement.</p>
+
+          <div class="cen-upload-type-row">
+            <span>Type de document :</span>
+            <nz-radio-group
+              [ngModel]="selectedFileType()"
+              (ngModelChange)="selectedFileType.set($any($event))">
+              <label nz-radio nzValue="PJ">Pièce jointe</label>
+              <label nz-radio nzValue="AR">Accusé de réception</label>
+              <label nz-radio nzValue="BOR">Bordereau</label>
+              <label nz-radio nzValue="REP">Réponse</label>
+            </nz-radio-group>
+          </div>
+
+          <div class="cen-upload-zone">
+            <nz-upload
+              nzType="drag"
+              [nzMultiple]="true"
+              [nzShowUploadList]="true"
+              [nzBeforeUpload]="preventAutoUpload"
+              (nzChange)="onUploadChange($event)">
+              <p class="ant-upload-drag-icon">
+                <span nz-icon nzType="inbox"></span>
+              </p>
+              <p class="ant-upload-text">Cliquez ou déposez vos fichiers ici</p>
+              <p class="ant-upload-hint">PDF, images, Word, Excel — maximum 20 Mo par fichier</p>
+            </nz-upload>
+          </div>
+        </div>
+      }
+
+      <!-- Error message -->
+      @if (errorMsg()) {
+        <div class="cen-error" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" flex-shrink="0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          {{ errorMsg() }}
+        </div>
+      }
+
+    </div>
+
+    <!-- ── Footer navigation ──────────────────────────────── -->
+    <footer class="cen-footer">
+      <span class="cen-footer__step-info">
+        {{ steps[currentStep()].title }}
+      </span>
+      <div class="cen-footer__actions">
+        @if (currentStep() > 0) {
+          <button type="button" class="cen-btn-prev" (click)="prev()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Précédent
+          </button>
+        }
+
+        @if (currentStep() < steps.length - 1) {
+          <button type="button" class="cen-btn-next" (click)="next()">
+            Suivant
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="cen-btn-submit"
+            [disabled]="isSubmitting()"
+            (click)="submit()">
+            @if (isSubmitting()) {
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cen-spinner"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>
+            } @else {
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            }
+            Enregistrer le courrier
+          </button>
+        }
+      </div>
+    </footer>
+
+  }
+</div>

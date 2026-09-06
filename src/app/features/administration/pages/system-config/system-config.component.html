@@ -1,0 +1,260 @@
+<div class="scf-page">
+
+  <!-- ── Page header ─────────────────────────────────────────── -->
+  <div class="scf-page-header">
+    <div class="scf-page-header__icon" aria-hidden="true">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 1.41 13.44M4.52 19.07A10 10 0 0 1 3.11 5.63M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+    </div>
+    <div class="scf-page-header__text">
+      <h1 class="scf-page-header__title">Configuration système</h1>
+      <p class="scf-page-header__sub">Paramétrage du stockage des documents et de l'annuaire utilisateurs.</p>
+    </div>
+  </div>
+
+  <!-- ── Section 1 — Stockage des documents ────────────────── -->
+  <section class="scf-card">
+    <header class="scf-card__header">
+      <div class="scf-card__header-icon scf-card__header-icon--storage">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+        </svg>
+      </div>
+      <div class="scf-card__header-text">
+        <h2 class="scf-card__title">Stockage des documents</h2>
+        <p class="scf-card__subtitle">Moteur de persistance des pièces jointes et fichiers attachés</p>
+      </div>
+    </header>
+
+    <div class="scf-card__body">
+      <form nz-form [formGroup]="storageForm" nzLayout="vertical">
+
+        <!-- Mode selector -->
+        <fieldset class="scf-fieldset">
+          <legend class="scf-fieldset__legend">Mode de stockage</legend>
+          <div class="scf-mode-grid">
+
+            <label class="scf-mode-card" [class.scf-mode-card--active]="storageForm.get('mode')?.value === 'interne'">
+              <input type="radio" formControlName="mode" value="interne" class="scf-radio-hidden" />
+              <div class="scf-mode-card__icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/>
+                  <circle cx="6" cy="6" r="1" fill="currentColor"/><circle cx="6" cy="18" r="1" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="scf-mode-card__body">
+                <span class="scf-mode-card__name">Stockage interne</span>
+                <span class="scf-mode-card__desc">Fichiers conservés sur le serveur PLI. Aucune dépendance externe.</span>
+              </div>
+              <span class="scf-mode-card__check" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+            </label>
+
+            <label class="scf-mode-card" [class.scf-mode-card--active]="storageForm.get('mode')?.value === 'alfresco'">
+              <input type="radio" formControlName="mode" value="alfresco" class="scf-radio-hidden" />
+              <div class="scf-mode-card__icon scf-mode-card__icon--alfresco">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+              </div>
+              <div class="scf-mode-card__body">
+                <span class="scf-mode-card__name">Alfresco ECM</span>
+                <span class="scf-mode-card__desc">Délégation à Alfresco Content Services. Nécessite une connexion réseau.</span>
+              </div>
+              <span class="scf-mode-card__check" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+            </label>
+
+          </div>
+        </fieldset>
+
+        <!-- Alfresco connection panel -->
+        @if (showAlfrescoFields) {
+          <div class="scf-connection-panel">
+            <div class="scf-connection-panel__header">
+              <span class="scf-connection-panel__dot"></span>
+              <span class="scf-connection-panel__label">Connexion Alfresco</span>
+            </div>
+
+            <div class="scf-connection-panel__body">
+              <nz-form-item class="scf-form-item--full">
+                <nz-form-label nzRequired>URL du serveur</nz-form-label>
+                <nz-form-control nzErrorTip="L'URL est obligatoire">
+                  <input nz-input formControlName="alfrescoUrl"
+                    placeholder="https://alfresco.example.com/alfresco"
+                    class="scf-input-mono" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <div class="scf-row-2">
+                <nz-form-item>
+                  <nz-form-label>Identifiant administrateur</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="alfrescoLogin" placeholder="admin" autocomplete="username" />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label>Mot de passe</nz-form-label>
+                  <nz-form-control>
+                    <nz-input-group [nzSuffix]="storagePwdToggle">
+                      <input nz-input formControlName="alfrescoPassword"
+                        [type]="showStoragePwd ? 'text' : 'password'"
+                        autocomplete="current-password" />
+                    </nz-input-group>
+                    <ng-template #storagePwdToggle>
+                      <span class="scf-pwd-toggle" (click)="showStoragePwd = !showStoragePwd" [attr.aria-label]="showStoragePwd ? 'Masquer' : 'Afficher'">
+                        @if (showStoragePwd) {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        } @else {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        }
+                      </span>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <nz-form-item class="scf-form-item--narrow">
+                <nz-form-label>Racine Courrier dans Alfresco</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="alfrescoRoot" placeholder="Courrier" class="scf-input-mono" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        }
+
+      </form>
+    </div>
+
+    <footer class="scf-card__footer">
+      <button class="scf-save-btn" (click)="saveStorage()" [class.scf-save-btn--loading]="isSavingStorage()" [disabled]="isSavingStorage()">
+        @if (isSavingStorage()) {
+          <span class="scf-save-btn__spinner"></span>
+          Enregistrement…
+        } @else {
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Enregistrer la configuration
+        }
+      </button>
+    </footer>
+  </section>
+
+  <!-- ── Section 2 — Annuaire LDAP ─────────────────────────── -->
+  <section class="scf-card">
+    <header class="scf-card__header">
+      <div class="scf-card__header-icon scf-card__header-icon--ldap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </div>
+      <div class="scf-card__header-text">
+        <h2 class="scf-card__title">Annuaire LDAP</h2>
+        <p class="scf-card__subtitle">Synchronisation des utilisateurs depuis un annuaire d'entreprise</p>
+      </div>
+      <div class="scf-card__header-toggle">
+        <form [formGroup]="ldapForm">
+          <label class="scf-toggle" [class.scf-toggle--on]="showLdapFields">
+            <input type="checkbox" formControlName="enabled" class="scf-radio-hidden" />
+            <span class="scf-toggle__track">
+              <span class="scf-toggle__thumb"></span>
+            </span>
+            <span class="scf-toggle__label">{{ showLdapFields ? 'Activé' : 'Désactivé' }}</span>
+          </label>
+        </form>
+      </div>
+    </header>
+
+    <div class="scf-card__body">
+      <form nz-form [formGroup]="ldapForm" nzLayout="vertical">
+
+        @if (!showLdapFields) {
+          <div class="scf-empty-state">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="scf-empty-state__icon">
+              <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <p class="scf-empty-state__text">L'annuaire LDAP est désactivé.<br>Les utilisateurs se connectent avec les comptes locaux PLI.</p>
+          </div>
+        } @else {
+          <div class="scf-connection-panel scf-connection-panel--ldap">
+            <div class="scf-connection-panel__header">
+              <span class="scf-connection-panel__dot scf-connection-panel__dot--active"></span>
+              <span class="scf-connection-panel__label">Connexion LDAP</span>
+            </div>
+
+            <div class="scf-connection-panel__body">
+              <div class="scf-row-2">
+                <nz-form-item>
+                  <nz-form-label>Serveur LDAP</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="serverUrl" placeholder="ldap://domain.example.com" class="scf-input-mono" />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label>Nom de domaine</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="domain" placeholder="dc=example,dc=com" class="scf-input-mono" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <div class="scf-row-2">
+                <nz-form-item>
+                  <nz-form-label>Compte de service</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="adminLogin" placeholder="serviceaccount" autocomplete="username" />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <nz-form-item>
+                  <nz-form-label>Mot de passe</nz-form-label>
+                  <nz-form-control>
+                    <nz-input-group [nzSuffix]="ldapPwdToggle">
+                      <input nz-input formControlName="adminPassword"
+                        [type]="showLdapPwd ? 'text' : 'password'"
+                        autocomplete="current-password" />
+                    </nz-input-group>
+                    <ng-template #ldapPwdToggle>
+                      <span class="scf-pwd-toggle" (click)="showLdapPwd = !showLdapPwd">
+                        @if (showLdapPwd) {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        } @else {
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        }
+                      </span>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+          </div>
+        }
+
+      </form>
+    </div>
+
+    @if (showLdapFields) {
+      <footer class="scf-card__footer">
+        <button class="scf-save-btn" (click)="saveLdap()" [class.scf-save-btn--loading]="isSavingLdap()" [disabled]="isSavingLdap()">
+          @if (isSavingLdap()) {
+            <span class="scf-save-btn__spinner"></span>
+            Enregistrement…
+          } @else {
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Enregistrer la configuration
+          }
+        </button>
+      </footer>
+    }
+  </section>
+
+</div>

@@ -1,0 +1,823 @@
+@import 'styles/tokens';
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+
+.tcd-layout {
+  display: grid;
+  grid-template-columns: 310px 330px 1fr;
+  height: 100%;
+  overflow: hidden;
+}
+
+// ── Panel base ────────────────────────────────────────────────────────────────
+
+.tcd-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+
+  &--catalog {
+    background: $surface-sidebar;  // #0a1520 — deep navy, like a code editor
+    border-right: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  &--word {
+    background: $surface-card;
+    border-right: 1px solid $surface-border;
+    overflow: hidden;
+  }
+
+  &--analysis {
+    background: $color-neutral-50;
+    overflow: hidden;
+  }
+}
+
+// ── Topbars ───────────────────────────────────────────────────────────────────
+
+.tcd-cat-topbar {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3 $space-2 $space-4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+
+  &__title {
+    font-size: 10px;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    flex: 1;
+  }
+}
+
+// ── Mode toggle (merge ↔ mustache) ────────────────────────────────────────────
+
+.tcd-mode-toggle {
+  display: flex;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: $radius-full;
+  padding: 2px;
+  gap: 1px;
+
+  &__btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: $font-family-mono;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.35);
+    padding: 3px 8px;
+    border-radius: $radius-full;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
+    line-height: 1;
+
+    &:hover { color: rgba(255, 255, 255, 0.65); }
+
+    &--active {
+      background: rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+
+      // mustache active: amber
+      &:last-child {
+        background: rgba(251, 191, 36, 0.2);
+        color: #fcd34d;
+      }
+    }
+  }
+}
+
+.tcd-panel-topbar {
+  padding: $space-3 $space-5;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+
+  &__label {
+    font-size: 10px;
+    font-weight: $font-weight-bold;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Search (dark) ─────────────────────────────────────────────────────────────
+
+.tcd-search {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
+
+  &__icon {
+    color: rgba(255, 255, 255, 0.25);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+
+  &__input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: $font-family-sans;
+
+    &::placeholder { color: rgba(255, 255, 255, 0.2); }
+  }
+
+  &__clear {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.25);
+    padding: 0;
+    display: flex;
+    font-size: 12px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+
+    &:hover { color: rgba(255, 255, 255, 0.5); }
+  }
+}
+
+// ── Accordion ─────────────────────────────────────────────────────────────────
+
+.tcd-accordion {
+  flex: 1;
+  overflow-y: auto;
+
+  // Thin dark scrollbar
+  &::-webkit-scrollbar        { width: 3px; }
+  &::-webkit-scrollbar-track  { background: transparent; }
+  &::-webkit-scrollbar-thumb  { background: rgba(255, 255, 255, 0.1); border-radius: 2px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+}
+
+.tcd-catalog-loading {
+  display: flex;
+  justify-content: center;
+  padding: $space-10;
+
+  :ng-deep .ant-spin-dot-item { background-color: rgba(255, 255, 255, 0.35); }
+}
+
+.tcd-empty-search {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-10 $space-4;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  text-align: center;
+}
+
+// ── Custom accordion ──────────────────────────────────────────────────────────
+
+.tcd-cat-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &--open .tcd-cat-hd__chevron {
+    transform: rotate(90deg);
+  }
+}
+
+.tcd-cat-hd {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  width: 100%;
+  padding: 7px $space-3 7px $space-4;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+
+  &:hover { background: rgba(255, 255, 255, 0.04); }
+
+  &__icon {
+    font-size: 13px;
+    flex-shrink: 0;
+    /* color set inline */
+  }
+
+  &__label {
+    flex: 1;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: left;
+  }
+
+  &__count {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: $radius-full;
+    padding: 1px 6px;
+    font-weight: $font-weight-semibold;
+    flex-shrink: 0;
+  }
+
+  &__chevron {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+  }
+}
+
+// ── Tag rows ──────────────────────────────────────────────────────────────────
+
+.tcd-tag-list { display: flex; flex-direction: column; }
+
+.tcd-tag-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: 5px $space-3 5px $space-8;
+  min-height: 28px;
+  transition: background 0.1s;
+  cursor: default;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.035);
+
+    .tcd-chip { opacity: 1; }
+  }
+
+  &__label {
+    flex: 1;
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.45);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.01em;
+  }
+}
+
+// ── Copy chips ────────────────────────────────────────────────────────────────
+
+.tcd-chip {
+  border-radius: $radius-sm;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-family: $font-family-mono;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.12s, border-color 0.12s, color 0.12s, opacity 0.12s, transform 0.1s;
+  line-height: 1.5;
+  opacity: 0.7;
+  white-space: nowrap;
+
+  &:hover  { opacity: 1; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+
+  // Blue/indigo — MERGEFIELD «Name»
+  &--merge {
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.15);
+    border-color: rgba(99, 102, 241, 0.35);
+
+    &:hover {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+  }
+
+  // Amber — {{mustache}}
+  &--mustache {
+    color: #fcd34d;
+    background: rgba(251, 191, 36, 0.1);
+    border-color: rgba(251, 191, 36, 0.3);
+
+    &:hover {
+      background: rgba(251, 191, 36, 0.2);
+      border-color: rgba(251, 191, 36, 0.55);
+    }
+  }
+
+  // Flash green on copy — applies to both variants
+  &--copied {
+    background: rgba(52, 211, 153, 0.22) !important;
+    border-color: rgba(52, 211, 153, 0.5) !important;
+    color: #6ee7b7 !important;
+    opacity: 1 !important;
+  }
+}
+
+// ── Word panel scroll area ────────────────────────────────────────────────────
+
+.tcd-word-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+// ── Word hero action ──────────────────────────────────────────────────────────
+
+.tcd-word-hero {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-4;
+  background: linear-gradient(135deg, #eef1fb 0%, #f4f6ff 100%);
+  border: 1px solid #d0d7f0;
+  border-radius: $radius-md;
+
+  &__icon {
+    width: 38px;
+    height: 38px;
+    background: #2b579a;
+    border-radius: $radius-base;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: $font-weight-bold;
+    color: white;
+    font-family: 'Segoe UI', 'Calibri', sans-serif;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(43, 87, 154, 0.3);
+  }
+
+  &__body { flex: 1; }
+
+  &__title {
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: 1.3;
+  }
+
+  &__desc {
+    font-size: 11px;
+    color: $color-text-secondary;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+}
+
+.tcd-word-open-btn { flex-shrink: 0; }
+
+// ── Status pill ───────────────────────────────────────────────────────────────
+
+.tcd-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: 5px $space-3;
+  border-radius: $radius-full;
+  font-size: 11.5px;
+  font-weight: $font-weight-medium;
+  background: $color-warning-light;
+  color: $color-warning-dark;
+  border: 1px solid rgba(160, 92, 0, 0.15);
+  align-self: flex-start;
+
+  &--saved {
+    background: $color-success-light;
+    color: $color-success-dark;
+    border-color: rgba(31, 122, 60, 0.15);
+
+    .tcd-status-pill__dot { background: $color-success; animation: none; }
+  }
+
+  &__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: $color-warning;
+    flex-shrink: 0;
+    animation: pulse-dot 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+// ── Separator ─────────────────────────────────────────────────────────────────
+
+.tcd-sep {
+  height: 1px;
+  background: $surface-border;
+}
+
+// ── Word sections ─────────────────────────────────────────────────────────────
+
+.tcd-word-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__icon {
+    font-size: 14px;
+    color: $color-text-secondary;
+
+    &--green { color: $color-success; }
+  }
+
+  &__desc {
+    font-size: 12px;
+    color: $color-text-secondary;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+// ── CSV button + path ─────────────────────────────────────────────────────────
+
+.tcd-csv-btn {
+  align-self: flex-start;
+  font-family: $font-family-mono;
+  font-size: 12px;
+}
+
+.tcd-csv-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+
+  &__step {
+    background: $color-neutral-100;
+    border: 1px solid $color-neutral-300;
+    border-radius: $radius-sm;
+    padding: 1px 6px;
+    color: $color-text-secondary;
+    font-weight: $font-weight-medium;
+    white-space: nowrap;
+  }
+
+  &__arrow {
+    color: $color-neutral-400;
+    font-size: 10px;
+  }
+}
+
+// ── Custom step guide ─────────────────────────────────────────────────────────
+
+.tcd-steps { display: flex; flex-direction: column; }
+
+.tcd-step {
+  display: grid;
+  grid-template-columns: 26px 1px 1fr;
+  grid-template-rows: auto 1fr;
+  column-gap: $space-3;
+  padding-bottom: $space-4;
+
+  &--last { padding-bottom: 0; }
+
+  &__num {
+    grid-column: 1;
+    grid-row: 1 / 3;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: $color-brand-50;
+    border: 1.5px solid $color-brand-200;
+    color: $color-brand-500;
+    font-size: 11px;
+    font-weight: $font-weight-bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    z-index: 1;
+    position: relative;
+
+    &--done {
+      background: $color-success-light;
+      border-color: rgba(31, 122, 60, 0.3);
+      color: $color-success;
+    }
+  }
+
+  &__line {
+    grid-column: 2;
+    grid-row: 2;
+    width: 1px;
+    background: $surface-border;
+    justify-self: center;
+    margin-top: 4px;
+    min-height: $space-4;
+  }
+
+  &__body {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    padding-top: 3px;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    line-height: 1.3;
+  }
+
+  &__desc {
+    font-size: 11px;
+    color: $color-neutral-500;
+    margin-top: 3px;
+    line-height: 1.5;
+
+    em {
+      font-style: normal;
+      color: $color-brand-500;
+      font-weight: $font-weight-medium;
+    }
+  }
+}
+
+// ── Fallback collapse ─────────────────────────────────────────────────────────
+
+.tcd-fallback-collapse {
+  :ng-deep .ant-collapse-item > .ant-collapse-header {
+    font-size: 12px;
+    color: $color-text-secondary;
+    padding: $space-2 0;
+  }
+  :ng-deep .ant-collapse-content-box { padding: $space-3 0 0; }
+}
+
+.tcd-fallback {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.tcd-upload-zone {
+  border: 1px dashed $color-neutral-300;
+  border-radius: $radius-md;
+  padding: $space-4;
+  text-align: center;
+  cursor: pointer;
+  font-size: 12px;
+  color: $color-text-secondary;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  transition: border-color 0.15s, background 0.15s;
+  outline: none;
+
+  &:hover, &:focus {
+    border-color: $color-brand-300;
+    background: $color-brand-50;
+  }
+
+  &__icon { font-size: 20px; color: $color-neutral-400; }
+  &__filename { font-weight: $font-weight-medium; color: $color-text-primary; }
+}
+
+.tcd-hidden-input { display: none; }
+
+// ── Analysis panel ────────────────────────────────────────────────────────────
+
+.tcd-analysis-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-5;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+}
+
+.tcd-analyze-btn { width: 100%; }
+
+// ── Idle state ────────────────────────────────────────────────────────────────
+
+.tcd-idle-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-10 $space-4;
+  text-align: center;
+
+  &__icon {
+    font-size: 26px;
+    font-family: $font-family-mono;
+    font-weight: $font-weight-bold;
+    color: $color-neutral-300;
+    letter-spacing: -2px;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: $color-neutral-500;
+    line-height: 1.7;
+    max-width: 240px;
+  }
+
+  code {
+    background: $color-neutral-200;
+    border-radius: $radius-sm;
+    padding: 1px 5px;
+    font-family: $font-family-mono;
+    font-size: 12px;
+    color: $color-text-secondary;
+  }
+}
+
+.tcd-parsing-state {
+  display: flex;
+  justify-content: center;
+  padding: $space-10;
+}
+
+// ── Result summary ────────────────────────────────────────────────────────────
+
+.tcd-result-summary {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.tcd-mode-row {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 11.5px;
+  color: $color-text-secondary;
+
+  &__label { font-weight: $font-weight-medium; }
+}
+
+.tcd-mode-tag { font-size: 11px; }
+
+// ── Breakdown bar ─────────────────────────────────────────────────────────────
+
+.tcd-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.tcd-bar {
+  height: 7px;
+  border-radius: $radius-full;
+  background: $color-neutral-200;
+  overflow: hidden;
+  display: flex;
+  gap: 1px;
+
+  &__seg {
+    transition: flex-grow 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    &--valid   { background: $color-success; }
+    &--unknown { background: $color-warning; }
+  }
+}
+
+.tcd-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-3;
+  font-size: 11px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: $color-text-secondary;
+
+    &--valid   { color: $color-success-dark; }
+    &--unknown { color: $color-warning-dark; }
+    &--unused  { color: $color-neutral-500; }
+
+    &__dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+  }
+
+  &__item--valid   .tcd-bar-legend__item__dot { background: $color-success; }
+  &__item--unknown .tcd-bar-legend__item__dot { background: $color-warning; }
+}
+
+.tcd-no-tags {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 13px;
+  color: $color-neutral-500;
+  padding: $space-2 0;
+}
+
+// ── Result blocks ─────────────────────────────────────────────────────────────
+
+.tcd-result-block {
+  border-radius: $radius-md;
+  border: 1px solid $surface-border;
+  border-left-width: 3px;
+  padding: $space-3 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  background: $surface-card;
+
+  &--valid   { border-left-color: $color-success; }
+  &--unknown { border-left-color: $color-warning; }
+  &--unused  { border-left-color: $color-neutral-300; background: transparent; }
+
+  &__hd {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+  }
+
+  &--valid   &__hd { color: $color-success-dark; }
+  &--unknown &__hd { color: $color-warning-dark; }
+  &--unused  &__hd { color: $color-neutral-600; }
+
+  &__icon {
+    font-size: 13px;
+    font-weight: $font-weight-bold;
+  }
+}
+
+.tcd-result-count {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  background: $color-neutral-200;
+  color: $color-text-secondary;
+  border-radius: $radius-full;
+  padding: 1px 8px;
+}
+
+.tcd-block-hint {
+  margin: 0;
+  font-size: 11px;
+  color: $color-neutral-500;
+  line-height: 1.5;
+}
+
+// ── Chip badges (analysis results) ────────────────────────────────────────────
+
+.tcd-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1;
+
+  &--faded { opacity: 0.6; }
+}
+
+.tcd-badge {
+  font-size: 11px;
+  font-family: $font-family-mono;
+  border-radius: $radius-sm;
+  padding: 2px 7px;
+  border: 1px solid transparent;
+
+  &--valid {
+    background: $color-success-light;
+    color: $color-success-dark;
+    border-color: rgba(31, 122, 60, 0.18);
+  }
+
+  &--unknown {
+    background: $color-warning-light;
+    color: $color-warning-dark;
+    border-color: rgba(160, 92, 0, 0.18);
+  }
+
+  &--unused {
+    background: $color-neutral-100;
+    color: $color-neutral-600;
+    border-color: $color-neutral-200;
+  }
+}

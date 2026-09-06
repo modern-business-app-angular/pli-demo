@@ -1,0 +1,108 @@
+// ============================================================
+// Pli — NG-ZORRO (Ant Design) Custom Theme
+// Override Less variables BEFORE importing component styles
+// Accessibility: WCAG 2.1 AA+ / DSFR Bleu France palette
+// ============================================================
+
+// Brand — Bleu France (DSFR) — 19:1 contrast on white
+@primary-color:           #000091;
+@link-color:              #000091;
+@link-hover-color:        #4040d4;
+@success-color:           #1f7a3c;
+@warning-color:           #a05c00;
+@error-color:             #c62828;
+@info-color:              #000091;
+
+// Typography — 15px base for older administrative users
+@font-family:             'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+@font-size-base:          15px;
+@font-size-lg:            17px;
+@line-height-base:        1.6;
+@text-color:              #141414;             // 17:1 on white ✓
+@text-color-secondary:    #595959;             // 7:1 on white ✓
+
+// Border
+@border-radius-base:      6px;
+@border-radius-sm:        4px;
+@border-color-base:       #D9D9D9;
+@border-color-split:      #F0F0F0;
+
+// Layout
+@layout-body-background:     #F0F2F5;
+@layout-header-background:   #000091;
+@layout-header-height:       56px;
+@layout-header-padding:      0 24px;
+@layout-sider-background:    #0a1520;
+@layout-sider-width:         240px;
+
+// Menu (dark sidebar)
+@menu-dark-bg:                #0a1520;
+@menu-dark-submenu-bg:        #060e17;
+@menu-dark-item-active-bg:    rgba(0, 0, 145, 0.3);
+@menu-dark-selected-item-icon-color: #EDB732;
+@menu-dark-selected-item-text-color: #FFFFFF;
+@menu-item-height:            48px;            // ← touch target minimum
+@menu-item-padding-horizontal: 20px;
+
+// Table — rows tall enough for easy tapping/clicking
+@table-border-radius-base:    6px;
+@table-header-bg:             #FAFAFA;
+@table-header-color:          #141414;         // 17:1 ✓
+@table-header-sort-active-bg: #F0F2F5;
+@table-row-hover-bg:          #e3e3fd;         // Bleu France light tint
+@table-padding-vertical:      14px;            // ~48px row height with 15px font
+@table-padding-horizontal:    16px;
+
+// Form / Input — tall enough for easy interaction
+@input-height-base:           44px;            // touch target minimum
+@input-height-lg:             48px;
+@input-height-sm:             36px;
+@input-border-color:          #9a9adb;
+@input-hover-border-color:    #4040d4;
+@input-focus-border-color:    #000091;
+@input-padding-horizontal:    12px;
+
+// Buttons — 48px standard, 56px large CTA
+@btn-height-base:             48px;            // WCAG 2.5.5 touch target
+@btn-height-lg:               56px;            // primary CTAs
+@btn-height-sm:               36px;            // compact contexts only
+@btn-border-radius-base:      6px;
+@btn-primary-bg:              #000091;
+@btn-primary-color:           #FFFFFF;
+@btn-font-weight:             500;
+
+// Card
+@card-radius:                 8px;
+@card-head-font-size:         17px;
+@card-head-padding:           16px;
+@card-inner-head-padding:     12px;
+@card-padding-base:           24px;
+
+// Shadows
+@shadow-1-down:   0 6px 16px -8px rgba(0, 0, 0, 0.08), 0 9px 28px 0 rgba(0, 0, 0, 0.05);
+@box-shadow-base: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02);
+
+// Badge
+@badge-color: #821313;
+
+// Tabs
+@tabs-active-color:     #000091;
+@tabs-ink-bar-color:    #000091;
+@tabs-highlight-color:  #000091;
+@tabs-hover-color:      #4040d4;
+
+// Select dropdown
+@select-item-selected-bg:     #e3e3fd;
+@select-item-active-bg:       #e3e3fd;
+
+// Checkbox / Radio
+@checkbox-color: #000091;
+@radio-button-color: #000091;
+@radio-button-active-color: #000091;
+
+// Pagination
+@pagination-item-size: 36px;
+@pagination-font-size: 15px;
+
+// MUST be last — imports all NG-ZORRO component styles using the overrides above
+@import 'ng-zorro-antd/ng-zorro-antd.less';

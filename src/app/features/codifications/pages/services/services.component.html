@@ -1,0 +1,286 @@
+<div class="srv-page">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <div class="srv-header">
+    <div class="srv-header__left">
+      <h1 class="srv-header__title">Services</h1>
+      <span class="srv-header__count">{{ items().length }} entrée{{ items().length !== 1 ? 's' : '' }}</span>
+    </div>
+    <div class="srv-header__actions">
+      <nz-input-group [nzPrefix]="searchIcon" class="srv-search">
+        <input
+          nz-input
+          placeholder="Rechercher…"
+          [(ngModel)]="searchModel"
+          (ngModelChange)="onSearch($event)" />
+      </nz-input-group>
+      <ng-template #searchIcon><span nz-icon nzType="search"></span></ng-template>
+
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <span nz-icon nzType="plus"></span>
+        Ajouter
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Table ──────────────────────────────────────────────── -->
+  <div class="srv-table">
+    <nz-table
+      #table
+      [nzData]="items()"
+      [nzLoading]="isLoading()"
+      [nzPageSize]="20"
+      nzSize="default"
+      [nzFrontPagination]="true"
+      [nzShowPagination]="items().length > 20">
+
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Rattachement</th>
+          <th nzWidth="80px" nzAlign="center">Actif</th>
+          <th nzWidth="60px" nzAlign="center">POP</th>
+          <th nzWidth="96px" nzAlign="right"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (item of table.data; track item.id) {
+          <tr (click)="openEdit(item)">
+            <td>
+              <div class="srv-cell-nom">
+                <span class="srv-cell-nom__lib">{{ item.nom }}</span>
+                @if (item.sigle) {
+                  <nz-tag class="srv-sigle-badge" nzColor="blue">{{ item.sigle }}</nz-tag>
+                }
+              </div>
+              @if (item.bal) {
+                <div class="srv-cell-bal">{{ item.bal }}</div>
+              }
+            </td>
+            <td>
+              @if (item.parentNom) {
+                <span class="srv-cell-parent">{{ item.parentNom }}</span>
+              } @else {
+                <span class="srv-cell-root">Racine</span>
+              }
+              <div class="srv-cell-hier">{{ item.hierarchie }}</div>
+            </td>
+            <td nzAlign="center">
+              @if (item.actif) {
+                <nz-tag nzColor="success">Actif</nz-tag>
+              } @else {
+                <nz-tag nzColor="default">Inactif</nz-tag>
+              }
+            </td>
+            <td nzAlign="center">
+              @if (hasPopConfig(item)) {
+                <span nz-icon nzType="mail" nzTheme="outline" class="srv-pop-icon" nz-tooltip [nzTooltipTitle]="item.popServeur"></span>
+              } @else {
+                <span class="srv-pop-none">—</span>
+              }
+            </td>
+            <td nzAlign="right">
+              <div class="srv-actions" (click)="$event.stopPropagation()">
+                <button nz-button nzSize="small" nzType="text" (click)="openEdit(item)" nz-tooltip nzTooltipTitle="Modifier">
+                  <span nz-icon nzType="edit"></span>
+                </button>
+                <button
+                  nz-button nzSize="small" nzType="text" nzDanger
+                  nz-popconfirm
+                  nzPopconfirmTitle="Supprimer ce service ?"
+                  nzOkText="Supprimer"
+                  nzOkDanger
+                  (nzOnConfirm)="confirmDelete(item.id)">
+                  <span nz-icon nzType="delete"></span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+
+</div>
+
+<!-- ── Drawer ─────────────────────────────────────────────────── -->
+<nz-drawer
+  [nzVisible]="drawerVisible()"
+  [nzTitle]="drawerTitle"
+  nzWidth="760px"
+  [nzFooter]="drawerFooter"
+  (nzOnClose)="drawerVisible.set(false)">
+
+  <ng-container *nzDrawerContent>
+    <form nz-form [formGroup]="form" nzLayout="vertical" class="srv-form">
+
+      <!-- ── Org Path Preview (SIGNATURE ELEMENT) ─────────────── -->
+      <div class="srv-org-path">
+        @for (seg of hierarchyPath; track seg.label; let last = $last) {
+          <span class="srv-org-path__segment" [class.srv-org-path__segment--current]="seg.last">
+            {{ seg.label }}
+          </span>
+          @if (!last) {
+            <span class="srv-org-path__sep">›</span>
+          }
+        }
+      </div>
+
+      <!-- ── §1 Détail du service ──────────────────────────────── -->
+      <div class="srv-section-head">
+        <span>Détail du service</span>
+      </div>
+
+      <div class="srv-grid-2">
+        <nz-form-item>
+          <nz-form-label nzRequired>Nom du service</nz-form-label>
+          <nz-form-control nzErrorTip="Nom requis (max 100 car.)">
+            <input nz-input formControlName="nom" placeholder="Ex : Service Courrier" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Sigle</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="sigle" placeholder="Ex : SC" style="text-transform: uppercase" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div class="srv-grid-2">
+        <nz-form-item>
+          <nz-form-label>BAL (Boîte aux lettres)</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="bal" placeholder="courrier@mairie.fr" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Code hiérarchique</nz-form-label>
+          <nz-form-control nzErrorTip="Code requis (max 50 car.)">
+            <input nz-input formControlName="hierarchie" placeholder="Ex : DG/SC" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div class="srv-grid-2">
+        <nz-form-item>
+          <nz-form-label>Service supérieur</nz-form-label>
+          <nz-form-control>
+            <nz-select
+              formControlName="parentId"
+              nzPlaceHolder="— Aucun (racine) —"
+              nzAllowClear
+              [nzShowSearch]="true">
+              @for (opt of parentOptions; track opt.id) {
+                <nz-option [nzValue]="opt.id" [nzLabel]="opt.nom"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <div></div><!-- spacer -->
+      </div>
+
+      <div class="srv-switch-row">
+        <div class="srv-switch-row__label">
+          <span nz-icon nzType="check-circle" nzTheme="outline"></span>
+          Service actif
+        </div>
+        <nz-switch formControlName="actif"></nz-switch>
+      </div>
+
+      <!-- ── §2 SAS courrier — Accès POP ───────────────────────────── -->
+      <div class="srv-section-head srv-section-head--pop">
+        <span nz-icon nzType="mail" nzTheme="outline"></span>
+        <span>SAS courrier — Accès au serveur POP</span>
+      </div>
+
+      <div class="srv-grid-3">
+        <nz-form-item>
+          <nz-form-label>Compte utilisateur</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="popCompte" placeholder="user@domaine.fr" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Mot de passe</nz-form-label>
+          <nz-form-control>
+            <input nz-input type="password" formControlName="popMotDePasse" placeholder="••••••••" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>Nom / IP serveur</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="popServeur" placeholder="mail.domaine.fr" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- POP test row -->
+      <div class="srv-test-row">
+        <button nz-button nzType="default" nzSize="small"
+                [nzLoading]="testingPop()"
+                (click)="testPopConnection()">
+          <span nz-icon nzType="api" nzTheme="outline"></span>
+          Tester la connexion POP
+        </button>
+        @if (popTestResult() === 'ok') {
+          <span class="srv-test-result srv-test-result--ok">
+            <span nz-icon nzType="check-circle" nzTheme="fill"></span>
+            Connexion réussie
+          </span>
+        }
+        @if (popTestResult() === 'err') {
+          <span class="srv-test-result srv-test-result--err">
+            <span nz-icon nzType="close-circle" nzTheme="fill"></span>
+            Connexion impossible — vérifiez les paramètres
+          </span>
+        }
+      </div>
+
+      <!-- ── §3 Éditions ───────────────────────────────────────── -->
+      <div class="srv-section-head">
+        <span nz-icon nzType="printer" nzTheme="outline"></span>
+        <span>Éditions</span>
+      </div>
+
+      <div class="srv-grid-2">
+        <nz-form-item>
+          <nz-form-label>Imprimante</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="imprimante" placeholder="Ex : PRINT-DG" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label>&nbsp;</nz-form-label>
+          <nz-form-control>
+            <label nz-checkbox formControlName="etiquettes">Impression d'étiquettes</label>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <nz-form-item class="srv-full">
+        <nz-form-label>Logo PDF</nz-form-label>
+        <nz-form-control>
+          <input nz-input formControlName="logoPdf" placeholder="/logos/service.pdf" />
+        </nz-form-control>
+      </nz-form-item>
+
+    </form>
+  </ng-container>
+</nz-drawer>
+
+<!-- ── Drawer footer ──────────────────────────────────────────── -->
+<ng-template #drawerFooter>
+  <div class="srv-drawer-footer">
+    <button nz-button (click)="drawerVisible.set(false)">Annuler</button>
+    <button nz-button nzType="primary" [nzLoading]="isSaving()" (click)="saveDrawer()">
+      {{ editingItem() ? 'Enregistrer' : 'Créer le service' }}
+    </button>
+  </div>
+</ng-template>

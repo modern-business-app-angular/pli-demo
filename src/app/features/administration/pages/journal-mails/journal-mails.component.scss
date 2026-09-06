@@ -1,0 +1,152 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.jml-page { @include page-root; }
+
+// ── Page header ───────────────────────────────────────────────
+.jml-header {
+  @include page-header;
+
+  &__title { @include page-title; }
+}
+
+// ── Filter card ───────────────────────────────────────────────
+.jml-filters {
+  flex-shrink: 0;
+  @include filter-card;
+}
+
+.jml-filters__row { @include filter-row; }
+
+.jml-filter-group {
+  @include filter-group;
+
+  &--grow { flex: 1; min-width: 200px; }
+}
+
+.jml-filter-label { @include filter-label; }
+
+.jml-filter-actions {
+  display: flex;
+  gap: $space-2;
+  align-self: flex-end;
+
+  ::ng-deep .ant-btn {
+    border-radius: $radius-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.jml-range-picker {
+  width: 240px;
+
+  ::ng-deep .ant-picker { @include input-border-override; }
+}
+
+.jml-select {
+  width: 180px;
+
+  ::ng-deep .ant-select-selector {
+    border-color: $color-neutral-300 !important;
+    border-radius: $radius-base !important;
+    font-size: $font-size-sm !important;
+  }
+}
+
+.jml-input {
+  width: 160px;
+
+  ::ng-deep .ant-input { @include input-border-override; }
+}
+
+// ── Table card ────────────────────────────────────────────────
+.jml-table {
+  @include table-card;
+
+  ::ng-deep {
+    @include table-ng-deep;
+
+    .ant-table-tbody > tr:hover > td { cursor: pointer; }
+  }
+}
+
+.jml-row {
+  cursor: pointer;
+  font-size: $font-size-base;
+  transition: background $transition-fast;
+}
+
+// ── Cell styles ───────────────────────────────────────────────
+.jml-cell-objet {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13.5px;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.jml-cell-email {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.jml-cell-date {
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
+  white-space: nowrap;
+  font-family: $font-family-mono;
+  letter-spacing: 0.01em;
+}
+
+.jml-cell-mono {
+  font-family: $font-family-mono;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  letter-spacing: 0.01em;
+}
+
+// ── Type badge ────────────────────────────────────────────────
+.jml-type-badge { @include badge-processing; }
+
+// ── Detail Drawer ─────────────────────────────────────────────
+.jml-detail {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding: $space-2;
+}
+
+.jml-detail__meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.jml-detail__row { @include detail-row; }
+
+.jml-detail__label { @include detail-label; }
+
+.jml-detail__content {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+// Email body preview
+.jml-detail__body {
+  @include section-card;
+  font-size: $font-size-sm;
+  line-height: 1.65;
+  max-height: 420px;
+  overflow-y: auto;
+  color: $color-text-primary;
+  @include scrollbar-thin;
+}

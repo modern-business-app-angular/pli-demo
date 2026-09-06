@@ -1,0 +1,746 @@
+@use '../../../../../styles/tokens' as *;
+
+// ============================================================
+// Search Models — .srm-* prefix
+// ============================================================
+
+// ── Page layout ────────────────────────────────────────────
+
+.srm-page {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  padding: $space-6;
+  min-height: 100%;
+}
+
+// ── Header ─────────────────────────────────────────────────
+
+.srm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-4;
+
+  &__left {
+    display: flex;
+    align-items: baseline;
+    gap: $space-3;
+  }
+
+  &__title {
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    background: $color-neutral-100;
+    padding: 2px $space-2;
+    border-radius: $radius-full;
+    font-weight: $font-weight-medium;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+}
+
+.srm-search {
+  width: 280px;
+}
+
+// ── Tab bar ────────────────────────────────────────────────
+
+.srm-tab-bar {
+  display: flex;
+  gap: $space-1;
+  border-bottom: 2px solid $color-neutral-200;
+  padding-bottom: 0;
+}
+
+.srm-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-4;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  border-radius: $radius-base $radius-base 0 0;
+  transition: color 0.15s, border-color 0.15s;
+
+  &:hover {
+    color: $color-brand-500;
+    background: $color-brand-50;
+  }
+
+  &--active {
+    color: $color-brand-500;
+    border-bottom-color: $color-brand-500;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 $space-1;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    background: $color-neutral-200;
+    color: $color-text-secondary;
+    border-radius: $radius-full;
+
+    .srm-tab--active & {
+      background: $color-brand-100;
+      color: $color-brand-600;
+    }
+  }
+}
+
+// ── Table ──────────────────────────────────────────────────
+
+.srm-table {
+  flex: 1;
+
+  ::ng-deep .ant-table-row {
+    cursor: pointer;
+
+    &:hover td {
+      background: $color-brand-50 !important;
+    }
+  }
+}
+
+.srm-row {
+  transition: background 0.1s;
+}
+
+// Name cell
+.srm-cell-nom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.srm-nom {
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.srm-libelle {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.srm-system-badge {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 0 6px;
+  height: 16px;
+  line-height: 16px;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: $color-neutral-200;
+  color: $color-neutral-700;
+  border-radius: $radius-full;
+  align-self: flex-start;
+}
+
+// Type tag
+.srm-type-tag {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+// Visibility badge
+.srm-vis-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.srm-vis-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  align-self: flex-start;
+
+  &--public {
+    background: #e6f7ff;
+    color: #0958d9;
+  }
+
+  &--private {
+    background: $color-neutral-100;
+    color: $color-neutral-700;
+  }
+
+  &--service {
+    background: #f9f0ff;
+    color: #531dab;
+  }
+}
+
+.srm-service-hint {
+  font-size: $font-size-xs;
+  color: $color-text-disabled;
+  padding-left: $space-1;
+}
+
+// Capability dots
+.srm-caps-dots {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: default;
+}
+
+.srm-cap-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: $radius-full;
+  background: $color-neutral-300;
+  flex-shrink: 0;
+  transition: background 0.15s;
+
+  &--on {
+    background: $color-brand-500;
+  }
+}
+
+.srm-caps-count {
+  margin-left: $space-2;
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-variant-numeric: tabular-nums;
+}
+
+.srm-caps-tooltip {
+  font-size: $font-size-sm;
+  line-height: 1.8;
+  padding: $space-1;
+}
+
+// Actions cell
+.srm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-1;
+}
+
+.srm-btn-danger {
+  color: $color-error !important;
+
+  &:hover {
+    background: $color-error-light !important;
+  }
+}
+
+// ── Drawer form ────────────────────────────────────────────
+
+.srm-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  padding: $space-2 0;
+}
+
+.srm-section-head {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 0;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  border-bottom: 2px solid $color-brand-500;
+  margin-top: $space-2;
+
+  [nz-icon] {
+    color: $color-brand-500;
+    font-size: 16px;
+  }
+
+  &__hint {
+    margin-left: auto;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-regular;
+    color: $color-text-secondary;
+  }
+
+  &--vis {
+    border-bottom-color: #531dab;
+    [nz-icon] { color: #531dab; }
+  }
+
+  &--caps {
+    border-bottom-color: $color-warning;
+    [nz-icon] { color: $color-warning; }
+  }
+}
+
+.srm-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-4;
+}
+
+.srm-full {
+  width: 100%;
+}
+
+// ── Visibility cards ───────────────────────────────────────
+
+.srm-vis-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+}
+
+.srm-vis-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: $space-2;
+  padding: $space-4;
+  border: 2px solid $surface-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  background: $surface-card;
+  position: relative;
+
+  &:hover {
+    border-color: $color-brand-300;
+    background: $color-brand-50;
+  }
+
+  &--active {
+    border-color: $color-brand-500;
+    background: $color-brand-50;
+    box-shadow: 0 0 0 3px rgba($color-brand-500, 0.12);
+  }
+
+  &__icon {
+    font-size: 22px;
+    color: $color-text-secondary;
+    transition: color 0.15s;
+
+    .srm-vis-card--active & {
+      color: $color-brand-500;
+    }
+  }
+
+  &__label {
+    font-size: $font-size-base;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__desc {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    line-height: $line-height-base;
+  }
+}
+
+.srm-vis-radio {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.srm-service-select {
+  margin-top: -$space-2;
+}
+
+// ── Capability groups ──────────────────────────────────────
+
+$cap-colors: (
+  'teal':  (#e6fffb, #006d75, #b5f5ec),
+  'brand': ($color-brand-50, $color-brand-500, $color-brand-100),
+  'amber': ($color-warning-light, $color-warning-dark, #ffe58f),
+);
+
+.srm-cap-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $color-text-secondary;
+  }
+
+  // Teal group
+  &--teal .srm-cap-card--active {
+    background: #e6fffb;
+    border-color: #36cfc9;
+
+    .srm-cap-card__icon { color: #006d75; }
+    .srm-cap-card__label { color: #006d75; }
+  }
+
+  // Brand group
+  &--brand .srm-cap-card--active {
+    background: $color-brand-50;
+    border-color: $color-brand-300;
+
+    .srm-cap-card__icon { color: $color-brand-500; }
+    .srm-cap-card__label { color: $color-brand-600; }
+  }
+
+  // Amber group
+  &--amber .srm-cap-card--active {
+    background: $color-warning-light;
+    border-color: #ffd666;
+
+    .srm-cap-card__icon { color: $color-warning; }
+    .srm-cap-card__label { color: $color-warning-dark; }
+  }
+}
+
+.srm-cap-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-3;
+}
+
+.srm-cap-card {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  border: 1.5px solid $surface-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  background: $surface-card;
+
+  &:hover {
+    border-color: $color-neutral-400;
+    background: $color-neutral-50;
+  }
+
+  &--active {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: $space-2;
+  }
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__icon {
+    font-size: 16px;
+    color: $color-text-secondary;
+    transition: color 0.15s;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    transition: color 0.15s;
+  }
+
+  &__desc {
+    margin: 0;
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    line-height: $line-height-base;
+  }
+}
+
+// ── Column editor — Section 4 ──────────────────────────────
+
+.srm-section-head--cols {
+  border-bottom-color: #096dd9;
+  [nz-icon] { color: #096dd9; }
+}
+
+.srm-cols-reset {
+  margin-left: $space-2;
+  color: $color-text-secondary !important;
+
+  &:hover {
+    color: $color-brand-500 !important;
+    background: $color-brand-50 !important;
+  }
+}
+
+.srm-col-section-label {
+  margin: $space-3 0 $space-2;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+
+  &--hidden {
+    margin-top: $space-4;
+  }
+}
+
+.srm-col-section-hint {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  color: $color-neutral-500;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: $space-2;
+}
+
+// Drag list
+.srm-col-drag-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  border: 1.5px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-2;
+  background: $color-neutral-50;
+  min-height: 48px;
+
+  // CDK drop over indicator
+  &.cdk-drop-list-dragging .srm-col-row:not(.cdk-drag-placeholder) {
+    transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+// Individual column row
+.srm-col-row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  padding: $space-2 $space-3;
+  background: $surface-card;
+  border: 1.5px solid $surface-border;
+  border-radius: $radius-base;
+  cursor: default;
+  transition: box-shadow 0.15s, border-color 0.15s;
+
+  &:hover {
+    border-color: $color-brand-300;
+    box-shadow: 0 2px 8px rgba(0, 0, 145, 0.08);
+  }
+
+  &.cdk-drag-animating {
+    transition: transform 300ms cubic-bezier(0, 0, 0.2, 1);
+  }
+
+  &.cdk-drag-preview {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    border-color: $color-brand-400;
+    border-radius: $radius-base;
+    background: $surface-card;
+  }
+}
+
+.srm-col-drag-placeholder {
+  height: 46px;
+  background: $color-brand-50;
+  border: 2px dashed $color-brand-300;
+  border-radius: $radius-base;
+  transition: all 200ms;
+}
+
+.srm-col-drag-handle {
+  cursor: grab;
+  color: $color-neutral-400;
+  font-size: 14px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: $space-1;
+
+  &:active { cursor: grabbing; }
+
+  &:hover { color: $color-neutral-600; }
+}
+
+.srm-col-type-icon {
+  color: $color-neutral-500;
+  font-size: 13px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.srm-col-label {
+  flex: 1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.srm-col-width-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.srm-col-width-input {
+  width: 72px !important;
+
+  ::ng-deep .ant-input-number-input {
+    font-size: $font-size-xs;
+    padding: 0 $space-2;
+    font-family: $font-family-mono;
+  }
+}
+
+.srm-col-width-unit {
+  font-size: $font-size-xs;
+  color: $color-text-disabled;
+  font-family: $font-family-mono;
+}
+
+.srm-col-hide-btn {
+  flex-shrink: 0;
+  color: $color-neutral-400 !important;
+  transition: color 0.15s, background 0.15s;
+
+  &:hover {
+    color: $color-warning !important;
+    background: $color-warning-light !important;
+  }
+}
+
+// Relation badge on visible column rows
+.srm-col-relation-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px $space-2;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #e6fffb;
+  color: #006d75;
+  border: 1px solid #87e8de;
+  border-radius: $radius-full;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// Grouped hidden columns container
+.srm-col-hidden-groups {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding: $space-3;
+  background: $color-neutral-50;
+  border: 1.5px dashed $color-neutral-300;
+  border-radius: $radius-md;
+}
+
+.srm-col-hidden-group {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.srm-col-group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #006d75;
+
+  [nz-icon] {
+    font-size: 11px;
+  }
+}
+
+// Hidden columns — chip list
+.srm-col-hidden-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-2;
+  padding: $space-3;
+  background: $color-neutral-50;
+  border: 1.5px dashed $color-neutral-300;
+  border-radius: $radius-md;
+}
+
+.srm-col-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-1 $space-3;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  background: $surface-card;
+  border: 1.5px solid $surface-border;
+  border-radius: $radius-full;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+
+  [nz-icon] {
+    font-size: 11px;
+    color: $color-neutral-400;
+  }
+
+  &:hover {
+    color: $color-brand-500;
+    border-color: $color-brand-400;
+    background: $color-brand-50;
+
+    [nz-icon] { color: $color-brand-500; }
+  }
+}
+
+// ── Drawer footer ──────────────────────────────────────────
+
+.srm-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-3;
+  padding: $space-4 0;
+}

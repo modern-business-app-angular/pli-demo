@@ -1,0 +1,72 @@
+<div class="mdp-wrap">
+
+  <!-- Action buttons -->
+  <div class="mdp-actions">
+    <span class="mdp-actions__label">Ajouter un document</span>
+    <button nz-button nzSize="small" class="mdp-actions__btn mdp-actions__btn--ar"
+      (click)="openSelector('AR')">
+      <span nz-icon nzType="check-circle"></span>
+      Accusé de réception
+    </button>
+    <button nz-button nzSize="small" class="mdp-actions__btn mdp-actions__btn--rep"
+      (click)="openSelector('REP')">
+      <span nz-icon nzType="mail"></span>
+      Réponse
+    </button>
+    <button nz-button nzSize="small" class="mdp-actions__btn mdp-actions__btn--bor"
+      (click)="openSelector('BOR')">
+      <span nz-icon nzType="snippets"></span>
+      Bordereau
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  @if (documents().length === 0) {
+    <div class="mdp-empty">
+      <span nz-icon nzType="plus-circle" style="font-size:32px;color:#c7d2fe"></span>
+      <p>Aucun document lié — cliquez sur un bouton ci-dessus pour ajouter un modèle</p>
+    </div>
+  }
+
+  <!-- Document cards -->
+  @for (doc of documents(); track doc.maquetteId + '_' + $index; let idx = $index) {
+    <div class="mdp-doc" [class.mdp-doc--active]="activeDocIdx() === idx">
+
+      <!-- Doc header -->
+      <div class="mdp-doc__header" (click)="activeDocIdx.set(activeDocIdx() === idx ? null : idx)">
+        <nz-tag [nzColor]="typeColor[doc.type]" class="mdp-doc__tag">{{ typeLabel[doc.type] }}</nz-tag>
+        <span class="mdp-doc__maquette">{{ doc.maquetteNom }}</span>
+        <div class="mdp-doc__spacer"></div>
+        <button nz-button nzType="text" nzSize="small" class="mdp-doc__del"
+          nz-tooltip nzTooltipTitle="Supprimer ce document"
+          (click)="$event.stopPropagation(); removeDoc(idx)">
+          <span nz-icon nzType="delete"></span>
+        </button>
+        <span nz-icon [nzType]="activeDocIdx() === idx ? 'up' : 'down'" class="mdp-doc__chevron"></span>
+      </div>
+
+      @if (activeDocIdx() === idx) {
+        <div class="mdp-doc__body">
+          <!-- Title input -->
+          <div class="mdp-doc__title-row">
+            <input nz-input
+              [value]="doc.titre"
+              (input)="updateDocTitre(idx, $any($event.target).value)"
+              placeholder="Titre du document"
+              class="mdp-doc__title-input" />
+          </div>
+          <!-- Quill editor -->
+          <div class="mdp-doc__editor">
+            <quill-editor
+              [ngModel]="doc.htmlContent"
+              (ngModelChange)="updateDocHtml(idx, $event)"
+              [modules]="quillModules"
+              format="html"
+              theme="snow"
+              [styles]="{ 'min-height': '280px', 'font-size': '13px' }" />
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

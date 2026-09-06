@@ -1,0 +1,118 @@
+@import 'styles/tokens';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+// ── Page shell ────────────────────────────────────────────────
+.cdf-page {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  flex: 1;
+  min-height: 0;
+}
+
+// ── Header ────────────────────────────────────────────────────
+.cdf-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-bottom: $space-4;
+  border-bottom: 1px solid $color-neutral-200;
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+}
+
+.cdf-search {
+  width: 260px;
+}
+
+// ── Table ─────────────────────────────────────────────────────
+.cdf-table {
+  flex: 1;
+
+  // Override NZ-ZORRO row height for accessible touch targets
+  ::ng-deep .ant-table-tbody > tr > td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    vertical-align: middle;
+  }
+
+  ::ng-deep .ant-table-thead > tr > th {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    background: $color-neutral-50;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.cdf-row {
+  min-height: 52px;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+
+  &:hover td {
+    background: $color-brand-50 !important;
+  }
+}
+
+// ── Action buttons cell ───────────────────────────────────────
+.cdf-actions {
+  display: flex;
+  gap: $space-2;
+  align-items: center;
+  white-space: nowrap;
+}
+
+// ── Button icon helper ────────────────────────────────────────
+.cdf-btn-icon {
+  vertical-align: -2px;
+  margin-right: 5px;
+}
+
+// ── Full-width form control helper ────────────────────────────
+.cdf-full {
+  width: 100%;
+}
+
+// ── NZ-ZORRO overrides in modal form ─────────────────────────
+::ng-deep .ant-modal-body {
+  .ant-form-item-label > label {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  .ant-form-item-explain-error {
+    font-size: $font-size-sm;
+    color: $color-error-dark;
+  }
+
+  .ant-form-item {
+    margin-bottom: $space-4;
+  }
+
+  nz-input-number,
+  nz-date-picker,
+  nz-select {
+    width: 100%;
+  }
+}

@@ -1,0 +1,114 @@
+<div class="fs-modal">
+  <!-- Header info -->
+  <div class="fs-modal__info">
+    <div class="fs-modal__info-row">
+      <span class="fs-modal__info-label">Courrier</span>
+      <span class="fs-modal__info-value fs-modal__chrono">{{ courrier.numeroChrono }}</span>
+    </div>
+    <div class="fs-modal__info-row">
+      <span class="fs-modal__info-label">Objet</span>
+      <span class="fs-modal__info-value">{{ courrier.objet }}</span>
+    </div>
+    @if (courrier.expediteur) {
+      <div class="fs-modal__info-row">
+        <span class="fs-modal__info-label">Expéditeur</span>
+        <span class="fs-modal__info-value">
+          {{ courrier.expediteur.nom }}
+          @if (courrier.expediteur.organisme) { — {{ courrier.expediteur.organisme }} }
+        </span>
+      </div>
+    }
+  </div>
+
+  <nz-spin [nzSpinning]="isLoadingActions()">
+    <form nz-form [formGroup]="form" nzLayout="vertical" class="fs-modal__form">
+
+      <!-- Action -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Action</nz-form-label>
+        <nz-form-control nzErrorTip="L'action est obligatoire">
+          <nz-select
+            formControlName="actionId"
+            nzPlaceHolder="Sélectionner une action…"
+            nzShowSearch
+            [nzLoading]="isLoadingActions()">
+            @for (action of actions(); track action.id) {
+              <nz-option [nzValue]="action.id" [nzLabel]="action.libelle" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Destinataire -->
+      <nz-form-item>
+        <nz-form-label nzRequired>Destinataire</nz-form-label>
+        <nz-form-control nzErrorTip="Le destinataire est obligatoire">
+          <nz-select
+            formControlName="destinataireId"
+            nzPlaceHolder="Rechercher un agent ou un service…"
+            nzShowSearch
+            nzServerSearch
+            [nzLoading]="isLoadingPersonnel()"
+            [nzDisabled]="!form.value.actionId"
+            (nzOnSearch)="onRecipientSearch($event)">
+            @for (p of personnel(); track p.id) {
+              <nz-option
+                [nzValue]="p.id"
+                [nzLabel]="p.displayName + ' — ' + p.serviceNom" />
+            }
+          </nz-select>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Date limite -->
+      <nz-form-item>
+        <nz-form-label>Date limite</nz-form-label>
+        <nz-form-control nzErrorTip="La date ne peut pas être dans le passé">
+          <nz-date-picker
+            formControlName="dateLimite"
+            nzFormat="dd/MM/yyyy"
+            style="width: 100%"
+            nzPlaceHolder="JJ/MM/AAAA" />
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Commentaire -->
+      <nz-form-item>
+        <nz-form-label>Commentaire</nz-form-label>
+        <nz-form-control [nzErrorTip]="'Maximum 3 500 caractères (' + commentaireLength() + '/3500)'">
+          <textarea
+            nz-input
+            formControlName="commentaire"
+            [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+            placeholder="Commentaire facultatif…"
+            maxlength="3500">
+          </textarea>
+          <div class="fs-modal__char-count">
+            {{ commentaireLength() }} / 3 500
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+
+      <!-- Error -->
+      @if (errorMsg()) {
+        <nz-alert nzType="error" [nzMessage]="errorMsg()!" nzShowIcon />
+      }
+
+    </form>
+  </nz-spin>
+
+  <!-- Footer -->
+  <div class="fs-modal__footer">
+    <button nz-button (click)="onCancel()" [disabled]="isSubmitting()">
+      Annuler
+    </button>
+    <button
+      nz-button
+      nzType="primary"
+      [nzLoading]="isSubmitting()"
+      [disabled]="form.invalid"
+      (click)="onSubmit()">
+      Faire suivre →
+    </button>
+  </div>
+</div>

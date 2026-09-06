@@ -1,0 +1,50 @@
+// ============================================================
+// Pli — Typography
+// Accessible text styles — min 7:1 contrast on white backgrounds
+// ============================================================
+@import 'tokens';
+
+// Inter font from Google Fonts (loaded via index.html preconnect)
+// @import url is handled in index.html for performance
+
+// Page-level headings
+.pli-page-title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;       // #141414 — 17:1 ✓
+  letter-spacing: -0.01em;
+  line-height: $line-height-tight;
+}
+
+.pli-section-title {
+  font-size: $font-size-lg;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;       // #141414 — 17:1 ✓
+  line-height: $line-height-tight;
+}
+
+// Uppercase label (status tags, column headers)
+.pli-label {
+  font-size: $font-size-sm;         // 13px minimum for uppercase labels
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $color-text-secondary;     // #595959 — 7:1 ✓
+}
+
+// Metadata / secondary text
+.pli-meta {
+  font-size: $font-size-base;       // 15px — readable for older users
+  color: $color-text-secondary;     // #595959 — 7:1 ✓
+  line-height: $line-height-base;
+}
+
+// Code / technical identifiers (chrono numbers, IDs)
+.pli-code {
+  font-family: $font-family-mono;
+  font-size: $font-size-base;
+  background: $color-neutral-100;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+  color: $color-brand-500;          // #000091 — 19:1 ✓
+}

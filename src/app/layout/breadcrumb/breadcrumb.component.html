@@ -1,0 +1,55 @@
+<header class="topbar">
+
+  <!-- ── Breadcrumbs ──────────────────────────────────────────── -->
+  <nav class="topbar__crumbs" aria-label="Fil d'Ariane">
+    @for (crumb of uiStore.breadcrumbs(); track crumb.route; let last = $last; let first = $first) {
+      @if (!first) {
+        <span class="topbar__sep" aria-hidden="true">/</span>
+      }
+      @if (!last && crumb.route) {
+        <a class="topbar__crumb topbar__crumb--link" [routerLink]="crumb.route">{{ crumb.label }}</a>
+      } @else {
+        <span class="topbar__crumb topbar__crumb--current" [attr.aria-current]="last ? 'page' : null">
+          {{ crumb.label }}
+        </span>
+      }
+    }
+  </nav>
+
+  <!-- ── Right actions ────────────────────────────────────────── -->
+  <div class="topbar__actions">
+
+    <pli-demo-badge />
+
+    <!-- About this demo -->
+    <button
+      class="topbar__btn"
+      type="button"
+      data-tour="about"
+      title="À propos de cette démo"
+      aria-label="À propos de cette démo"
+      (click)="demo.openAbout()">
+      <svg class="topbar__btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+    </button>
+
+    <!-- Source code -->
+    <a
+      class="topbar__btn"
+      [href]="demo.config.links.github"
+      target="_blank"
+      rel="noopener"
+      title="Code source sur GitHub"
+      aria-label="Code source sur GitHub">
+      <svg class="topbar__btn-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+      </svg>
+    </a>
+
+  </div>
+
+</header>

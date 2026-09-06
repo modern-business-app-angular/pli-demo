@@ -1,0 +1,347 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.sec-page { @include page-root; }
+
+// ── Header ────────────────────────────────────────────────────
+.sec-header {
+  @include page-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__left {
+    display: flex;
+    align-items: baseline;
+    gap: $space-3;
+  }
+
+  &__title { @include page-title; }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-neutral-400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+}
+
+.sec-search { width: 260px; }
+
+// ── Table card ────────────────────────────────────────────────
+.sec-table {
+  @include table-card;
+
+  ::ng-deep {
+    @include table-ng-deep;
+    .ant-table-tbody > tr > td { padding: 10px 16px; }
+    .ant-table-tbody > tr      { cursor: pointer; }
+  }
+}
+
+// ── Row cells ─────────────────────────────────────────────────
+.sec-row:hover { background: rgba(0, 0, 145, 0.02); }
+
+.sec-cp {
+  font-family: $font-family-mono;
+  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+}
+
+.sec-cell-rue {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+}
+
+.sec-mot-voie {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $color-neutral-400;
+}
+
+.sec-nom-rue {
+  font-size: 13.5px;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sec-ville {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  &::before { content: '·'; margin-right: $space-2; color: $color-neutral-300; }
+}
+
+// ── Address range pill ────────────────────────────────────────
+.sec-range {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: $font-family-mono;
+  font-size: 12px;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-full;
+  padding: 3px 10px;
+}
+
+.sec-range__num {
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.sec-range__type {
+  font-size: 10px;
+  color: $color-neutral-500;
+  margin-left: -2px;
+}
+
+.sec-range__arrow {
+  color: $color-neutral-400;
+  font-size: 10px;
+  margin: 0 2px;
+}
+
+// ── Parité badge ──────────────────────────────────────────────
+.sec-parite-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  padding: 2px 8px;
+  border-radius: $radius-full;
+
+  &--pair {
+    background: rgba(0, 0, 145, 0.07);
+    color: $color-brand-600;
+  }
+
+  &--impair {
+    background: rgba(5, 120, 85, 0.08);
+    color: #057855;
+  }
+
+  &--tous {
+    background: $color-neutral-100;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Geo count badge ───────────────────────────────────────────
+.sec-geo-count {
+  display: inline-block;
+  font-family: $font-family-mono;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  color: $color-brand-600;
+  background: $color-brand-50;
+  border: 1px solid $color-brand-100;
+  border-radius: $radius-full;
+  padding: 1px 7px;
+  cursor: default;
+}
+
+.sec-geo-empty { color: $color-neutral-300; }
+
+.sec-geo-tooltip {
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+// ── Actions ───────────────────────────────────────────────────
+.sec-actions {
+  display: flex;
+  gap: $space-1;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.sec-actions ::ng-deep button.ant-btn-sm { @include action-btn-square; }
+
+.sec-btn-danger ::ng-deep .anticon { color: $color-neutral-400; transition: color $transition-fast; }
+.sec-btn-danger:hover ::ng-deep .anticon { color: $color-error; }
+
+// ── Drawer form ───────────────────────────────────────────────
+.sec-form {
+  padding-bottom: $space-8;
+
+  nz-form-item { margin-bottom: $space-4; }
+  nz-select { width: 100%; }
+  nz-input-number { width: 100%; }
+
+  ::ng-deep .ant-form-item-label > label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+  }
+}
+
+.sec-full { width: 100%; }
+
+// ── Section headers ───────────────────────────────────────────
+.sec-section-head {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: $color-brand-500;
+  margin-bottom: $space-4;
+  padding-bottom: $space-2;
+  border-bottom: 1px solid $color-neutral-100;
+  margin-top: $space-5;
+
+  &:first-of-type { margin-top: 0; }
+
+  &--range { color: #059669; border-color: rgba(5, 150, 105, 0.15); }
+  &--geo   { color: #7c3aed; border-color: rgba(124, 58, 237, 0.15); flex-wrap: wrap; }
+
+  &__hint {
+    font-size: 11px;
+    font-weight: $font-weight-regular;
+    text-transform: none;
+    letter-spacing: 0;
+    color: $color-neutral-400;
+    margin-left: auto;
+  }
+}
+
+// ── Grid layouts ──────────────────────────────────────────────
+.sec-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.sec-grid-3 {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.sec-span-2 { grid-column: span 2; }
+
+// ── Range row ─────────────────────────────────────────────────
+.sec-range-row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-4;
+}
+
+.sec-range-group {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-3;
+  flex: 1;
+  padding: $space-3 $space-4 $space-3;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+  position: relative;
+}
+
+.sec-range-label {
+  position: absolute;
+  top: 8px;
+  left: $space-4;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: $color-neutral-400;
+}
+
+.sec-range-num { flex: 1; nz-form-item { margin-bottom: 0; } }
+.sec-range-type { width: 100px; nz-form-item { margin-bottom: 0; } }
+
+.sec-range-separator {
+  font-size: 18px;
+  color: $color-neutral-300;
+  flex-shrink: 0;
+  padding-top: 16px;
+}
+
+// ── Territoire matrix (3×3) ───────────────────────────────────
+.sec-geo-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+}
+
+.sec-geo-card {
+  padding: $space-3;
+  background: $color-neutral-50;
+  border: 1.5px solid $color-neutral-200;
+  border-radius: $radius-md;
+  transition: all 0.15s ease;
+
+  &--filled {
+    background: rgba(0, 0, 145, 0.03);
+    border-color: rgba(0, 0, 145, 0.2);
+    border-left: 3px solid $color-brand-400;
+
+    .sec-geo-card__num { color: $color-brand-500; }
+    .sec-geo-card__name { color: $color-brand-700; font-weight: $font-weight-semibold; }
+  }
+}
+
+.sec-geo-card__niveau {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-bottom: $space-2;
+}
+
+.sec-geo-card__num {
+  font-family: $font-family-mono;
+  font-size: 14px;
+  font-weight: $font-weight-bold;
+  color: $color-neutral-300;
+  line-height: 1;
+  transition: color $transition-fast;
+}
+
+.sec-geo-card__name {
+  font-size: 11px;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color $transition-fast;
+}
+
+.sec-geo-select {
+  width: 100%;
+
+  ::ng-deep .ant-select-selector {
+    font-size: 12px !important;
+    height: 28px !important;
+    padding: 0 8px !important;
+  }
+
+  ::ng-deep .ant-select-selection-item {
+    line-height: 26px !important;
+    font-size: 12px !important;
+  }
+}
+
+// ── Drawer footer ─────────────────────────────────────────────
+.sec-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+}

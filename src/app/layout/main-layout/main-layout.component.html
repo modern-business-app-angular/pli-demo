@@ -1,0 +1,25 @@
+<pli-command-palette />
+
+<nz-layout class="pli-app-layout">
+  <!-- Sidebar -->
+  <nz-sider
+    nzCollapsible
+    [(nzCollapsed)]="sidebarCollapsed"
+    [nzWidth]="240"
+    [nzCollapsedWidth]="64"
+    nzTheme="dark"
+    [nzTrigger]="null"
+    class="pli-app-sider">
+    <pli-sidebar />
+  </nz-sider>
+
+  <!-- Main content area (flex column: sticky topbar + scrollable page) -->
+  <nz-layout class="pli-main-area">
+    <nz-content class="pli-app-content">
+      <pli-breadcrumb />
+      <div class="pli-page-wrapper">
+        <router-outlet />
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

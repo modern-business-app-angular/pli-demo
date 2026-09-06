@@ -1,0 +1,89 @@
+<div class="mar-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="mar-header">
+    <h2 class="mar-header__title">Liste des mails archivés</h2>
+  </header>
+
+  <!-- ── Filter bar ───────────────────────────────────────────── -->
+  <div class="mar-filters">
+    <div class="mar-filters__row">
+
+      <div class="mar-filter-group">
+        <label class="mar-filter-label">Période</label>
+        <nz-range-picker [(ngModel)]="dateRange" nzFormat="dd/MM/yyyy" class="mar-range-picker" />
+      </div>
+
+      <div class="mar-filter-group mar-filter-group--grow">
+        <label class="mar-filter-label">Objet d'email</label>
+        <input nz-input [(ngModel)]="filterObjet" placeholder="Objet…" />
+      </div>
+
+      <div class="mar-filter-group">
+        <label class="mar-filter-label">Type</label>
+        <nz-select [(ngModel)]="filterType" class="mar-select" nzAllowClear nzPlaceHolder="Tous">
+          @for (opt of typeOptions; track opt.value) {
+            <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+          }
+        </nz-select>
+      </div>
+
+      <div class="mar-filter-group">
+        <label class="mar-filter-label">Emetteur</label>
+        <input nz-input class="mar-input" [(ngModel)]="filterEmetteur" placeholder="Emetteur…" />
+      </div>
+
+      <div class="mar-filter-group">
+        <label class="mar-filter-label">Destinataire</label>
+        <input nz-input class="mar-input" [(ngModel)]="filterDestinataire" placeholder="Destinataire…" />
+      </div>
+
+      <div class="mar-filter-actions">
+        <button nz-button nzType="primary" (click)="search()">Rechercher</button>
+        <button nz-button nzType="default" (click)="reset()">Réinitialiser</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="mar-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th nzWidth="100px">Origine</th>
+        <th>Objet</th>
+        <th nzWidth="200px">Emetteur</th>
+        <th nzWidth="200px">Destinataire</th>
+        <th nzWidth="110px" [nzSortFn]="true">Date</th>
+        <th nzWidth="110px">Date suppr.</th>
+        <th nzWidth="180px">Service</th>
+        <th nzWidth="90px">Demande</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of items(); track item.id) {
+        <tr class="mar-row">
+          <td><nz-tag>{{ item.origine }}</nz-tag></td>
+          <td class="mar-cell-objet">{{ item.objet }}</td>
+          <td class="mar-cell-email">{{ item.emetteur }}</td>
+          <td class="mar-cell-email">{{ item.destinataire }}</td>
+          <td class="mar-cell-date">{{ formatDate(item.date) }}</td>
+          <td [class.mar-cell-deleted]="!!item.dateSuppr">{{ formatDate(item.dateSuppr) }}</td>
+          <td class="mar-cell-service">{{ item.serviceHierarchie ?? '—' }}</td>
+          <td>{{ item.demandeId ?? '—' }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+</div>

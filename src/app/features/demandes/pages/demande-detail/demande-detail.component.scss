@@ -1,0 +1,394 @@
+@use '../../../../../styles/tokens' as *;
+
+// ── Page ─────────────────────────────────────────────────────────────────────
+
+.dmd-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $surface-body;
+}
+
+// ── Top bar ───────────────────────────────────────────────────────────────────
+
+.dmd-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-6;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+}
+
+.dmd-back-btn {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+
+  &:hover {
+    color: $color-brand-500;
+  }
+}
+
+.dmd-nav {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+
+.dmd-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Layout ────────────────────────────────────────────────────────────────────
+
+.dmd-layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: $space-6;
+  padding: $space-6;
+  overflow: auto;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// ── Email viewer ──────────────────────────────────────────────────────────────
+
+.dmd-viewer {
+  min-width: 0;
+}
+
+.dmd-email-card {
+  background: $surface-card;
+  border: 1px solid $surface-border;
+  border-radius: $radius-lg;
+  padding: $space-8;
+  box-shadow: $shadow-sm;
+}
+
+.dmd-subject {
+  margin: 0 0 $space-4;
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  line-height: $line-height-tight;
+}
+
+.dmd-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-4;
+  margin-bottom: $space-4;
+  align-items: center;
+}
+
+.dmd-meta-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+}
+
+.dmd-meta-label {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dmd-meta-value {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.dmd-meta-email {
+  color: $color-text-secondary;
+  font-size: $font-size-xs;
+}
+
+.dmd-divider {
+  height: 1px;
+  background: $surface-border;
+  margin: $space-4 0 $space-6;
+}
+
+// ── Body ──────────────────────────────────────────────────────────────────────
+
+.dmd-body {
+  font-size: $font-size-base;
+  line-height: $line-height-relaxed;
+  color: $color-text-primary;
+
+  p { margin: 0 0 $space-3; }
+  p:last-child { margin-bottom: 0; }
+
+  a {
+    color: $color-text-link;
+    text-decoration: underline;
+  }
+
+  strong { font-weight: $font-weight-semibold; }
+}
+
+// ── Reply preview ─────────────────────────────────────────────────────────────
+
+.dmd-reply-preview {
+  margin-top: $space-6;
+  padding: $space-4;
+  background: $badge-done-bg;
+  border: 1px solid #b7eb8f;
+  border-radius: $radius-md;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $badge-done-text;
+    margin-bottom: $space-3;
+
+    [nz-icon] { font-size: 14px; }
+  }
+
+  &__body {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    white-space: pre-wrap;
+    border-left: 3px solid #52c41a;
+    padding-left: $space-3;
+  }
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+
+.dmd-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+  position: sticky;
+  top: $space-6;
+}
+
+.dmd-sidebar-card {
+  background: $surface-card;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  box-shadow: $shadow-xs;
+
+  &__title {
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $color-text-secondary;
+    margin-bottom: $space-3;
+  }
+}
+
+.dmd-statut-badge {
+  display: inline-block;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+
+  &--nouveau  { background: $badge-new-bg;        color: $badge-new-text;        }
+  &--en-cours { background: $badge-processing-bg; color: $badge-processing-text; }
+  &--traite   { background: $badge-done-bg;        color: $badge-done-text;       }
+}
+
+.dmd-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dmd-element-ref {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: $color-brand-50;
+  border: 1px solid $color-brand-100;
+  border-radius: $radius-sm;
+  color: $color-brand-600;
+
+  &__code {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    font-family: $font-family-mono;
+  }
+}
+
+.dmd-reponse-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__row {
+    display: flex;
+    gap: $space-2;
+    font-size: $font-size-sm;
+    color: $color-text-primary;
+  }
+
+  &__label {
+    min-width: 24px;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+}
+
+// ── Shared drawer styles (duplicated from inbox, keeping local) ───────────────
+
+.dem-drawer-form { padding: $space-2 0; }
+
+.dem-section-head {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  padding: $space-4 0 $space-3;
+  border-bottom: 1px solid $surface-border;
+  margin-bottom: $space-4;
+
+  [nz-icon] { color: $color-brand-500; font-size: 15px; }
+
+  &--convert [nz-icon] { color: $color-success; }
+}
+
+.dem-demande-preview {
+  background: $color-neutral-50;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dem-preview-row { display: flex; gap: $space-3; align-items: flex-start; }
+
+.dem-preview-label {
+  min-width: 52px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+
+.dem-preview-value {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+  &--objet { font-weight: $font-weight-semibold; }
+}
+
+.dem-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 $space-4; }
+.dem-full { width: 100%; }
+
+.dem-priorite-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+  margin-bottom: $space-4;
+}
+
+.dem-priorite-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-4 $space-3;
+  background: $surface-card;
+  border: 2px solid $surface-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+  text-align: center;
+
+  &:hover { border-color: $color-brand-300; }
+  &--active { border-color: $color-brand-500; background: $color-brand-50; }
+
+  &--urgente.dem-priorite-card--active {
+    border-color: $color-warning; background: $color-warning-light;
+    .dem-priorite-card__icon { color: $color-warning; }
+    .dem-priorite-card__label { color: $color-warning-dark; }
+  }
+
+  &--bloquante.dem-priorite-card--active {
+    border-color: $color-error; background: $color-error-light;
+    .dem-priorite-card__icon { color: $color-error; }
+    .dem-priorite-card__label { color: $color-error-dark; }
+  }
+
+  &__icon { font-size: 20px; color: $color-neutral-500; transition: color $transition-fast; }
+  &__label { font-size: $font-size-sm; font-weight: $font-weight-semibold; color: $color-text-primary; }
+  &__desc { font-size: $font-size-xs; color: $color-text-secondary; }
+}
+
+.dem-priorite-card--active .dem-priorite-card__icon { color: $color-brand-500; }
+.dem-vis-radio { position: absolute; opacity: 0; pointer-events: none; }
+
+.dem-reply-header {
+  background: $color-neutral-50;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+}
+
+.dem-reply-meta { display: flex; flex-direction: column; gap: $space-2; }
+.dem-reply-meta-row { display: flex; gap: $space-3; align-items: center; }
+
+.dem-reply-meta-label {
+  min-width: 52px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dem-reply-meta-value { font-size: $font-size-sm; color: $color-text-primary; }
+
+.dem-char-count {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: right;
+  margin-top: -$space-3;
+  margin-bottom: $space-3;
+}
+
+.dem-drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-3;
+  padding: $space-3 0;
+}

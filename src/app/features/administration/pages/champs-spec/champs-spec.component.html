@@ -1,0 +1,543 @@
+<div class="chs-page">
+
+  <!-- ── Page header ────────────────────────────────────────────── -->
+  <header class="chs-page-header">
+    <div class="chs-page-header__icon">
+      <span nz-icon nzType="control" nzTheme="outline"></span>
+    </div>
+    <div>
+      <h1 class="chs-page-header__title">Personnalisation des champs</h1>
+      <p class="chs-page-header__sub">
+        Définissez les pages spécifiques et leurs champs de saisie personnalisés
+        <span class="chs-page-header__badge">{{ totalChamps() }} champs</span>
+      </p>
+    </div>
+  </header>
+
+  <!-- ── Split-pane workspace ──────────────────────────────────── -->
+  <div class="chs-workspace">
+
+    <!-- ── Left panel: Pages ─────────────────────────────────── -->
+    <aside class="chs-panel chs-panel--left">
+      <div class="chs-panel__header">
+        <span class="chs-panel__title">Pages</span>
+        <span class="chs-panel__count">{{ pages().length }}</span>
+      </div>
+
+      <div class="chs-panel__body">
+        <nz-spin [nzSpinning]="isLoadingPages()">
+          @if (pages().length === 0 && !isLoadingPages()) {
+            <div class="chs-page-empty">
+              <span nz-icon nzType="inbox" nzTheme="outline" class="chs-page-empty__icon"></span>
+              <p class="chs-page-empty__text">Aucune page</p>
+            </div>
+          }
+          <ul class="chs-page-list">
+            @for (page of pages(); track page.id) {
+              <li
+                class="chs-page-item"
+                [class.chs-page-item--active]="selectedPage()?.nom === page.nom"
+                (click)="selectPage(page)"
+              >
+                <span class="chs-page-item__dot"></span>
+                <div class="chs-page-item__body">
+                  <span class="chs-page-item__nom">{{ page.nom }}</span>
+                  @if (page.nomTable) {
+                    <span class="chs-page-item__table">{{ page.nomTable }}</span>
+                  }
+                </div>
+                <span class="chs-page-item__count">{{ page.champCount }}</span>
+                <button
+                  class="chs-page-item__del"
+                  nz-button nzType="text" nzSize="small" nzDanger
+                  nz-popconfirm
+                  nzPopconfirmTitle="Supprimer la page {{ page.nom }} et tous ses champs ?"
+                  nzPopconfirmPlacement="right"
+                  (nzOnConfirm)="deletePage(page)"
+                  (click)="$event.stopPropagation()"
+                  nz-tooltip nzTooltipTitle="Supprimer"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </li>
+            }
+          </ul>
+        </nz-spin>
+      </div>
+
+      <div class="chs-panel__footer">
+        <button nz-button nzType="dashed" nzBlock (click)="openAddPage()">
+          <span nz-icon nzType="plus"></span>
+          Ajouter une page
+        </button>
+      </div>
+    </aside>
+
+    <!-- ── Right panel: Champs ──────────────────────────────── -->
+    <main class="chs-panel chs-panel--right">
+
+      @if (!selectedPage()) {
+        <!-- Empty state: no page selected -->
+        <div class="chs-no-selection">
+          <div class="chs-no-selection__visual">
+            <span nz-icon nzType="layout" nzTheme="outline" class="chs-no-selection__icon"></span>
+          </div>
+          <p class="chs-no-selection__title">Sélectionnez une page</p>
+          <p class="chs-no-selection__hint">Choisissez une page dans le panneau de gauche pour voir et gérer ses champs spécifiques.</p>
+        </div>
+      } @else {
+        <!-- Champs panel header -->
+        <div class="chs-champs-header">
+          <div class="chs-champs-header__title">
+            <span nz-icon nzType="table" nzTheme="outline" class="chs-champs-header__icon"></span>
+            <span class="chs-champs-header__name">{{ selectedPage()!.nom }}</span>
+            @if (selectedPage()!.nomTable) {
+              <span class="chs-champs-header__table-tag">{{ selectedPage()!.nomTable }}</span>
+            }
+          </div>
+          <button
+            nz-button nzType="primary" nzSize="small"
+            [disabled]="isLoadingChamps()"
+            (click)="openAddChamp()"
+          >
+            <span nz-icon nzType="plus"></span>
+            Ajouter un champ
+          </button>
+        </div>
+
+        <!-- Fields table -->
+        <nz-spin [nzSpinning]="isLoadingChamps()" class="chs-spin-wrap">
+          <nz-table
+            #champsTable
+            [nzData]="champs()"
+            nzSize="small"
+            [nzShowPagination]="false"
+            [nzScroll]="{ y: 'calc(100vh - 330px)' }"
+            class="chs-table"
+            cdkDropList
+            [cdkDropListData]="champs()"
+            (cdkDropListDropped)="dropChamp($event)"
+          >
+            <thead>
+              <tr>
+                <th class="chs-th-handle"></th>
+                <th class="chs-th-nom">Nom</th>
+                <th>Libellé</th>
+                <th>Info-bulle</th>
+                <th class="chs-th-type">Type</th>
+                <th class="chs-th-bool" nz-tooltip nzTooltipTitle="Visible">Vi</th>
+                <th class="chs-th-bool" nz-tooltip nzTooltipTitle="Obligatoire">Ob</th>
+                <th class="chs-th-bool" nz-tooltip nzTooltipTitle="Majuscule">Maj</th>
+                <th>Défaut</th>
+                <th class="chs-th-actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              @if (champs().length === 0 && !isLoadingChamps()) {
+                <tr>
+                  <td colspan="10">
+                    <div class="chs-table-empty">
+                      <span nz-icon nzType="file-add" nzTheme="outline"></span>
+                      <span>Aucun champ — cliquez sur « Ajouter un champ » pour commencer</span>
+                    </div>
+                  </td>
+                </tr>
+              }
+              @for (champ of champs(); track champ.id) {
+                <tr
+                  cdkDrag
+                  [cdkDragData]="champ"
+                  class="chs-row"
+                  (dblclick)="openEditChamp(champ)"
+                >
+                  <!-- Drag handle -->
+                  <td class="chs-td-handle">
+                    <span cdkDragHandle class="chs-drag-handle" nz-tooltip nzTooltipTitle="Glisser pour réordonner">
+                      <span nz-icon nzType="holder" nzTheme="outline"></span>
+                    </span>
+                  </td>
+                  <!-- Nom -->
+                  <td class="chs-td-nom">{{ champ.nom }}</td>
+                  <!-- Libellé -->
+                  <td class="chs-td-libelle">{{ champ.libelle }}</td>
+                  <!-- Infobulle -->
+                  <td class="chs-td-infobulle">
+                    @if (champ.infobulle) {
+                      <span nz-tooltip [nzTooltipTitle]="champ.infobulle" class="chs-info-icon">
+                        <span nz-icon nzType="info-circle" nzTheme="outline"></span>
+                      </span>
+                    } @else {
+                      <span class="chs-td-empty">—</span>
+                    }
+                  </td>
+                  <!-- Type badge -->
+                  <td class="chs-td-type">
+                    <span class="chs-type-badge chs-type-badge--{{ champ.type }}">
+                      <span nz-icon [nzType]="typeOption(champ.type).icon" nzTheme="outline"></span>
+                      {{ typeOption(champ.type).label }}
+                    </span>
+                  </td>
+                  <!-- Booleans -->
+                  <td class="chs-td-bool">
+                    <span class="chs-bool" [class.chs-bool--on]="champ.visible">
+                      <span nz-icon [nzType]="champ.visible ? 'check-circle' : 'close-circle'" nzTheme="outline"></span>
+                    </span>
+                  </td>
+                  <td class="chs-td-bool">
+                    <span class="chs-bool" [class.chs-bool--on]="champ.obligatoire">
+                      <span nz-icon [nzType]="champ.obligatoire ? 'check-circle' : 'minus-circle'" nzTheme="outline"></span>
+                    </span>
+                  </td>
+                  <td class="chs-td-bool">
+                    <span class="chs-bool" [class.chs-bool--on]="champ.majuscule">
+                      <span nz-icon [nzType]="champ.majuscule ? 'check-circle' : 'minus-circle'" nzTheme="outline"></span>
+                    </span>
+                  </td>
+                  <!-- Valeur défaut -->
+                  <td class="chs-td-defaut">
+                    @if (champ.valeurDefaut) {
+                      <code class="chs-code">{{ champ.valeurDefaut }}</code>
+                    } @else {
+                      <span class="chs-td-empty">—</span>
+                    }
+                  </td>
+                  <!-- Actions -->
+                  <td class="chs-td-actions">
+                    <button
+                      nz-button nzType="text" nzSize="small"
+                      (click)="openEditChamp(champ)"
+                      nz-tooltip nzTooltipTitle="Modifier"
+                    >
+                      <span nz-icon nzType="edit" nzTheme="outline"></span>
+                    </button>
+                    <button
+                      nz-button nzType="text" nzSize="small" nzDanger
+                      nz-popconfirm
+                      nzPopconfirmTitle="Supprimer le champ {{ champ.nom }} ?"
+                      nzPopconfirmPlacement="left"
+                      (nzOnConfirm)="deleteChamp(champ)"
+                      nz-tooltip nzTooltipTitle="Supprimer"
+                    >
+                      <span nz-icon nzType="delete" nzTheme="outline"></span>
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </nz-table>
+        </nz-spin>
+      }
+
+    </main>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DRAWER — Champ (add / edit)
+════════════════════════════════════════════════════════════════ -->
+<nz-drawer
+  [nzVisible]="champDrawerVisible()"
+  [nzTitle]="champDrawerTitle()"
+  nzPlacement="right"
+  nzWidth="760px"
+  [nzMaskClosable]="false"
+  (nzOnClose)="closeChampDrawer()"
+  [nzExtra]="champDrawerExtra"
+>
+  <ng-template #champDrawerExtra>
+    <div class="chs-drawer-actions">
+      <button nz-button nzType="default" (click)="closeChampDrawer()">Annuler</button>
+      <button
+        nz-button nzType="primary"
+        [nzLoading]="isSaving()"
+        (click)="saveChamp()"
+      >Enregistrer</button>
+    </div>
+  </ng-template>
+
+  <ng-container *nzDrawerContent>
+    <form nz-form nzLayout="vertical" [formGroup]="champForm" class="chs-drawer-form">
+
+      <!-- Section 1: Identité -->
+      <div class="chs-drawer-section">
+        <div class="chs-drawer-section__header">
+          <span nz-icon nzType="tag" nzTheme="outline" class="chs-drawer-section__icon"></span>
+          <span class="chs-drawer-section__title">Identité</span>
+        </div>
+        <div class="chs-drawer-section__body">
+          <div class="chs-form-row-2">
+            <!-- Nom -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Nom technique</nz-form-label>
+              <nz-form-control [nzErrorTip]="nomError">
+                <input nz-input formControlName="nom" placeholder="ex: refArticle"
+                       [class.chs-input-mono]="true"
+                       [disabled]="!!editingChamp()" />
+              </nz-form-control>
+              <ng-template #nomError>
+                @if (getControl('nom').hasError('required')) { Champ requis }
+                @else if (getControl('nom').hasError('maxlength')) { 50 caractères max }
+                @else if (getControl('nom').hasError('pattern')) { Commence par une lettre, lettres/chiffres/_ seulement }
+              </ng-template>
+            </nz-form-item>
+            <!-- Libellé -->
+            <nz-form-item>
+              <nz-form-label nzRequired>Libellé affiché</nz-form-label>
+              <nz-form-control [nzErrorTip]="libelleError">
+                <input nz-input formControlName="libelle" placeholder="ex: Référence article" />
+              </nz-form-control>
+              <ng-template #libelleError>
+                @if (getControl('libelle').hasError('required')) { Champ requis }
+                @else { 250 caractères max }
+              </ng-template>
+            </nz-form-item>
+          </div>
+          <!-- Infobulle -->
+          <nz-form-item>
+            <nz-form-label>Info-bulle <span class="chs-label-optional">(optionnel)</span></nz-form-label>
+            <nz-form-control>
+              <input nz-input formControlName="infobulle" placeholder="Texte d'aide affiché au survol…" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <!-- Section 2: Comportement -->
+      <div class="chs-drawer-section">
+        <div class="chs-drawer-section__header">
+          <span nz-icon nzType="setting" nzTheme="outline" class="chs-drawer-section__icon"></span>
+          <span class="chs-drawer-section__title">Comportement</span>
+        </div>
+        <div class="chs-drawer-section__body">
+          <div class="chs-toggle-grid">
+            <label class="chs-toggle-item">
+              <nz-switch formControlName="visible" nzSize="small"></nz-switch>
+              <div class="chs-toggle-item__text">
+                <span class="chs-toggle-item__label">Visible</span>
+                <span class="chs-toggle-item__hint">Le champ est affiché dans le formulaire</span>
+              </div>
+            </label>
+            <label class="chs-toggle-item">
+              <nz-switch formControlName="obligatoire" nzSize="small"></nz-switch>
+              <div class="chs-toggle-item__text">
+                <span class="chs-toggle-item__label">Obligatoire</span>
+                <span class="chs-toggle-item__hint">La saisie est requise avant validation</span>
+              </div>
+            </label>
+            <label class="chs-toggle-item">
+              <nz-switch formControlName="majuscule" nzSize="small"></nz-switch>
+              <div class="chs-toggle-item__text">
+                <span class="chs-toggle-item__label">Majuscule</span>
+                <span class="chs-toggle-item__hint">Convertit automatiquement la saisie en majuscules</span>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 3: Type -->
+      <div class="chs-drawer-section">
+        <div class="chs-drawer-section__header">
+          <span nz-icon nzType="appstore" nzTheme="outline" class="chs-drawer-section__icon"></span>
+          <span class="chs-drawer-section__title">Type de champ</span>
+        </div>
+        <div class="chs-drawer-section__body">
+          <div class="chs-type-grid">
+            @for (ct of champTypes; track ct.value) {
+              <label
+                class="chs-type-card"
+                [class.chs-type-card--active]="champForm.get('type')?.value === ct.value"
+              >
+                <input type="radio" formControlName="type" [value]="ct.value" class="chs-radio-hidden" />
+                <span class="chs-type-card__icon chs-type-card__icon--{{ ct.value }}">
+                  <span nz-icon [nzType]="ct.icon" nzTheme="outline"></span>
+                </span>
+                <span class="chs-type-card__label">{{ ct.label }}</span>
+              </label>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Section 4: Valeur par défaut -->
+      <div class="chs-drawer-section">
+        <div class="chs-drawer-section__header">
+          <span nz-icon nzType="edit" nzTheme="outline" class="chs-drawer-section__icon"></span>
+          <span class="chs-drawer-section__title">Valeur par défaut <span class="chs-label-optional">(optionnel)</span></span>
+        </div>
+        <div class="chs-drawer-section__body">
+          <nz-form-item>
+            <nz-form-control>
+              <input nz-input formControlName="valeurDefaut" placeholder="Valeur pré-remplie à la création…" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <!-- Section 5: Configuration Liste (conditional) -->
+      @if (showListeConfig()) {
+        <div class="chs-drawer-section chs-drawer-section--liste">
+          <div class="chs-drawer-section__header">
+            <span nz-icon nzType="bars" nzTheme="outline" class="chs-drawer-section__icon chs-drawer-section__icon--purple"></span>
+            <span class="chs-drawer-section__title">Configuration de la liste</span>
+          </div>
+          <div class="chs-drawer-section__body">
+            <!-- Mode selector -->
+            <div class="chs-liste-mode">
+              <label class="chs-liste-mode-card" [class.chs-liste-mode-card--active]="champForm.get('listeMode')?.value === 'static'">
+                <input type="radio" formControlName="listeMode" value="static" class="chs-radio-hidden" />
+                <span nz-icon nzType="ordered-list" nzTheme="outline"></span>
+                <span>Valeurs statiques</span>
+              </label>
+              <label class="chs-liste-mode-card" [class.chs-liste-mode-card--active]="champForm.get('listeMode')?.value === 'query'">
+                <input type="radio" formControlName="listeMode" value="query" class="chs-radio-hidden" />
+                <span nz-icon nzType="database" nzTheme="outline"></span>
+                <span>Requête SQL</span>
+              </label>
+            </div>
+
+            @if (showStaticValues()) {
+              <div class="chs-static-values">
+                <div class="chs-form-row-2">
+                  <nz-form-item>
+                    <nz-form-label>
+                      Valeurs
+                      <span nz-tooltip nzTooltipTitle="Séparées par des virgules — ex: Val1,Val2,Val3" class="chs-help-icon">
+                        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+                      </span>
+                    </nz-form-label>
+                    <nz-form-control>
+                      <textarea
+                        nz-input formControlName="valeurs"
+                        placeholder="Val1,Val2,Val3"
+                        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                        class="chs-input-mono"
+                      ></textarea>
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>
+                      Identifiants
+                      <span nz-tooltip nzTooltipTitle="Codes correspondants aux valeurs (même ordre) — ex: V1,V2,V3" class="chs-help-icon">
+                        <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+                      </span>
+                    </nz-form-label>
+                    <nz-form-control>
+                      <textarea
+                        nz-input formControlName="identifiants"
+                        placeholder="V1,V2,V3"
+                        [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                        class="chs-input-mono"
+                      ></textarea>
+                    </nz-form-control>
+                  </nz-form-item>
+                </div>
+                <div class="chs-values-preview">
+                  <p class="chs-values-preview__label">Aperçu</p>
+                  <div class="chs-values-preview__items">
+                    @for (pair of champForm.get('valeurs')?.value?.split(',') ?? []; track $index) {
+                      @if (pair.trim()) {
+                        <span class="chs-values-preview__chip">{{ pair.trim() }}</span>
+                      }
+                    }
+                    @if (!champForm.get('valeurs')?.value) {
+                      <span class="chs-td-empty">Aucune valeur saisie</span>
+                    }
+                  </div>
+                </div>
+              </div>
+            }
+
+            @if (showQueryConfig()) {
+              <nz-form-item>
+                <nz-form-label>
+                  Requête SQL
+                  <span nz-tooltip nzTooltipTitle="La requête doit retourner au minimum deux colonnes : libellé et identifiant" class="chs-help-icon">
+                    <span nz-icon nzType="question-circle" nzTheme="outline"></span>
+                  </span>
+                </nz-form-label>
+                <nz-form-control>
+                  <textarea
+                    nz-input formControlName="requeteListe"
+                    placeholder="SELECT libelle, code FROM ma_table WHERE actif = 1 ORDER BY libelle"
+                    [nzAutosize]="{ minRows: 4, maxRows: 10 }"
+                    class="chs-input-mono"
+                  ></textarea>
+                </nz-form-control>
+              </nz-form-item>
+              <div class="chs-sql-warning">
+                <span nz-icon nzType="warning" nzTheme="outline"></span>
+                La requête est exécutée en lecture seule. Vérifiez les performances avant la mise en production.
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </form>
+  </ng-container>
+</nz-drawer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DRAWER — Page (add)
+════════════════════════════════════════════════════════════════ -->
+<nz-drawer
+  [nzVisible]="pageDrawerVisible()"
+  nzTitle="Ajouter une page"
+  nzPlacement="right"
+  nzWidth="420px"
+  [nzMaskClosable]="false"
+  (nzOnClose)="closePageDrawer()"
+  [nzExtra]="pageDrawerExtra"
+>
+  <ng-template #pageDrawerExtra>
+    <div class="chs-drawer-actions">
+      <button nz-button nzType="default" (click)="closePageDrawer()">Annuler</button>
+      <button
+        nz-button nzType="primary"
+        [nzLoading]="isSaving()"
+        (click)="savePage()"
+      >Créer</button>
+    </div>
+  </ng-template>
+
+  <ng-container *nzDrawerContent>
+    <form nz-form nzLayout="vertical" [formGroup]="pageForm" class="chs-drawer-form">
+      <div class="chs-drawer-section">
+        <div class="chs-drawer-section__header">
+          <span nz-icon nzType="file-text" nzTheme="outline" class="chs-drawer-section__icon"></span>
+          <span class="chs-drawer-section__title">Identité de la page</span>
+        </div>
+        <div class="chs-drawer-section__body">
+          <nz-form-item>
+            <nz-form-label nzRequired>Nom technique</nz-form-label>
+            <nz-form-control [nzErrorTip]="pageNomError">
+              <input
+                nz-input formControlName="nom"
+                placeholder="ex: courrier-entrant"
+                class="chs-input-mono"
+              />
+            </nz-form-control>
+            <ng-template #pageNomError>
+              @if (pageForm.get('nom')?.hasError('required')) { Champ requis }
+              @else if (pageForm.get('nom')?.hasError('maxlength')) { 100 caractères max }
+              @else { Commence par une lettre, lettres/chiffres/_ seulement }
+            </ng-template>
+            <p class="chs-hint">Identifiant technique de la page, référencé par les chronos</p>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label>Table associée <span class="chs-label-optional">(optionnel)</span></nz-form-label>
+            <nz-form-control>
+              <input
+                nz-input formControlName="nomTable"
+                placeholder="ex: ELEMENT"
+                class="chs-input-mono"
+              />
+            </nz-form-control>
+            <p class="chs-hint">Métadonnée informative — n'affecte pas le comportement.</p>
+          </nz-form-item>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</nz-drawer>

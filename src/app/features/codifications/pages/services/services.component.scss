@@ -1,0 +1,252 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.srv-page { @include page-root; }
+
+// ── Header ────────────────────────────────────────────────────
+.srv-header {
+  @include page-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__left {
+    display: flex;
+    align-items: baseline;
+    gap: $space-3;
+  }
+
+  &__title { @include page-title; }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-neutral-400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+}
+
+.srv-search { width: 240px; }
+
+// ── Table card ────────────────────────────────────────────────
+.srv-table {
+  @include table-card;
+
+  ::ng-deep {
+    @include table-ng-deep;
+    .ant-table-tbody > tr > td { padding: 10px 16px; }
+    .ant-table-tbody > tr      { cursor: pointer; }
+  }
+}
+
+.srv-cell-nom {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  &__lib {
+    font-size: 13.5px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+}
+
+.srv-sigle-badge { font-size: 10px; font-weight: $font-weight-semibold; }
+.srv-cell-bal    { font-size: $font-size-sm; color: $color-text-secondary; margin-top: 2px; }
+
+.srv-cell-parent { font-size: $font-size-sm; color: $color-text-primary; }
+.srv-cell-root   { font-size: $font-size-sm; color: $color-neutral-400; font-style: italic; }
+.srv-cell-hier   { font-family: $font-family-mono; font-size: 11px; color: $color-brand-500; margin-top: 2px; }
+
+.srv-pop-icon { color: $color-brand-400; font-size: 15px; }
+.srv-pop-none { color: $color-neutral-300; }
+
+.srv-actions {
+  display: flex;
+  gap: $space-1;
+  align-items: center;
+  white-space: nowrap;
+}
+.srv-actions ::ng-deep button.ant-btn-sm { @include action-btn-square; }
+
+// ── Drawer ────────────────────────────────────────────────────
+.srv-form { padding-bottom: $space-8; }
+
+.srv-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+}
+
+// ════════════════════════════════════════════════════════════
+// ORG PATH PREVIEW — SIGNATURE ELEMENT
+// ════════════════════════════════════════════════════════════
+.srv-org-path {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: $space-1 $space-2;
+  padding: $space-4 $space-5;
+  background: linear-gradient(135deg, $color-brand-50 0%, #fff 70%);
+  border: 1px solid rgba(0, 0, 145, 0.1);
+  border-radius: $radius-lg;
+  margin-bottom: $space-5;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative corner arc
+  &::after {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 100px;
+    height: 100px;
+    border-radius: $radius-full;
+    background: rgba(0, 0, 145, 0.04);
+    pointer-events: none;
+  }
+
+  &__segment {
+    font-size: 13px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    transition: color $transition-fast;
+
+    &--current {
+      color: $color-brand-600;
+      font-size: 14px;
+    }
+  }
+
+  &__sep {
+    color: $color-neutral-300;
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// ── Section headers ───────────────────────────────────────────
+.srv-section-head {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding-bottom: $space-3;
+  margin-top: $space-6;
+  margin-bottom: $space-4;
+  border-bottom: 1px solid $color-neutral-100;
+
+  &::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: $color-brand-500;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  svg, span[nz-icon] { color: $color-brand-400; flex-shrink: 0; }
+
+  span:not([nz-icon]) {
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: $color-brand-500;
+  }
+
+  // POP variant — slightly different accent
+  &--pop {
+    &::before { background: $color-neutral-400; }
+    span:not([nz-icon]) { color: $color-text-secondary; }
+    span[nz-icon] { color: $color-neutral-400; }
+  }
+}
+
+// ── Grid layouts ──────────────────────────────────────────────
+.srv-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.srv-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.srv-full { width: 100%; }
+
+// ── Switch row ────────────────────────────────────────────────
+.srv-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-4;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+  margin-bottom: $space-4;
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+
+    span[nz-icon] { color: $color-neutral-400; flex-shrink: 0; }
+  }
+}
+
+// ── NZ-ZORRO overrides inside drawer ─────────────────────────
+::ng-deep .ant-drawer-body {
+  .ant-form-item-label > label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+  }
+
+  .ant-form-item { margin-bottom: $space-4; }
+
+  nz-select { width: 100%; }
+}
+
+// ── POP test row ──────────────────────────────────────────────
+.srv-test-row {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-5;
+  padding: $space-3 $space-4;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+}
+
+.srv-test-result {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-1;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+
+  &--ok {
+    color: #389e0d;
+    .anticon { color: #52c41a; }
+  }
+
+  &--err {
+    color: #cf1322;
+    .anticon { color: #ff4d4f; }
+  }
+}

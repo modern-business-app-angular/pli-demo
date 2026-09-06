@@ -1,0 +1,42 @@
+@import 'styles/tokens';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.cdh-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ── Left navigation panel ─────────────────────────────────────
+.cdh-nav {
+  width: 220px;
+  flex-shrink: 0;
+  border-right: 1px solid $color-neutral-200;
+  background: $surface-card;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: $color-neutral-200 transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: $color-neutral-200;
+    border-radius: 2px;
+  }
+}
+
+// ── Main content ─────────────────────────────────────────────
+.cdh-content {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  padding: $space-6;
+  background: $color-neutral-50;
+}

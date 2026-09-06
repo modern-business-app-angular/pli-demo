@@ -1,0 +1,127 @@
+<div class="pli-login-page">
+
+  <!-- Left brand panel -->
+  <div class="pli-login-brand">
+    <div class="pli-login-brand-content">
+      <div class="pli-login-logo">
+        <span class="pli-login-logo-text">Pli</span>
+        <span class="pli-login-logo-version">démo</span>
+      </div>
+      <p class="pli-login-tagline">
+        Gestion du courrier<br />et des demandes administratives
+      </p>
+      <div class="pli-login-features">
+        <div class="pli-login-feature">
+          <span>&#x2713;</span>
+          <span>Courrier entrant, sortant &amp; interne</span>
+        </div>
+        <div class="pli-login-feature">
+          <span>&#x2713;</span>
+          <span>Fiches suiveuses et workflow d'affectation</span>
+        </div>
+        <div class="pli-login-feature">
+          <span>&#x2713;</span>
+          <span>Boîte de réception des demandes</span>
+        </div>
+        <div class="pli-login-feature">
+          <span>&#x2713;</span>
+          <span>Recherche avancée et modèles sauvegardés</span>
+        </div>
+      </div>
+    </div>
+    <div class="pli-login-brand-footer">
+      <pli-demo-badge tone="light" />
+      <span class="pli-login-brand-footer-text">
+        Aucun serveur : les données restent dans votre navigateur.
+        <button type="button" class="pli-login-brand-link" (click)="demo.openAbout()">En savoir plus</button>
+      </span>
+    </div>
+  </div>
+
+  <!-- Right form panel -->
+  <div class="pli-login-form-panel">
+    <div class="pli-login-card">
+      <h1 class="pli-login-title">Connexion</h1>
+      <p class="pli-login-subtitle">Accédez à votre espace Pli</p>
+
+      <pli-demo-persona-bar [disabled]="isLoading()" (pick)="loginAs($event)" />
+
+      @if (errorMsg()) {
+        <nz-alert
+          nzType="error"
+          [nzMessage]="errorMsg()!"
+          nzShowIcon
+          class="pli-login-alert">
+        </nz-alert>
+      }
+
+      <form
+        nz-form
+        [formGroup]="form"
+        nzLayout="vertical"
+        (ngSubmit)="submit()"
+        class="pli-login-form">
+
+        <!-- Username -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Identifiant</nz-form-label>
+          <nz-form-control nzErrorTip="L'identifiant est obligatoire">
+            <nz-input-group [nzPrefix]="userIcon">
+              <input
+                nz-input
+                formControlName="username"
+                placeholder="admin"
+                autocomplete="username" />
+            </nz-input-group>
+            <ng-template #userIcon>
+              <span nz-icon nzType="user"></span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Password -->
+        <nz-form-item>
+          <nz-form-label nzRequired>Mot de passe</nz-form-label>
+          <nz-form-control nzErrorTip="Le mot de passe est obligatoire (min. 3 caractères)">
+            <nz-input-group [nzPrefix]="lockIcon" [nzSuffix]="eyeIcon">
+              <input
+                nz-input
+                formControlName="password"
+                [type]="showPwd() ? 'text' : 'password'"
+                placeholder="admin"
+                autocomplete="current-password" />
+            </nz-input-group>
+            <ng-template #lockIcon>
+              <span nz-icon nzType="lock"></span>
+            </ng-template>
+            <ng-template #eyeIcon>
+              <span
+                nz-icon
+                [nzType]="showPwd() ? 'eye' : 'eye-invisible'"
+                class="pli-pwd-toggle"
+                role="button"
+                tabindex="0"
+                [attr.aria-label]="showPwd() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                [attr.title]="showPwd() ? 'Masquer le mot de passe' : 'Afficher le mot de passe'"
+                (click)="togglePassword()"
+                (keydown.enter)="togglePassword()">
+              </span>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- Submit -->
+        <button
+          nz-button
+          nzType="primary"
+          [nzLoading]="isLoading()"
+          nzBlock
+          class="pli-login-btn"
+          type="submit">
+          Se connecter
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,128 @@
+<div class="cl-page">
+
+  <!-- Toolbar -->
+  <div class="cl-toolbar">
+    <div class="cl-toolbar__left">
+      <nz-input-group [nzPrefix]="searchIcon" [nzSuffix]="clearTpl" class="cl-toolbar__search">
+        <input nz-input [formControl]="searchControl" placeholder="Recherche rapide…" />
+      </nz-input-group>
+      <ng-template #searchIcon><span nz-icon nzType="search" style="color:#9ca3af"></span></ng-template>
+      <ng-template #clearTpl>
+        @if (store.hasActiveFilters()) {
+          <span nz-icon nzType="close-circle" style="color:#9ca3af;cursor:pointer" (click)="clearSearch()"></span>
+        }
+      </ng-template>
+    </div>
+
+    <div class="cl-toolbar__right">
+      @if (store.hasActiveFilters()) {
+        <span class="cl-toolbar__filter-badge">
+          <span nz-icon nzType="filter"></span>
+          Filtre actif
+        </span>
+      }
+      <button nz-button nzType="primary" class="cl-toolbar__new" routerLink="nouveau">
+        <span nz-icon nzType="plus"></span>
+        Nouveau courrier
+      </button>
+    </div>
+  </div>
+
+  <!-- Count bar -->
+  <div class="cl-count-bar">
+    @if (store.isLoading()) {
+      <span class="cl-count-bar__text">Chargement…</span>
+    } @else {
+      <span class="cl-count-bar__text">
+        <strong>{{ store.total() }}</strong> courrier{{ store.total() > 1 ? 's' : '' }}
+      </span>
+    }
+    <button nz-button nzType="default" nzSize="small" class="cl-count-bar__export"
+      nz-tooltip nzTooltipTitle="Exporter en Excel">
+      <span nz-icon nzType="export"></span>
+      Export
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="cl-table-wrap">
+    <nz-table
+      class="cl-table"
+      [nzData]="store.items()"
+      [nzTotal]="store.total()"
+      [nzPageIndex]="store.page()"
+      [nzPageSize]="store.pageSize()"
+      [nzLoading]="store.isLoading()"
+      [nzFrontPagination]="false"
+      [nzShowSizeChanger]="true"
+      [nzPageSizeOptions]="[10, 20, 50]"
+      [nzShowTotal]="totalTpl"
+      nzSize="small"
+      (nzPageIndexChange)="onPageChange($event)"
+      (nzPageSizeChange)="onPageSizeChange($event)"
+    >
+      <ng-template #totalTpl let-total>{{ total }} résultat{{ total > 1 ? 's' : '' }}</ng-template>
+
+      <thead>
+        <tr>
+          <th nzWidth="150px" [nzSortFn]="true" (nzSortOrderChange)="onSortChange('numeroChrono', $event)">Chrono</th>
+          <th nzWidth="110px" [nzSortFn]="true" (nzSortOrderChange)="onSortChange('dateArrivee', $event)">{{ config().dateLabel }}</th>
+          <th [nzSortFn]="true" (nzSortOrderChange)="onSortChange('objet', $event)">Objet</th>
+          <th nzWidth="200px">{{ config().partieLabel }}</th>
+          <th nzWidth="100px">État</th>
+          <th nzWidth="60px" style="text-align:center">PJ</th>
+          <th nzWidth="50px"></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @if (store.isEmpty()) {
+          <tr>
+            <td colspan="7" class="cl-empty-cell">
+              <nz-empty nzDescription="Aucun courrier trouvé"></nz-empty>
+            </td>
+          </tr>
+        }
+
+        @for (item of store.items(); track trackById($index, item)) {
+          <tr class="cl-row" [routerLink]="[item.id]">
+            <td><code class="cl-chrono">{{ item.numeroChrono }}</code></td>
+            <td class="cl-td--date">{{ item.dateArrivee | date: 'dd/MM/yyyy' }}</td>
+            <td>
+              <div class="cl-objet">{{ item.objet }}</div>
+              @if (item.reference) {
+                <div class="cl-ref">{{ item.reference }}</div>
+              }
+            </td>
+            <td>
+              <div class="cl-contact__name">
+                {{ item.expediteur?.prenom ? item.expediteur!.prenom + ' ' : '' }}{{ item.expediteur?.nom ?? '—' }}
+              </div>
+              @if (item.expediteur?.organisme) {
+                <div class="cl-contact__org">{{ item.expediteur!.organisme }}</div>
+              }
+            </td>
+            <td>
+              <nz-tag [nzColor]="statutColor[item.statut]" class="cl-statut">
+                {{ statutLabel[item.statut] }}
+              </nz-tag>
+            </td>
+            <td style="text-align:center">
+              @if (item.nbPiecesJointes > 0) {
+                <span class="cl-pj" nz-tooltip [nzTooltipTitle]="item.nbPiecesJointes + ' pièce(s)'">
+                  <span nz-icon nzType="paper-clip"></span>{{ item.nbPiecesJointes }}
+                </span>
+              }
+            </td>
+            <td (click)="$event.stopPropagation()" style="text-align:center">
+              <button nz-button nzType="text" nzSize="small" [routerLink]="[item.id]">
+                <span nz-icon nzType="arrow-right"></span>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+
+</div>

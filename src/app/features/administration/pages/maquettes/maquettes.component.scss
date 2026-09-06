@@ -1,0 +1,238 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.maq-page { @include page-root; }
+
+// ── Page header ───────────────────────────────────────────────
+.maq-header {
+  @include page-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__title { @include page-title; }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+}
+
+// ── Search input ──────────────────────────────────────────────
+.maq-search {
+  width: 280px;
+
+  ::ng-deep .ant-input {
+    @include input-border-override;
+    background: $color-neutral-50;
+    &:focus { background: #fff; }
+  }
+}
+
+// ── Table card ────────────────────────────────────────────────
+.maq-table {
+  @include table-card;
+
+  ::ng-deep {
+    @include table-ng-deep;
+
+    .ant-table { border-radius: $radius-lg; }
+    .ant-table-tbody > tr > td { padding: 13px 16px; }
+  }
+}
+
+.maq-row {
+  font-size: $font-size-base;
+  color: $color-text-primary;
+  transition: background $transition-fast;
+}
+
+// ── Cells ─────────────────────────────────────────────────────
+.maq-cell-nom {
+  font-weight: $font-weight-semibold;
+  font-size: 13.5px;
+  color: $color-text-primary;
+}
+
+.maq-cell-owner {
+  color: $color-text-secondary;
+  font-size: $font-size-sm;
+}
+
+code { @include code-tag; }
+
+// ── Actions cell ──────────────────────────────────────────────
+.maq-actions {
+  display: flex;
+  gap: $space-1;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.maq-actions ::ng-deep button.ant-btn-sm { @include action-btn-square; }
+
+// ── Ajouter button ────────────────────────────────────────────
+::ng-deep .ant-btn-primary {
+  border-radius: $radius-base;
+  font-weight: $font-weight-semibold;
+  font-size: $font-size-sm;
+}
+
+// ── Nom cell: filename subtitle ───────────────────────────────
+.maq-filename {
+  display: block;
+  font-size: 11px;
+  color: $color-neutral-400;
+  font-family: $font-family-mono;
+  margin-top: 2px;
+  font-weight: $font-weight-regular;
+}
+
+// ── Extension code tag ────────────────────────────────────────
+.maq-ext { @include code-tag; }
+
+// ── Form helpers ──────────────────────────────────────────────
+.maq-full { width: 100%; }
+
+// ── Accès radio group ─────────────────────────────────────────
+.maq-radio-group {
+  display: flex;
+  gap: $space-4;
+}
+
+// ── File upload zone ──────────────────────────────────────────
+.maq-file-input {
+  display: none;
+}
+
+.maq-upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-5 $space-4;
+  border: 2px dashed $color-neutral-200;
+  border-radius: $radius-md;
+  background: $color-neutral-50;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+
+  &:hover, &:focus {
+    border-color: $color-brand-400;
+    background: $color-brand-50;
+    outline: none;
+  }
+}
+
+.maq-upload-icon {
+  color: $color-neutral-400;
+}
+
+.maq-upload-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}
+
+.maq-upload-hint {
+  font-size: 11px;
+  color: $color-neutral-400;
+  font-family: $font-family-mono;
+}
+
+// ── Current file (edit mode) ──────────────────────────────────
+.maq-file-current,
+.maq-file-selected {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-base;
+}
+
+.maq-file-icon {
+  color: $color-neutral-400;
+  flex-shrink: 0;
+
+  &--ok { color: $color-success; }
+}
+
+.maq-file-name {
+  flex: 1;
+  min-width: 0;
+  font-size: $font-size-sm;
+  font-family: $font-family-mono;
+  color: $color-text-primary;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.maq-file-size {
+  font-size: 11px;
+  color: $color-neutral-400;
+  flex-shrink: 0;
+}
+
+.maq-file-change {
+  background: none;
+  border: 1px solid $color-neutral-300;
+  border-radius: $radius-sm;
+  font-size: 11px;
+  font-weight: $font-weight-medium;
+  color: $color-info;
+  cursor: pointer;
+  padding: 2px 8px;
+  flex-shrink: 0;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-neutral-100;
+  }
+}
+
+.maq-file-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: $color-neutral-400;
+  border-radius: $radius-sm;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $color-neutral-100;
+    color: $color-error;
+  }
+}
+
+// ── Modal form overrides ──────────────────────────────────────
+::ng-deep .ant-modal-body {
+  .ant-form-item-label > label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    letter-spacing: 0.01em;
+  }
+
+  .ant-form-item-explain-error {
+    font-size: $font-size-sm;
+    color: $color-error-dark;
+  }
+
+  .ant-form-item { margin-bottom: $space-4; }
+
+  nz-select { width: 100%; }
+
+  .ant-modal-content { border-radius: $radius-lg; }
+}

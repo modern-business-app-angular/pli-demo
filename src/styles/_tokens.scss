@@ -1,0 +1,171 @@
+// ============================================================
+// Pli — Design Tokens
+// Single source of truth for all design values
+// Accessibility: WCAG 2.1 AA+ / DSFR compliant
+// ============================================================
+
+// ---- COLOR PALETTE ----
+
+// Bleu France (DSFR) — primary identity, institutional authority
+// #000091 has ~19:1 contrast on white — far exceeds 7:1 requirement
+$color-brand-50:   #e3e3fd;
+$color-brand-100:  #cacafb;
+$color-brand-200:  #adadf9;
+$color-brand-300:  #8585f6;
+$color-brand-400:  #6a6af4;
+$color-brand-500:  #000091;   // PRIMARY — Bleu France (DSFR)
+$color-brand-600:  #00007a;
+$color-brand-700:  #000063;
+$color-brand-800:  #00004d;
+$color-brand-900:  #000036;
+
+// Info / link blue (lighter, still 4.5:1+ on white)
+$color-info-light:    #e3e3fd;
+$color-info:          #4040d4;   // 5.5:1 on white — AA compliant
+$color-info-dark:     #000091;
+
+// Gold (accent) — used sparingly for interactive triggers & notifications
+$color-accent-300: #F5CE82;
+$color-accent-400: #EDB732;
+$color-accent-500: #C9860A;   // ACCENT — hover states, notifications badge
+
+// Semantic colors
+$color-success-light: #dffae5;
+$color-success:       #1f7a3c;   // 5.1:1 on white — AA compliant
+$color-success-dark:  #0d4a22;   // 9.3:1 on white — 7:1 ✓
+
+$color-warning-light: #fff4e1;
+$color-warning:       #a05c00;   // 5.9:1 on white — AA compliant
+$color-warning-dark:  #7a3200;   // 8.3:1 on white — 7:1 ✓
+
+$color-error-light:   #fff0f0;
+$color-error:         #c62828;   // 6.2:1 on white — AA compliant
+$color-error-dark:    #821313;   // 10.2:1 on white — 7:1 ✓
+
+// Neutral — surfaces and text
+$color-neutral-0:   #FFFFFF;
+$color-neutral-50:  #FAFAFA;
+$color-neutral-100: #F5F5F5;
+$color-neutral-200: #F0F0F0;
+$color-neutral-300: #D9D9D9;
+$color-neutral-400: #BFBFBF;  // ⚠ DO NOT use as text — 1.9:1 — decoration only
+$color-neutral-500: #8C8C8C;  // ⚠ DO NOT use as body text — 3.35:1 — captions only
+$color-neutral-600: #595959;  // ✓ min for body text — 7.0:1 on white
+$color-neutral-700: #434343;  // ✓ 9.7:1 on white
+$color-neutral-800: #262626;  // ✓ 14.7:1 on white
+$color-neutral-900: #141414;  // ✓ 17.1:1 on white
+
+// ---- ACCESSIBLE TEXT COLORS ----
+// Use these for all text to guarantee contrast ratios
+
+$color-text-primary:    #141414;  // 17.1:1 on white — headings, body
+$color-text-secondary:  #595959;  // 7.0:1  on white — labels, descriptions
+$color-text-disabled:   #767676;  // 4.6:1  on white — placeholders, disabled (AA only)
+$color-text-inverse:    #FFFFFF;  // for text on dark backgrounds
+$color-text-link:       #000091;  // 19:1   on white — Bleu France
+
+// Application surfaces
+$surface-body:      #F0F2F5;
+$surface-card:      #FFFFFF;
+$surface-sidebar:   #0a1520;   // very dark navy — maximum contrast sidebar
+$surface-header:    #000091;   // Bleu France header
+$surface-border:    #D9D9D9;
+
+// ---- ACCESSIBLE STATUS BADGE COLORS ----
+// All pairs verified ≥7:1 contrast ratio (body text standard)
+
+$badge-new-bg:       #e3e3fd;  $badge-new-text:       #000063;  // 12:1 ✓
+$badge-processing-bg: #fff4e1; $badge-processing-text: #7a3200;  // 8.3:1 ✓
+$badge-done-bg:      #dffae5;  $badge-done-text:       #0d4a22;  // 9.3:1 ✓
+$badge-urgent-bg:    #fff0f0;  $badge-urgent-text:     #821313;  // 10.2:1 ✓
+$badge-archived-bg:  #f5f5f5;  $badge-archived-text:   #434343;  // 9.7:1 ✓
+$badge-pending-bg:   #fffbe6;  $badge-pending-text:    #614700;  // 9.9:1 ✓
+
+// ---- TYPOGRAPHY ----
+
+$font-family-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+$font-family-mono:  'JetBrains Mono', 'Fira Code', monospace;
+
+// Base is 15px per accessibility requirement for older users
+$font-size-xs:    11px;  // decorative only (dots, superscripts)
+$font-size-sm:    13px;  // secondary text, captions (use sparingly)
+$font-size-base:  15px;  // ← default body text (increased for readability)
+$font-size-md:    16px;
+$font-size-lg:    17px;
+$font-size-xl:    19px;
+$font-size-2xl:   22px;
+$font-size-3xl:   26px;
+$font-size-4xl:   30px;
+
+$font-weight-regular:   400;
+$font-weight-medium:    500;
+$font-weight-semibold:  600;
+$font-weight-bold:      700;
+
+$line-height-tight:   1.2;
+$line-height-base:    1.6;    // slightly relaxed from 1.5715 for readability
+$line-height-relaxed: 1.8;
+
+// ---- SPACING (4px base unit) ----
+
+$space-1:   4px;
+$space-2:   8px;
+$space-3:   12px;
+$space-4:   16px;
+$space-5:   20px;
+$space-6:   24px;
+$space-8:   32px;
+$space-10:  40px;
+$space-12:  48px;
+$space-14:  56px;
+$space-16:  64px;
+
+// ---- TOUCH TARGETS ----
+// WCAG 2.5.5 — minimum 44×44px, target 48–56px
+
+$touch-target-min:  44px;  // absolute minimum
+$touch-target:      48px;  // standard (buttons, menu items, table rows)
+$touch-target-lg:   56px;  // primary CTAs
+
+// ---- BORDER RADIUS ----
+
+$radius-sm:   4px;
+$radius-base: 6px;
+$radius-md:   8px;
+$radius-lg:   12px;
+$radius-xl:   16px;
+$radius-full: 9999px;
+
+// ---- SHADOWS ----
+
+$shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-sm:   0 1px 4px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+$shadow-md:   0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+$shadow-lg:   0 8px 24px rgba(0, 0, 0, 0.10), 0 4px 12px rgba(0, 0, 0, 0.06);
+$shadow-nav:  0 2px 8px rgba(0, 0, 145, 0.15);
+$shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.03), 0 1px 6px -1px rgba(0, 0, 0, 0.02);
+
+// ---- LAYOUT ----
+
+$layout-header-height:      56px;
+$layout-sidebar-width:      240px;
+$layout-sidebar-collapsed:  64px;
+$layout-content-padding:    24px;
+$layout-max-content-width:  1440px;
+
+// ---- TRANSITIONS ----
+
+$transition-fast:    0.15s ease;
+$transition-base:    0.2s ease;
+$transition-slow:    0.3s ease;
+
+// ---- Z-INDEX SCALE ----
+
+$z-dropdown:  1000;
+$z-sticky:    1020;
+$z-fixed:     1030;
+$z-modal-bg:  1040;
+$z-modal:     1050;
+$z-popover:   1060;
+$z-tooltip:   1070;
+$z-toast:     1080;

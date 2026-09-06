@@ -1,0 +1,119 @@
+<nz-drawer
+  [nzVisible]="demo.aboutOpen()"
+  nzPlacement="right"
+  [nzWidth]="480"
+  [nzClosable]="true"
+  nzTitle="À propos de cette démo"
+  (nzOnClose)="demo.closeAbout()">
+  <ng-container *nzDrawerContent>
+    <div class="about">
+
+      <section class="about__section">
+        <p class="about__lead">
+          <strong>{{ config.appName }}</strong> est une démonstration interactive d’un logiciel métier
+          de gestion du courrier et des demandes destiné aux collectivités : enregistrement,
+          numérotation, affectation aux services, suivi jusqu’à la clôture.
+        </p>
+        <p class="about__muted">
+          Il s’agit d’une refonte complète d’une application existante (interface serveur des années
+          2000) vers une architecture web moderne. Toutes les données affichées sont fictives.
+        </p>
+      </section>
+
+      <section class="about__section">
+        <h3 class="about__title">Ce que la démo montre</h3>
+        <ul class="about__list">
+          @for (item of showcase; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </section>
+
+      <section class="about__section">
+        <h3 class="about__title">Architecture réseau — sans serveur</h3>
+        <p class="about__muted">
+          L’application conserve sa couche réseau réelle ; seul le dernier maillon est remplacé.
+          Ouvrez l’onglet <em>Réseau</em> de votre navigateur : aucune requête ne quitte la page.
+        </p>
+        <ol class="flow">
+          @for (f of flow; track f.step; let i = $index) {
+            <li class="flow__step">
+              <span class="flow__index" aria-hidden="true">{{ i + 1 }}</span>
+              <span class="flow__body">
+                <span class="flow__name">{{ f.step }}</span>
+                <span class="flow__text">{{ f.text }}</span>
+              </span>
+            </li>
+          }
+        </ol>
+      </section>
+
+      <section class="about__section">
+        <h3 class="about__title">Pile technique</h3>
+        <div class="about__tags">
+          @for (t of stack; track t) {
+            <nz-tag>{{ t }}</nz-tag>
+          }
+        </div>
+      </section>
+
+      <section class="about__section">
+        <h3 class="about__title">Comptes de démonstration</h3>
+        <table class="about__table">
+          <thead>
+            <tr><th>Profil</th><th>Identifiant</th><th>Mot de passe</th></tr>
+          </thead>
+          <tbody>
+            @for (p of config.personas; track p.key) {
+              <tr>
+                <td>{{ p.title }}<span class="about__sub">{{ p.name }}</span></td>
+                <td><code>{{ p.username }}</code></td>
+                <td><code>{{ p.password }}</code></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="about__section">
+        <h3 class="about__title">Limites connues</h3>
+        <ul class="about__list about__list--muted">
+          @for (item of limits; track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      </section>
+
+      <section class="about__section about__actions">
+        <a nz-button nzType="primary" [href]="config.links.github" target="_blank" rel="noopener">
+          Code source sur GitHub
+        </a>
+        <a nz-button nzType="default" [href]="config.links.malt" target="_blank" rel="noopener">
+          Profil Malt
+        </a>
+        <button nz-button nzType="link" type="button" (click)="replayTour()">
+          Revoir la visite guidée
+        </button>
+        <button
+          nz-button
+          nzType="link"
+          nzDanger
+          type="button"
+          nz-popconfirm
+          nzPopconfirmTitle="Effacer vos modifications et recharger les données de démonstration ?"
+          nzOkText="Réinitialiser"
+          nzCancelText="Annuler"
+          (nzOnConfirm)="reset()">
+          Réinitialiser la démo
+        </button>
+        @if (demo.restoredFromStorage && demo.savedAt) {
+          <p class="about__muted about__saved">
+            Données restaurées depuis votre navigateur ({{ demo.savedAt.slice(0, 10) }}).
+          </p>
+        }
+      </section>
+
+      <p class="about__version">{{ config.appName }} {{ config.version }}</p>
+    </div>
+  </ng-container>
+</nz-drawer>

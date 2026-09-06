@@ -1,0 +1,413 @@
+<div class="ter-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header class="ter-header">
+    <div class="ter-header__left">
+      <h1 class="ter-header__title">Territoires</h1>
+      <span class="ter-header__count">{{ elements().length }} éléments</span>
+    </div>
+  </header>
+
+  <!-- ── Body (split pane) ──────────────────────────────────────────── -->
+  <div class="ter-body">
+
+    <!-- ── Left rail: 9 level cards ──────────────────────────────────── -->
+    <aside class="ter-rail">
+      @for (n of niveaux(); track n.niveau) {
+        <div
+          class="ter-level-card"
+          [class.ter-level-card--active]="selectedNiveau() === n.niveau"
+          [style.--fill]="levelFillPercent(n.niveau) + '%'"
+          (click)="selectNiveau(n.niveau)"
+        >
+          <div class="ter-level-card__inner">
+            <span class="ter-level-card__num">{{ padLevel(n.niveau) }}</span>
+            <div class="ter-level-card__info">
+              <span class="ter-level-card__name">{{ n.nom }}</span>
+              @if (levelElementCount(n.niveau) > 0) {
+                <span class="ter-level-card__badge">{{ levelElementCount(n.niveau) }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (isLoadingNiveaux()) {
+        @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
+          <div class="ter-level-card ter-level-card--skeleton"></div>
+        }
+      }
+    </aside>
+
+    <!-- ── Right panel: elements for selected level ───────────────────── -->
+    <section class="ter-content">
+
+      <!-- Panel header with level name + rename -->
+      <div class="ter-content-header">
+        <div class="ter-content-header__left">
+          @if (!renamingNiveau()) {
+            <h2 class="ter-content-title">
+              @if (currentNiveau(); as niv) {
+                {{ niv.nom }}
+              }
+            </h2>
+            <button
+              nz-button nzType="text" nzSize="small"
+              nz-tooltip="Renommer ce niveau"
+              class="ter-rename-btn"
+              (click)="startRename()"
+            >
+              <span nz-icon nzType="edit" nzTheme="outline"></span>
+            </button>
+          } @else {
+            <input
+              nz-input
+              nzSize="small"
+              class="ter-rename-input"
+              [formControl]="renameControl"
+              (keydown.enter)="confirmRename()"
+              (keydown.escape)="cancelRename()"
+              (blur)="confirmRename()"
+             
+            />
+          }
+        </div>
+        <div class="ter-content-header__right">
+          <span class="ter-element-count">
+            {{ currentNiveauElements().length }}
+            {{ currentNiveauElements().length === 1 ? 'élément' : 'éléments' }}
+          </span>
+          <button
+            nz-button nzType="default" nzSize="small"
+            [nzLoading]="isAffecting()"
+            nz-tooltip="Associer les organisations à ce niveau de territoire selon leurs adresses"
+            (click)="openAffectationModal()"
+          >
+            <span nz-icon nzType="environment" nzTheme="outline"></span>
+            Affectation des adresses
+          </button>
+          <button
+            nz-button nzType="primary" nzSize="small"
+            [disabled]="addingNew()"
+            (click)="startAdd()"
+          >
+            <span nz-icon nzType="plus" nzTheme="outline"></span>
+            Ajouter
+          </button>
+        </div>
+      </div>
+
+      <!-- Elements table -->
+      <div class="ter-table-wrap">
+        <nz-table
+          #elemTable
+          [nzData]="currentNiveauElements()"
+          [nzLoading]="isLoadingElements()"
+          [nzSize]="'small'"
+          [nzFrontPagination]="false"
+          [nzShowPagination]="false"
+          nzTableLayout="fixed"
+          class="ter-table"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="80px">Code</th>
+              <th nzWidth="160px">Libellé court</th>
+              <th>Libellé long</th>
+              <th nzWidth="70px" nzAlign="center">Rang</th>
+              <th nzWidth="100px" nzAlign="center">Adresses</th>
+              <th nzWidth="90px" nzAlign="right"></th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Existing rows -->
+            @for (el of currentNiveauElements(); track el.id) {
+              @if (!isEditing(el)) {
+                <!-- Read-only row -->
+                <tr class="ter-row" (dblclick)="startEdit(el)">
+                  <td>
+                    <span class="ter-cell-code">{{ el.cle }}</span>
+                  </td>
+                  <td>
+                    <span class="ter-cell-label">{{ el.labelCourt }}</span>
+                  </td>
+                  <td>
+                    <span class="ter-cell-secondary">{{ el.labelLong }}</span>
+                  </td>
+                  <td nzAlign="center">
+                    <span class="ter-cell-rang">{{ el.rang }}</span>
+                  </td>
+                  <td nzAlign="center">
+                    @if (el.adresseCount > 0) {
+                      <span class="ter-addr-chip">{{ el.adresseCount }}</span>
+                    } @else {
+                      <span class="ter-addr-empty">—</span>
+                    }
+                  </td>
+                  <td nzAlign="right">
+                    <div class="ter-actions">
+                      <button
+                        nz-button nzType="text" nzSize="small"
+                        nz-tooltip="Modifier"
+                        (click)="startEdit(el)"
+                      >
+                        <span nz-icon nzType="edit" nzTheme="outline"></span>
+                      </button>
+                      <button
+                        nz-button nzType="text" nzSize="small"
+                        nz-popconfirm
+                        nzPopconfirmTitle="Supprimer cet élément ?"
+                        nzPopconfirmPlacement="left"
+                        (nzOnConfirm)="deleteElement(el)"
+                        class="ter-btn-danger"
+                      >
+                        <span nz-icon nzType="delete" nzTheme="outline"></span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              } @else {
+                <!-- Inline edit row -->
+                <tr class="ter-row ter-row--editing" [formGroup]="inlineForm">
+                  <td class="ter-inline-cell">
+                    <input
+                      nz-input
+                      nzSize="small"
+                      formControlName="cle"
+                      placeholder="Code"
+                      maxlength="6"
+                      class="ter-inline-input"
+                    />
+                  </td>
+                  <td class="ter-inline-cell">
+                    <input
+                      nz-input
+                      nzSize="small"
+                      formControlName="labelCourt"
+                      placeholder="Libellé court"
+                      class="ter-inline-input"
+                    />
+                  </td>
+                  <td class="ter-inline-cell">
+                    <input
+                      nz-input
+                      nzSize="small"
+                      formControlName="labelLong"
+                      placeholder="Libellé long"
+                      class="ter-inline-input"
+                    />
+                  </td>
+                  <td class="ter-inline-cell" nzAlign="center">
+                    <nz-input-number
+                      formControlName="rang"
+                      [nzMin]="1"
+                      [nzMax]="999"
+                      [nzSize]="'small'"
+                      class="ter-inline-num"
+                    ></nz-input-number>
+                  </td>
+                  <td nzAlign="center">
+                    @if (el.adresseCount > 0) {
+                      <span class="ter-addr-chip">{{ el.adresseCount }}</span>
+                    }
+                  </td>
+                  <td nzAlign="right">
+                    <div class="ter-actions">
+                      <button
+                        nz-button nzType="primary" nzSize="small"
+                        [nzLoading]="isSaving()"
+                        [disabled]="inlineForm.invalid"
+                        (click)="saveEdit(el)"
+                      >
+                        <span nz-icon nzType="check" nzTheme="outline"></span>
+                      </button>
+                      <button
+                        nz-button nzType="text" nzSize="small"
+                        (click)="cancelInline()"
+                      >
+                        <span nz-icon nzType="close" nzTheme="outline"></span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+
+            <!-- New row (add) -->
+            @if (addingNew()) {
+              <tr class="ter-row ter-row--adding" [formGroup]="inlineForm">
+                <td class="ter-inline-cell">
+                  <input
+                    nz-input
+                    nzSize="small"
+                    formControlName="cle"
+                    placeholder="Code"
+                    maxlength="6"
+                    class="ter-inline-input"
+                   
+                  />
+                </td>
+                <td class="ter-inline-cell">
+                  <input
+                    nz-input
+                    nzSize="small"
+                    formControlName="labelCourt"
+                    placeholder="Libellé court"
+                    class="ter-inline-input"
+                  />
+                </td>
+                <td class="ter-inline-cell">
+                  <input
+                    nz-input
+                    nzSize="small"
+                    formControlName="labelLong"
+                    placeholder="Libellé long"
+                    class="ter-inline-input"
+                  />
+                </td>
+                <td class="ter-inline-cell" nzAlign="center">
+                  <nz-input-number
+                    formControlName="rang"
+                    [nzMin]="1"
+                    [nzMax]="999"
+                    [nzSize]="'small'"
+                    class="ter-inline-num"
+                  ></nz-input-number>
+                </td>
+                <td nzAlign="center">
+                  <span class="ter-addr-empty">—</span>
+                </td>
+                <td nzAlign="right">
+                  <div class="ter-actions">
+                    <button
+                      nz-button nzType="primary" nzSize="small"
+                      [nzLoading]="isSaving()"
+                      [disabled]="inlineForm.invalid"
+                      (click)="saveNew()"
+                    >
+                      <span nz-icon nzType="check" nzTheme="outline"></span>
+                    </button>
+                    <button
+                      nz-button nzType="text" nzSize="small"
+                      (click)="cancelInline()"
+                    >
+                      <span nz-icon nzType="close" nzTheme="outline"></span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+            <!-- Empty state -->
+            @if (currentNiveauElements().length === 0 && !addingNew() && !isLoadingElements()) {
+              <tr>
+                <td colspan="6">
+                  <div class="ter-empty">
+                    <span nz-icon nzType="inbox" nzTheme="outline" class="ter-empty__icon"></span>
+                    <span class="ter-empty__text">Aucun élément pour ce niveau</span>
+                    <button nz-button nzType="dashed" nzSize="small" (click)="startAdd()">
+                      <span nz-icon nzType="plus" nzTheme="outline"></span>
+                      Ajouter le premier
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+          </tbody>
+        </nz-table>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<!-- ── Affectation des adresses modal ────────────────────────────────── -->
+<nz-modal
+  [nzVisible]="affectationModalVisible()"
+  [nzFooter]="null"
+  [nzClosable]="true"
+  [nzWidth]="600"
+  nzClassName="ter-affectation-modal"
+  (nzOnCancel)="affectationModalVisible.set(false)"
+>
+  <ng-container *nzModalContent>
+    <div class="ter-aff">
+
+      <!-- Header -->
+      <div class="ter-aff__header">
+        <div class="ter-aff__icon-wrap">
+          <span nz-icon nzType="environment" nzTheme="fill" class="ter-aff__icon"></span>
+        </div>
+        <div class="ter-aff__meta">
+          <h3 class="ter-aff__title">Affectation des adresses</h3>
+          <p class="ter-aff__subtitle">
+            Niveau <strong>{{ padLevel(selectedNiveau()) }}</strong>
+            @if (currentNiveau(); as niv) { — {{ niv.nom }} }
+          </p>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="ter-aff__divider">
+        <span class="ter-aff__divider-text">Choisissez le périmètre de mise à jour</span>
+      </div>
+
+      <!-- Choice cards -->
+      <div class="ter-aff__cards">
+
+        <!-- Card: NON — unassigned only -->
+        <button class="ter-aff-card ter-aff-card--safe" (click)="runAffectation(false)">
+          <div class="ter-aff-card__icon-wrap">
+            <span nz-icon nzType="filter" nzTheme="outline" class="ter-aff-card__icon"></span>
+          </div>
+          <div class="ter-aff-card__body">
+            <span class="ter-aff-card__scope">Périmètre restreint</span>
+            <strong class="ter-aff-card__action">Non affectées uniquement</strong>
+            <p class="ter-aff-card__desc">
+              Met à jour uniquement les organisations qui ne disposent pas encore
+              d'affectation pour ce niveau de territoire.
+            </p>
+          </div>
+          <div class="ter-aff-card__footer">
+            <span class="ter-aff-card__cta">
+              Appliquer
+              <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+            </span>
+          </div>
+        </button>
+
+        <!-- Card: OUI — all addresses -->
+        <button class="ter-aff-card ter-aff-card--all" (click)="runAffectation(true)">
+          <div class="ter-aff-card__icon-wrap">
+            <span nz-icon nzType="database" nzTheme="outline" class="ter-aff-card__icon"></span>
+          </div>
+          <div class="ter-aff-card__body">
+            <span class="ter-aff-card__scope">Périmètre complet</span>
+            <strong class="ter-aff-card__action">Toutes les adresses</strong>
+            <p class="ter-aff-card__desc">
+              Met à jour <em>toutes</em> les organisations correspondantes,
+              même si elles possèdent déjà une affectation pour ce niveau.
+            </p>
+          </div>
+          <div class="ter-aff-card__footer">
+            <span class="ter-aff-card__cta">
+              Appliquer
+              <span nz-icon nzType="arrow-right" nzTheme="outline"></span>
+            </span>
+          </div>
+        </button>
+
+      </div>
+
+      <!-- Cancel -->
+      <div class="ter-aff__cancel-row">
+        <button nz-button nzType="text" (click)="affectationModalVisible.set(false)">
+          Annuler
+        </button>
+      </div>
+
+    </div>
+  </ng-container>
+</nz-modal>

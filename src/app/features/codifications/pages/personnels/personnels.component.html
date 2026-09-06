@@ -1,0 +1,556 @@
+<div class="prs-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="prs-header">
+    <div class="prs-header__left">
+      <h2 class="prs-header__title">Personnels</h2>
+      <span class="prs-header__count">{{ items().length }} agent{{ items().length > 1 ? 's' : '' }}</span>
+    </div>
+    <div class="prs-header__actions">
+      <input
+        nz-input
+        class="prs-search"
+        placeholder="Rechercher…"
+        [(ngModel)]="searchModel"
+        (ngModelChange)="onSearch($event)"
+        aria-label="Rechercher un personnel" />
+      <nz-select
+        class="prs-filter-select"
+        [(ngModel)]="filtreActif"
+        (ngModelChange)="onFiltreChange()">
+        @for (opt of filtreOptions; track opt.value) {
+          <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+        }
+      </nz-select>
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ajouter
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="prs-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th nzWidth="280px" [nzSortFn]="true">Nom</th>
+        <th nzWidth="220px">Service</th>
+        <th nzWidth="90px">Actif</th>
+        <th nzWidth="100px">Connecté</th>
+        <th nzWidth="110px">BAL Service</th>
+        <th nzWidth="100px">Par défaut</th>
+        <th nzWidth="100px">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of items(); track item.id) {
+        <tr class="prs-row" (click)="openEdit(item)">
+          <td class="prs-cell-nom">
+            <div class="prs-identity">
+              <span class="prs-avatar">{{ getInitials(item) }}</span>
+              <span class="prs-identity__info">
+                <span class="prs-identity__nom">{{ item.nom }}</span>
+                <span class="prs-identity__prenom">{{ item.prenom }}</span>
+              </span>
+            </div>
+          </td>
+          <td class="prs-cell-service">
+            @if (item.serviceNom) { {{ item.serviceNom }} }
+            @else { <span class="prs-empty">—</span> }
+          </td>
+          <td>
+            @if (item.actif) {
+              <nz-tag nzColor="success" class="prs-badge">Actif</nz-tag>
+            } @else {
+              <nz-tag nzColor="default" class="prs-badge">Inactif</nz-tag>
+            }
+          </td>
+          <td>
+            @if (item.connecte) { <span class="prs-tick prs-tick--on">✓</span> }
+            @else { <span class="prs-empty">—</span> }
+          </td>
+          <td>
+            @if (item.estBalService) { <span class="prs-tick prs-tick--on">✓</span> }
+            @else { <span class="prs-empty">—</span> }
+          </td>
+          <td>
+            @if (item.parDefaut) { <span class="prs-tick prs-tick--brand">✓</span> }
+            @else { <span class="prs-empty">—</span> }
+          </td>
+          <td class="prs-actions" (click)="$event.stopPropagation()">
+            <button nz-button nzSize="small" nzType="default" (click)="openEdit(item)" aria-label="Modifier" title="Modifier">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button nz-button nzSize="small" nzDanger
+              nz-popconfirm nzPopconfirmTitle="Supprimer ce personnel ?"
+              nzOkText="Supprimer" nzCancelText="Annuler"
+              (nzOnConfirm)="confirmDelete(item.id)"
+              aria-label="Supprimer" title="Supprimer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+</div>
+
+<!-- ── Drawer footer ─────────────────────────────────────────── -->
+<ng-template #drawerFooter>
+  <div class="prs-drawer-footer">
+    <button nz-button nzType="default" (click)="drawerVisible.set(false)">Annuler</button>
+    <button nz-button nzType="primary" [nzLoading]="isSaving()" (click)="saveDrawer()">
+      {{ editingItem() ? 'Enregistrer les modifications' : 'Ajouter le personnel' }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- ── Drawer — Add / Edit ────────────────────────────────────── -->
+<nz-drawer
+  [nzVisible]="drawerVisible()"
+  [nzTitle]="drawerTitle"
+  [nzFooter]="drawerFooter"
+  nzPlacement="right"
+  nzWidth="860px"
+  [nzClosable]="true"
+  (nzOnClose)="drawerVisible.set(false)">
+
+  <ng-container *nzDrawerContent>
+    <form nz-form [formGroup]="form" nzLayout="vertical" class="prs-form">
+
+      <!-- ── Live identity preview ──────────────────────────────── -->
+      <div class="prs-identity-card">
+        <div class="prs-avatar-lg">{{ previewInitials }}</div>
+        <div class="prs-preview-meta">
+          <span class="prs-preview-name">{{ previewName }}</span>
+          <span class="prs-preview-login">
+            @if (previewLogin) { {{ previewLogin }} }
+            @else { <em>identifiant non défini</em> }
+          </span>
+        </div>
+        @if (editingItem()?.actif) {
+          <span class="prs-preview-status prs-preview-status--actif">Actif</span>
+        } @else if (editingItem() && !editingItem()?.actif) {
+          <span class="prs-preview-status prs-preview-status--inactif">Inactif</span>
+        }
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 1: Identification                              -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="prs-section-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span>Identification</span>
+      </div>
+
+      <div class="prs-grid-2">
+        <nz-form-item>
+          <nz-form-label nzRequired>Nom</nz-form-label>
+          <nz-form-control nzErrorTip="Obligatoire">
+            <input nz-input formControlName="nom" placeholder="Nom de famille…" maxlength="250" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired>Prénom</nz-form-label>
+          <nz-form-control nzErrorTip="Obligatoire">
+            <input nz-input formControlName="prenom" placeholder="Prénom…" maxlength="250" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired>Login</nz-form-label>
+          <nz-form-control nzErrorTip="Obligatoire">
+            <input nz-input formControlName="login" placeholder="Identifiant de connexion…" maxlength="250" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item class="prs-pwd-item">
+          <nz-form-label>Mot de passe</nz-form-label>
+          <nz-form-control>
+            <nz-input-group [nzSuffix]="pwdEye">
+              <input
+                nz-input
+                [type]="passwordVisible() ? 'text' : 'password'"
+                formControlName="motDePasse"
+                placeholder="••••••••"
+                maxlength="250"
+                autocomplete="new-password" />
+            </nz-input-group>
+            <ng-template #pwdEye>
+              <span class="prs-pwd-toggle" (click)="passwordVisible.set(!passwordVisible())" tabindex="0" role="button">
+                @if (passwordVisible()) {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                } @else {
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                }
+              </span>
+            </ng-template>
+            @if (form.value.motDePasse) {
+              <div class="prs-pwd-strength">
+                @for (i of [1,2,3,4,5]; track i) {
+                  <div class="prs-pwd-strength__seg prs-pwd-strength__seg--{{ getStrengthClass(i) }}"></div>
+                }
+                <span class="prs-pwd-strength__label">{{ passwordStrengthLabel }}</span>
+              </div>
+              <ul class="prs-pwd-rules">
+                @for (rule of passwordRules; track rule.label) {
+                  <li [class.prs-pwd-rules__item--met]="rule.met">
+                    @if (rule.met) {
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                    } @else {
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/></svg>
+                    }
+                    {{ rule.label }}
+                  </li>
+                }
+              </ul>
+            }
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Service de l'utilisateur</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="serviceId" nzPlaceHolder="Sélectionner un service…" nzAllowClear class="prs-full">
+              @for (srv of services(); track srv.id) {
+                <nz-option [nzValue]="srv.id" [nzLabel]="srv.nom" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- ── Service change panel (edit mode only, triggered by serviceId change) ── -->
+      @if (showServiceChange()) {
+        <div class="prs-service-change-panel" [formGroup]="serviceChangeForm">
+          <div class="prs-service-change-panel__header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>Changement de service détecté</span>
+          </div>
+          <div class="prs-service-change-panel__body">
+            <div class="prs-service-change-section">
+              <div class="prs-service-change-section__label">Transfert des encours</div>
+              <nz-radio-group formControlName="transfertEncours">
+                <label nz-radio nzValue="SUIVENT">Les encours suivent l'utilisateur vers le nouveau service</label>
+                <label nz-radio nzValue="RESTENT">Les encours restent affectés à un utilisateur de l'ancien service</label>
+              </nz-radio-group>
+            </div>
+            <div class="prs-service-change-section">
+              <div class="prs-service-change-section__label">Gestion des protections</div>
+              <nz-radio-group formControlName="gestionProtections">
+                <label nz-radio nzValue="LAISSER">Laisser les protections actuelles sans modification</label>
+                <label nz-radio nzValue="SUPPRIMER">Supprimer toutes les protections pour cet utilisateur</label>
+              </nz-radio-group>
+            </div>
+            <button nz-button nzSize="small" nzType="default" (click)="cancelServiceChange()">
+              Annuler le changement
+            </button>
+          </div>
+        </div>
+      }
+
+      <div class="prs-grid-2">
+        <nz-form-item>
+          <nz-form-label>Boite aux lettres (e-mail)</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="email" placeholder="utilisateur@domaine.fr" type="email" maxlength="250" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <!-- Account type pills -->
+      <div class="prs-account-type-label">Type de compte</div>
+      <div class="prs-account-type">
+        <label nz-checkbox formControlName="estAgent">
+          <span class="prs-pill-content">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Agent
+          </span>
+        </label>
+        <label nz-checkbox formControlName="estBalService">
+          <span class="prs-pill-content">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07"/><path d="M16 16H2v-2a4 4 0 0 1 4-4h4"/><path d="M22 8.5a8 8 0 0 1-8 7.5"/><path d="M14 2a8 8 0 0 1 7.5 8"/></svg>
+            BAL Service
+          </span>
+        </label>
+        <label nz-checkbox formControlName="estBal">
+          <span class="prs-pill-content">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            BAL
+          </span>
+        </label>
+        <label nz-checkbox formControlName="estListe">
+          <span class="prs-pill-content">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Liste
+          </span>
+        </label>
+        <label nz-checkbox formControlName="estResponsable">
+          <span class="prs-pill-content">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            Responsable
+          </span>
+        </label>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 2: Autorisations                               -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="prs-section-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+        <span>Autorisations</span>
+      </div>
+
+      <div class="prs-perms-container">
+        <!-- Accès -->
+        <div class="prs-perms-group">
+          <div class="prs-perms-group__label">Accès au système</div>
+          <div class="prs-perms-group__items">
+            <label nz-checkbox formControlName="actif">Actif</label>
+            <label nz-checkbox formControlName="connecte">Connecté</label>
+            <label nz-checkbox formControlName="admin">Administrateur</label>
+          </div>
+        </div>
+        <!-- Fonctionnalités -->
+        <div class="prs-perms-group">
+          <div class="prs-perms-group__label">Compte &amp; fonctionnalités</div>
+          <div class="prs-perms-group__items">
+            <label nz-checkbox formControlName="lectureSeule">Lecture seule</label>
+            <label nz-checkbox formControlName="parDefaut">Utilisateur par défaut du service</label>
+            <label nz-checkbox formControlName="fonctionsAvancees">Fonctions avancées</label>
+          </div>
+        </div>
+        <!-- Gestion -->
+        <div class="prs-perms-group">
+          <div class="prs-perms-group__label">Gestion des données</div>
+          <div class="prs-perms-group__items">
+            <label nz-checkbox formControlName="adminMaqPubliques">Admin. modèles publics</label>
+            <label nz-checkbox formControlName="adminMaqServices">Admin. modèles services</label>
+            <label nz-checkbox formControlName="creationClasseur">Création d'un classeur</label>
+            <label nz-checkbox formControlName="creationPersonne">Création d'une personne</label>
+            <label nz-checkbox formControlName="creationOrganisme">Création d'un organisme</label>
+            <label nz-checkbox formControlName="droitSuppression">Droit de suppression</label>
+          </div>
+        </div>
+        <!-- Droits avancés -->
+        <div class="prs-perms-group">
+          <div class="prs-perms-group__label">Droits avancés</div>
+          <div class="prs-perms-group__items">
+            <label nz-checkbox formControlName="modifHierarchie">Modif. selon la hiérarchie</label>
+            <label nz-checkbox formControlName="voitBalService">Voit la BAL de son service</label>
+            <label nz-checkbox formControlName="droitSuppressionSas">Suppression des SAS</label>
+            <label nz-checkbox formControlName="nonEnvoiCourrielSuiveuse">Non-envoi courriel suiveuse</label>
+            <label nz-checkbox formControlName="droitProtocole">Droit du protocole</label>
+            <label nz-checkbox formControlName="modifInfosSpecifiques">Modif. infos spécifiques</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 3: Messagerie POP                             -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="prs-section-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <span>Messagerie</span>
+      </div>
+
+      <!-- POP card -->
+      <div class="prs-msg-card">
+        <div class="prs-msg-card__header">
+          <div class="prs-msg-card__header-left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="8 17 12 21 16 17"/>
+              <line x1="12" y1="12" x2="12" y2="21"/>
+              <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"/>
+            </svg>
+            <span class="prs-msg-card__label">Serveur POP entrant</span>
+          </div>
+          <nz-switch formControlName="popActif" nzCheckedChildren="Activé" nzUnCheckedChildren="Désactivé" />
+        </div>
+        @if (popActif) {
+          <div class="prs-msg-card__body">
+            <div class="prs-grid-3">
+              <nz-form-item>
+                <nz-form-label>Compte utilisateur</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="popCompte" placeholder="user@domaine.fr" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label>Adresse IP / Serveur</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="popServeur" placeholder="mail.serveur.fr" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label>Mot de passe</nz-form-label>
+                <nz-form-control>
+                  <input nz-input type="password" formControlName="popMotDePasse" placeholder="••••••••" autocomplete="new-password" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+            <div class="prs-test-row">
+              <button nz-button nzSize="small" nzType="default" [nzLoading]="testingPop()" (click)="testPopConnection()">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                </svg>
+                Tester la connexion POP
+              </button>
+              @if (popTestResult() === 'success') {
+                <span class="prs-test-result prs-test-result--ok">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  Connexion réussie
+                </span>
+              } @else if (popTestResult() === 'error') {
+                <span class="prs-test-result prs-test-result--err">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  Connexion échouée
+                </span>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- SAS access switch (separate row) -->
+      <div class="prs-switch-row">
+        <div class="prs-switch-row__label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="8" x2="8" y2="16"/>
+            <line x1="8" y1="8" x2="8.01" y2="8"/>
+            <line x1="16" y1="16" x2="16.01" y2="16"/>
+          </svg>
+          Voir le SAS des demandes
+        </div>
+        <nz-switch formControlName="voirSas" nzCheckedChildren="Oui" nzUnCheckedChildren="Non" />
+      </div>
+
+      <!-- SMTP card -->
+      <div class="prs-msg-card">
+        <div class="prs-msg-card__header">
+          <div class="prs-msg-card__header-left">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+              <path d="M4 4h2c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4"/>
+            </svg>
+            <span class="prs-msg-card__label">Compte SMTP sortant</span>
+          </div>
+        </div>
+        <div class="prs-msg-card__body">
+          <div class="prs-grid-2">
+            <nz-form-item>
+              <nz-form-label>Compte utilisateur</nz-form-label>
+              <nz-form-control>
+                <input nz-input formControlName="smtpCompte" placeholder="user@domaine.fr" />
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>Mot de passe</nz-form-label>
+              <nz-form-control>
+                <input nz-input type="password" formControlName="smtpMotDePasse" placeholder="••••••••" autocomplete="new-password" />
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+          <div class="prs-test-row">
+            <button nz-button nzSize="small" nzType="default" [nzLoading]="testingSmtp()" (click)="testSmtpConnection()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+              Tester la connexion SMTP
+            </button>
+            @if (smtpTestResult() === 'success') {
+              <span class="prs-test-result prs-test-result--ok">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                Connexion réussie
+              </span>
+            } @else if (smtpTestResult() === 'error') {
+              <span class="prs-test-result prs-test-result--err">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                Connexion échouée
+              </span>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <!-- SECTION 4: Triplet associé                            -->
+      <!-- ═══════════════════════════════════════════════════════ -->
+      <div class="prs-section-head">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+        </svg>
+        <span>Triplet associé</span>
+      </div>
+
+      <div class="prs-grid-2">
+        <nz-form-item>
+          <nz-form-label>Nom</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="tripletNom" placeholder="Nom…" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Prénom</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="tripletPrenom" placeholder="Prénom…" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Fonction</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="tripletFonction" placeholder="Fonction…" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label>Organisme</nz-form-label>
+          <nz-form-control>
+            <input nz-input formControlName="tripletOrganisme" placeholder="Organisme…" />
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </form>
+  </ng-container>
+
+</nz-drawer>

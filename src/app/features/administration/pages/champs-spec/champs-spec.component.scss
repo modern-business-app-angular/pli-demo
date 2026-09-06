@@ -1,0 +1,819 @@
+@use '../../../../../styles/tokens' as *;
+
+// ── Page shell ────────────────────────────────────────────────────────────────
+
+.chs-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: $space-5 $space-6 $space-6;
+  gap: $space-4;
+  min-height: 0;
+}
+
+// ── Page header ───────────────────────────────────────────────────────────────
+
+.chs-page-header {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding-bottom: $space-2;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: $color-brand-500;
+    color: $color-neutral-0;
+    border-radius: $radius-md;
+    flex-shrink: 0;
+    font-size: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 145, 0.25);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: $line-height-tight;
+  }
+
+  &__sub {
+    margin: 2px 0 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 $space-2;
+    background: $color-brand-100;
+    color: $color-brand-600;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ── Split-pane workspace ──────────────────────────────────────────────────────
+
+.chs-workspace {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  flex: 1;
+  min-height: 0;
+  background: $surface-card;
+  border: 1px solid $surface-border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  overflow: hidden;
+  animation: chs-workspace-in 0.2s ease both;
+}
+
+@keyframes chs-workspace-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+// ── Panel shared ─────────────────────────────────────────────────────────────
+
+.chs-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $surface-border;
+    background: $color-neutral-50;
+    flex-shrink: 0;
+  }
+
+  &__title {
+    flex: 1;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $color-text-secondary;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 $space-1;
+    background: $color-neutral-200;
+    color: $color-text-secondary;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: $space-2 0;
+  }
+
+  &__footer {
+    padding: $space-3 $space-4;
+    border-top: 1px solid $surface-border;
+    background: $color-neutral-50;
+    flex-shrink: 0;
+  }
+}
+
+// ── Left panel ───────────────────────────────────────────────────────────────
+
+.chs-panel--left {
+  border-right: 1px solid $surface-border;
+  background: $color-neutral-50;
+}
+
+// ── Page list ─────────────────────────────────────────────────────────────────
+
+.chs-page-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $space-8 $space-4;
+  gap: $space-2;
+  color: $color-neutral-400;
+
+  &__icon {
+    font-size: 24px;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-neutral-500;
+  }
+}
+
+.chs-page-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chs-page-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  cursor: pointer;
+  transition: background $transition-fast;
+  border-left: 3px solid transparent;
+
+  &:hover {
+    background: $color-neutral-100;
+
+    .chs-page-item__del {
+      opacity: 1;
+    }
+  }
+
+  &--active {
+    background: rgba(0, 0, 145, 0.05);
+    border-left-color: $color-brand-500;
+
+    .chs-page-item__nom {
+      color: $color-brand-600;
+      font-weight: $font-weight-semibold;
+    }
+
+    .chs-page-item__dot {
+      background: $color-brand-500;
+    }
+
+    .chs-page-item__count {
+      background: $color-brand-100;
+      color: $color-brand-600;
+    }
+  }
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: $radius-full;
+    background: $color-neutral-300;
+    flex-shrink: 0;
+    transition: background $transition-fast;
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__nom {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    font-family: $font-family-mono;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color $transition-fast;
+  }
+
+  &__table {
+    font-size: $font-size-xs;
+    color: $color-neutral-500;
+    margin-top: 1px;
+  }
+
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 18px;
+    padding: 0 $space-1;
+    background: $color-neutral-200;
+    color: $color-text-secondary;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    flex-shrink: 0;
+    transition: background $transition-fast, color $transition-fast;
+  }
+
+  &__del {
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity $transition-fast;
+  }
+}
+
+// ── Right panel ───────────────────────────────────────────────────────────────
+
+.chs-panel--right {
+  background: $surface-body;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// ── No selection state ────────────────────────────────────────────────────────
+
+.chs-no-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: $space-3;
+  padding: $space-8 $space-6;
+  text-align: center;
+
+  &__visual {
+    width: 72px;
+    height: 72px;
+    border-radius: $radius-full;
+    background: $color-neutral-100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $color-neutral-400;
+  }
+
+  &__icon {
+    font-size: 32px;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    max-width: 320px;
+    line-height: $line-height-relaxed;
+  }
+}
+
+// ── Champs panel header ───────────────────────────────────────────────────────
+
+.chs-champs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-5;
+  border-bottom: 1px solid $surface-border;
+  background: $color-neutral-50;
+  flex-shrink: 0;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__icon {
+    color: $color-text-secondary;
+    font-size: 14px;
+  }
+
+  &__name {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    font-family: $font-family-mono;
+  }
+
+  &__table-tag {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 $space-2;
+    background: $color-neutral-200;
+    color: $color-text-secondary;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-family: $font-family-mono;
+  }
+}
+
+// ── Champs table ──────────────────────────────────────────────────────────────
+
+.chs-spin-wrap {
+  display: block;
+  flex: 1;
+  overflow: hidden;
+}
+
+.chs-table {
+  .ant-table {
+    font-size: $font-size-sm !important;
+  }
+}
+
+.chs-th-handle  { width: 40px;  }
+.chs-th-nom     { width: 130px; }
+.chs-th-type    { width: 120px; }
+.chs-th-bool    { width: 40px; text-align: center; }
+.chs-th-actions { width: 80px;  text-align: right; }
+
+.chs-td-handle  { width: 40px;  }
+.chs-td-nom     { font-family: $font-family-mono; font-size: $font-size-xs; color: $color-text-primary; }
+.chs-td-libelle { color: $color-text-primary; }
+.chs-td-infobulle { width: 48px; text-align: center; }
+.chs-td-type    { width: 120px; }
+.chs-td-bool    { text-align: center; }
+.chs-td-defaut  { font-size: $font-size-xs; }
+.chs-td-actions { text-align: right; white-space: nowrap; }
+
+.chs-row {
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-neutral-50;
+  }
+}
+
+.chs-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  color: $color-neutral-300;
+  cursor: grab;
+  transition: color $transition-fast;
+  padding: $space-1;
+
+  &:hover {
+    color: $color-neutral-500;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.chs-table-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-8 $space-4;
+  color: $color-neutral-500;
+  font-size: $font-size-sm;
+}
+
+.chs-td-empty {
+  color: $color-neutral-300;
+  font-size: $font-size-xs;
+}
+
+.chs-info-icon {
+  color: $color-brand-400;
+  cursor: default;
+}
+
+// ── Type badges ───────────────────────────────────────────────────────────────
+
+.chs-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 $space-2;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+  white-space: nowrap;
+
+  &--chaine {
+    background: #e6f4ff;
+    color: #0958d9;
+  }
+
+  &--date {
+    background: #e6fffb;
+    color: #0c7a6e;
+  }
+
+  &--numerique {
+    background: #fffbe6;
+    color: #92400e;
+  }
+
+  &--liste {
+    background: #f3e8ff;
+    color: #6b21a8;
+  }
+
+  &--multiligne {
+    background: $color-neutral-100;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Boolean indicators ────────────────────────────────────────────────────────
+
+.chs-bool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: $color-neutral-300;
+
+  &--on {
+    color: $color-success;
+  }
+}
+
+// ── Code ──────────────────────────────────────────────────────────────────────
+
+.chs-code {
+  font-family: $font-family-mono;
+  font-size: $font-size-xs;
+  background: $color-neutral-100;
+  color: $color-text-secondary;
+  padding: 1px 4px;
+  border-radius: $radius-sm;
+}
+
+// ── Drawer ────────────────────────────────────────────────────────────────────
+
+.chs-drawer-actions {
+  display: flex;
+  gap: $space-2;
+}
+
+.chs-drawer-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding-bottom: $space-8;
+}
+
+// ── Drawer sections ───────────────────────────────────────────────────────────
+
+.chs-drawer-section {
+  background: $surface-card;
+  border: 1px solid $surface-border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+
+  &--liste {
+    border-color: rgba(107, 33, 168, 0.2);
+    background: #fdf8ff;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-3 $space-4;
+    border-bottom: 1px solid $surface-border;
+    background: $color-neutral-50;
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: $color-brand-100;
+    color: $color-brand-600;
+    border-radius: $radius-base;
+    font-size: 13px;
+    flex-shrink: 0;
+
+    &--purple {
+      background: #f3e8ff;
+      color: #6b21a8;
+    }
+  }
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__body {
+    padding: $space-4 $space-4 $space-2;
+
+    nz-form-item {
+      margin-bottom: $space-3;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// ── Form layout ───────────────────────────────────────────────────────────────
+
+.chs-form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-4;
+  margin-bottom: $space-3;
+
+  nz-form-item {
+    margin-bottom: 0 !important;
+  }
+}
+
+.chs-label-optional {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-regular;
+  color: $color-neutral-500;
+  margin-left: $space-1;
+}
+
+.chs-hint {
+  margin: $space-1 0 0;
+  font-size: $font-size-xs;
+  color: $color-neutral-500;
+  line-height: $line-height-base;
+
+  code {
+    font-family: $font-family-mono;
+    font-size: $font-size-xs;
+    background: $color-neutral-100;
+    padding: 0 3px;
+    border-radius: $radius-sm;
+  }
+}
+
+.chs-help-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: $space-1;
+  color: $color-neutral-400;
+  cursor: help;
+  font-size: 12px;
+}
+
+// ── Toggle grid (Comportement) ────────────────────────────────────────────────
+
+.chs-toggle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.chs-toggle-item {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  cursor: pointer;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  &__hint {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    line-height: $line-height-base;
+  }
+}
+
+// ── Type card grid ────────────────────────────────────────────────────────────
+
+.chs-type-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: $space-2;
+}
+
+.chs-type-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-2;
+  background: $surface-card;
+  border: 2px solid $surface-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    border-color: $color-neutral-400;
+  }
+
+  &--active {
+    border-color: $color-brand-500;
+    background: rgba(0, 0, 145, 0.04);
+    box-shadow: 0 0 0 3px rgba(0, 0, 145, 0.06);
+
+    .chs-type-card__label {
+      color: $color-brand-600;
+      font-weight: $font-weight-semibold;
+    }
+  }
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: $radius-base;
+    font-size: 16px;
+
+    &--chaine    { background: #e6f4ff; color: #0958d9; }
+    &--date      { background: #e6fffb; color: #0c7a6e; }
+    &--numerique { background: #fffbe6; color: #92400e; }
+    &--liste     { background: #f3e8ff; color: #6b21a8; }
+    &--multiligne { background: $color-neutral-100; color: $color-text-secondary; }
+  }
+
+  &__label {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+    transition: color $transition-fast;
+  }
+}
+
+// ── Liste mode selector ───────────────────────────────────────────────────────
+
+.chs-liste-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-2;
+  margin-bottom: $space-4;
+}
+
+.chs-liste-mode-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  background: $surface-card;
+  border: 2px solid $surface-border;
+  border-radius: $radius-base;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: border-color $transition-fast, color $transition-fast;
+
+  &:hover {
+    border-color: $color-neutral-400;
+  }
+
+  &--active {
+    border-color: #6b21a8;
+    color: #6b21a8;
+    background: #fdf8ff;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ── Static values preview ─────────────────────────────────────────────────────
+
+.chs-static-values {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.chs-values-preview {
+  background: $color-neutral-50;
+  border: 1px solid $surface-border;
+  border-radius: $radius-base;
+  padding: $space-3;
+
+  &__label {
+    margin: 0 0 $space-2;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: $color-text-secondary;
+  }
+
+  &__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    height: 22px;
+    padding: 0 $space-2;
+    background: #f3e8ff;
+    color: #6b21a8;
+    border-radius: $radius-full;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// ── SQL warning ───────────────────────────────────────────────────────────────
+
+.chs-sql-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-2;
+  padding: $space-3;
+  background: #fffbe6;
+  border: 1px solid #fadf6b;
+  border-radius: $radius-base;
+  font-size: $font-size-xs;
+  color: #92400e;
+  margin-top: $space-3;
+  line-height: $line-height-relaxed;
+}
+
+// ── Mono input ────────────────────────────────────────────────────────────────
+
+.chs-input-mono {
+  font-family: $font-family-mono !important;
+  font-size: $font-size-sm !important;
+}
+
+// ── Hidden radio ──────────────────────────────────────────────────────────────
+
+.chs-radio-hidden {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}

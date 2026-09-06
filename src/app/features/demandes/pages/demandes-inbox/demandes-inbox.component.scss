@@ -1,0 +1,528 @@
+@use '../../../../../styles/tokens' as *;
+
+// ── Page shell ───────────────────────────────────────────────────────────────
+
+.dem-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $surface-body;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.dem-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding: $space-5 $space-6;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+
+  &__left {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__icon {
+    font-size: 20px;
+    color: $color-brand-500;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+    background: $color-neutral-100;
+    padding: 2px $space-2;
+    border-radius: $radius-full;
+    font-weight: $font-weight-medium;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+  }
+}
+
+// ── Search input ──────────────────────────────────────────────────────────────
+
+.dem-search {
+  width: 260px;
+}
+
+// ── Pull button ───────────────────────────────────────────────────────────────
+
+.dem-pull-btn {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+
+  &--pulling {
+    opacity: 0.8;
+  }
+}
+
+.dem-spin {
+  animation: dem-spin 0.8s linear infinite;
+}
+
+@keyframes dem-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Tab bar ───────────────────────────────────────────────────────────────────
+
+.dem-tab-bar {
+  display: flex;
+  gap: 0;
+  padding: 0 $space-6;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  flex-shrink: 0;
+}
+
+.dem-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color $transition-fast, border-color $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    color: $color-brand-500;
+  }
+
+  &--active {
+    color: $color-brand-500;
+    border-bottom-color: $color-brand-500;
+  }
+
+  &__count {
+    font-size: $font-size-xs;
+    background: $color-neutral-200;
+    color: $color-text-secondary;
+    border-radius: $radius-full;
+    padding: 1px 6px;
+    font-weight: $font-weight-semibold;
+    min-width: 18px;
+    text-align: center;
+  }
+}
+
+.dem-tab--active .dem-tab__count {
+  background: $color-brand-50;
+  color: $color-brand-600;
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+
+.dem-table {
+  flex: 1;
+  overflow: auto;
+  padding: $space-4 $space-6;
+}
+
+// ── Table rows ────────────────────────────────────────────────────────────────
+
+.dem-row {
+  cursor: default;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: $color-neutral-50 !important;
+  }
+
+  &--nouveau td {
+    background: rgba($color-brand-500, 0.02);
+  }
+}
+
+.dem-td-icon {
+  padding: 0 $space-1 !important;
+  text-align: center;
+}
+
+// ── Type icon ─────────────────────────────────────────────────────────────────
+
+.dem-type-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: $radius-sm;
+  font-size: 14px;
+
+  &--mail     { background: #e6f4ff; color: #0958d9; }
+  &--sms      { background: #f9f0ff; color: #722ed1; }
+  &--formulaire { background: #e6fffb; color: #006d75; }
+  &--guichet  { background: #fff7e6; color: #d46b08; }
+}
+
+// ── Emetteur cell ─────────────────────────────────────────────────────────────
+
+.dem-emetteur-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dem-emetteur-nom {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+}
+
+.dem-emetteur-email {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+}
+
+// ── Objet cell ────────────────────────────────────────────────────────────────
+
+.dem-objet-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dem-objet {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+
+  &--bold {
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.dem-excerpt {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 500px;
+}
+
+// ── Type tag ──────────────────────────────────────────────────────────────────
+
+.dem-type-tag {
+  font-size: $font-size-xs;
+  font-weight: $font-weight-medium;
+}
+
+// ── Statut badge ──────────────────────────────────────────────────────────────
+
+.dem-statut-badge {
+  display: inline-block;
+  padding: 2px $space-2;
+  border-radius: $radius-full;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+
+  &--nouveau {
+    background: $badge-new-bg;
+    color: $badge-new-text;
+  }
+
+  &--en-cours {
+    background: $badge-processing-bg;
+    color: $badge-processing-text;
+  }
+
+  &--traite {
+    background: $badge-done-bg;
+    color: $badge-done-text;
+  }
+}
+
+// ── Date ──────────────────────────────────────────────────────────────────────
+
+.dem-date {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+// ── Row actions ───────────────────────────────────────────────────────────────
+
+.dem-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-1;
+}
+
+.dem-btn-traiter {
+  color: $color-brand-500;
+
+  &:hover { color: $color-brand-600; }
+}
+
+.dem-btn-repondre {
+  color: $color-neutral-600;
+
+  &:hover { color: $color-brand-500; }
+}
+
+// ── Drawer form ───────────────────────────────────────────────────────────────
+
+.dem-drawer-form {
+  padding: $space-2 0;
+}
+
+.dem-section-head {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;
+  padding: $space-4 0 $space-3;
+  border-bottom: 1px solid $surface-border;
+  margin-bottom: $space-4;
+
+  nz-icon, [nz-icon] {
+    color: $color-brand-500;
+    font-size: 15px;
+  }
+
+  &--convert {
+    margin-top: $space-6;
+
+    [nz-icon] { color: $color-success; }
+  }
+}
+
+.dem-demande-preview {
+  background: $color-neutral-50;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dem-preview-row {
+  display: flex;
+  gap: $space-3;
+  align-items: flex-start;
+
+  &--body {
+    flex-direction: column;
+    gap: $space-1;
+  }
+}
+
+.dem-preview-label {
+  min-width: 52px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-top: 2px;
+}
+
+.dem-preview-value {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+
+  &--objet {
+    font-weight: $font-weight-semibold;
+  }
+}
+
+.dem-preview-excerpt {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-style: italic;
+  line-height: $line-height-relaxed;
+}
+
+.dem-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.dem-full {
+  width: 100%;
+}
+
+// ── Priorité cards ────────────────────────────────────────────────────────────
+
+.dem-priorite-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $space-3;
+  margin-bottom: $space-4;
+}
+
+.dem-priorite-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-1;
+  padding: $space-4 $space-3;
+  background: $surface-card;
+  border: 2px solid $surface-border;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: border-color $transition-fast, background $transition-fast;
+  text-align: center;
+
+  &:hover {
+    border-color: $color-brand-300;
+  }
+
+  &--active {
+    border-color: $color-brand-500;
+    background: $color-brand-50;
+  }
+
+  &--urgente.dem-priorite-card--active {
+    border-color: $color-warning;
+    background: $color-warning-light;
+
+    .dem-priorite-card__icon { color: $color-warning; }
+    .dem-priorite-card__label { color: $color-warning-dark; }
+  }
+
+  &--bloquante.dem-priorite-card--active {
+    border-color: $color-error;
+    background: $color-error-light;
+
+    .dem-priorite-card__icon { color: $color-error; }
+    .dem-priorite-card__label { color: $color-error-dark; }
+  }
+
+  &__icon {
+    font-size: 20px;
+    color: $color-neutral-500;
+    transition: color $transition-fast;
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+
+  &__desc {
+    font-size: $font-size-xs;
+    color: $color-text-secondary;
+  }
+}
+
+.dem-priorite-card--active .dem-priorite-card__icon {
+  color: $color-brand-500;
+}
+
+.dem-vis-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+// ── Reply drawer ──────────────────────────────────────────────────────────────
+
+.dem-reply-header {
+  background: $color-neutral-50;
+  border: 1px solid $surface-border;
+  border-radius: $radius-md;
+  padding: $space-4;
+  margin-bottom: $space-4;
+}
+
+.dem-reply-meta {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+}
+
+.dem-reply-meta-row {
+  display: flex;
+  gap: $space-3;
+  align-items: center;
+}
+
+.dem-reply-meta-label {
+  min-width: 52px;
+  font-size: $font-size-xs;
+  font-weight: $font-weight-semibold;
+  color: $color-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dem-reply-meta-value {
+  font-size: $font-size-sm;
+  color: $color-text-primary;
+}
+
+.dem-reply-original {
+  margin-bottom: $space-4;
+}
+
+.dem-reply-original-label {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  font-weight: $font-weight-semibold;
+  margin-bottom: $space-2;
+}
+
+.dem-reply-quote {
+  margin: 0;
+  padding: $space-3 $space-4;
+  border-left: 3px solid $color-neutral-300;
+  background: $color-neutral-50;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  font-style: italic;
+  border-radius: 0 $radius-sm $radius-sm 0;
+}
+
+.dem-char-count {
+  font-size: $font-size-xs;
+  color: $color-text-secondary;
+  text-align: right;
+  margin-top: -$space-3;
+  margin-bottom: $space-3;
+}
+
+// ── Drawer footer ─────────────────────────────────────────────────────────────
+
+.dem-drawer-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-3;
+  padding: $space-3 0;
+}

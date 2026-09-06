@@ -1,0 +1,453 @@
+<div class="chr-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="chr-header">
+    <div class="chr-header__left">
+      <h2 class="chr-header__title">Chronos</h2>
+      <span class="chr-header__count">{{ items().length }} chrono{{ items().length > 1 ? 's' : '' }}</span>
+    </div>
+    <div class="chr-header__actions">
+      <input
+        nz-input
+        class="chr-search"
+        placeholder="Rechercher…"
+        [(ngModel)]="searchModel"
+        (ngModelChange)="onSearch($event)"
+        aria-label="Rechercher un chrono" />
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <span nz-icon nzType="plus"></span>
+        Ajouter
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="chr-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th nzWidth="240px">Nom</th>
+        <th nzWidth="210px">Format généré</th>
+        <th nzWidth="80px">Préfixe</th>
+        <th nzWidth="130px">Chiffres</th>
+        <th nzWidth="90px">Visibilité</th>
+        <th nzWidth="90px">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of items(); track item.id) {
+        <tr (click)="openEdit(item)">
+          <td>
+            <div class="chr-cell-nom">
+              <span class="chr-cell-nom__lib">{{ item.nom }}</span>
+              <nz-tag nzColor="blue" class="chr-type-badge">{{ getTypeLabel(item.type) }}</nz-tag>
+            </div>
+          </td>
+          <td>
+            <span class="chr-preview-pill">{{ buildPreview(item) }}</span>
+          </td>
+          <td class="chr-cell-mono">{{ item.prefixe || '—' }}</td>
+          <td class="chr-cell-secondary">{{ item.nbChiffresAnnee }}A / {{ item.nbChiffresNumero }}N</td>
+          <td>
+            @if (item.isPublic) {
+              <nz-tag nzColor="success" class="chr-badge">Public</nz-tag>
+            } @else {
+              <nz-tag nzColor="default" class="chr-badge">Privé</nz-tag>
+            }
+          </td>
+          <td class="chr-actions" (click)="$event.stopPropagation()">
+            <button nz-button nzSize="small" nzType="default" (click)="openEdit(item)" aria-label="Modifier">
+              <span nz-icon nzType="edit"></span>
+            </button>
+            <button nz-button nzSize="small" nzDanger
+              nz-popconfirm nzPopconfirmTitle="Supprimer ce chrono ?"
+              nzOkText="Supprimer" nzCancelText="Annuler"
+              (nzOnConfirm)="confirmDelete(item.id)"
+              aria-label="Supprimer">
+              <span nz-icon nzType="delete"></span>
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+</div>
+
+<!-- ── Drawer footer ─────────────────────────────────────────── -->
+<ng-template #drawerFooter>
+  <div class="chr-drawer-footer">
+    <button nz-button nzType="default" (click)="drawerVisible.set(false)">Annuler</button>
+    <button nz-button nzType="primary" [nzLoading]="isSaving()" (click)="saveDrawer()">
+      {{ editingItem() ? 'Enregistrer les modifications' : 'Ajouter le chrono' }}
+    </button>
+  </div>
+</ng-template>
+
+<!-- ── Drawer ────────────────────────────────────────────────── -->
+<nz-drawer
+  [nzVisible]="drawerVisible()"
+  [nzTitle]="drawerTitle"
+  [nzFooter]="drawerFooter"
+  nzPlacement="right"
+  nzWidth="760px"
+  [nzClosable]="true"
+  (nzOnClose)="drawerVisible.set(false)">
+
+  <ng-container *nzDrawerContent>
+    <form nz-form [formGroup]="form" nzLayout="vertical" class="chr-form">
+
+      <!-- ══════════════════════════════════════════════════════
+           LIVE FORMAT PREVIEW — always visible above tabs
+           ══════════════════════════════════════════════════════ -->
+      <div class="chr-format-preview">
+        <div class="chr-format-preview__left">
+          <div class="chr-format-preview__label">Format généré</div>
+          <div class="chr-format-preview__tokens">
+            @for (part of formatParts; track $index) {
+              <span class="chr-token chr-token--{{ part.role }}">{{ part.value }}</span>
+            }
+          </div>
+        </div>
+        <div class="chr-format-preview__right">
+          <div class="chr-format-preview__nom">{{ form.value.nom || 'Nouveau chrono' }}</div>
+          @if (form.value.type) {
+            <nz-tag nzColor="blue" class="chr-type-badge">{{ getTypeLabel(form.value.type ?? '') }}</nz-tag>
+          }
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════════════════
+           TABS
+           ══════════════════════════════════════════════════════ -->
+      <ng-template #tab1Title><span nz-icon nzType="setting" nzTheme="outline"></span> Format</ng-template>
+      <ng-template #tab2Title><span nz-icon nzType="font-size" nzTheme="outline"></span> Libellés</ng-template>
+      <ng-template #tab3Title><span nz-icon nzType="control" nzTheme="outline"></span> Comportement</ng-template>
+      <ng-template #tab4Title><span nz-icon nzType="tool" nzTheme="outline"></span> Avancé</ng-template>
+
+      <nz-tabs class="chr-tabs" [nzAnimated]="false">
+
+        <!-- ── TAB 1: Format ──────────────────────────────── -->
+        <nz-tab [nzTitle]="tab1Title">
+
+          <div class="chr-tab-body">
+            <div class="chr-grid-2">
+              <nz-form-item>
+                <nz-form-label nzRequired>Nom</nz-form-label>
+                <nz-form-control nzErrorTip="Obligatoire">
+                  <input nz-input formControlName="nom" placeholder="Ex : Arrivée" maxlength="50" />
+                </nz-form-control>
+              </nz-form-item>
+              <nz-form-item>
+                <nz-form-label nzRequired>Type de courrier</nz-form-label>
+                <nz-form-control nzErrorTip="Obligatoire">
+                  <nz-select formControlName="type" class="chr-full">
+                    @for (opt of typeOptions; track opt.value) {
+                      <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="chr-format-builder">
+              <div class="chr-format-builder__title">Composition du numéro</div>
+              <div class="chr-grid-3">
+                <nz-form-item>
+                  <nz-form-label>Préfixe</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="prefixe" placeholder="A" maxlength="20" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Séparateur</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="separateur" placeholder="-" maxlength="5" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Suffixe</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="suffixe" placeholder="" maxlength="20" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+
+              <div class="chr-switch-row">
+                <div class="chr-switch-row__label">
+                  <span nz-icon nzType="apartment" nzTheme="outline"></span>
+                  Utiliser le sigle de service comme préfixe
+                </div>
+                <nz-switch formControlName="sigleService" nzCheckedChildren="Oui" nzUnCheckedChildren="Non" />
+              </div>
+            </div>
+
+            <div class="chr-digits-panel">
+              <div class="chr-digits-panel__row">
+                <div class="chr-digits-panel__label">Chiffres de l'année</div>
+                <nz-radio-group formControlName="nbChiffresAnnee" class="chr-radio-inline">
+                  <label nz-radio [nzValue]="2">2 <em>(24)</em></label>
+                  <label nz-radio [nzValue]="4">4 <em>(2024)</em></label>
+                </nz-radio-group>
+              </div>
+              <div class="chr-digits-panel__row">
+                <div class="chr-digits-panel__label">Chiffres du numéro</div>
+                <nz-radio-group formControlName="nbChiffresNumero" class="chr-radio-inline">
+                  <label nz-radio [nzValue]="3">3 <em>(001)</em></label>
+                  <label nz-radio [nzValue]="4">4 <em>(0001)</em></label>
+                  <label nz-radio [nzValue]="5">5 <em>(00001)</em></label>
+                  <label nz-radio [nzValue]="6">6 <em>(000001)</em></label>
+                </nz-radio-group>
+              </div>
+            </div>
+          </div>
+        </nz-tab>
+
+        <!-- ── TAB 2: Libellés ────────────────────────────── -->
+        <nz-tab [nzTitle]="tab2Title">
+
+          <div class="chr-tab-body">
+            <p class="chr-labels-hint">Personnalisez les intitulés affichés dans le formulaire courrier.</p>
+
+            <div class="chr-labels-grid">
+              <div class="chr-labels-grid__hd">Champ</div>
+              <div class="chr-labels-grid__hd">Intitulé personnalisé</div>
+              <div class="chr-labels-grid__hd chr-labels-grid__hd--center">Afficher</div>
+
+              <div class="chr-labels-grid__name">Résumé</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="resumeLabel" placeholder="Commentaires" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle"></div>
+
+              <div class="chr-labels-grid__name">Triplet</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="tripletLabel" placeholder="Client" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle"></div>
+
+              <div class="chr-labels-grid__name">Objet</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="objetLabel" placeholder="Objet" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle"></div>
+
+              <div class="chr-labels-grid__name">Référence</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="reference" placeholder="Référence" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle"></div>
+
+              <div class="chr-labels-grid__name">Date d'arrivée</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="dateArriveeLabel" placeholder="Date d'arrivée" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle chr-labels-grid__toggle--center">
+                <label nz-checkbox formControlName="showDateArrivee" title="Afficher"></label>
+              </div>
+
+              <div class="chr-labels-grid__name">Date d'expédition</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="dateExpeditionLabel" placeholder="Date d'expédition" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle chr-labels-grid__toggle--center">
+                <label nz-checkbox formControlName="showDateExpedition" title="Afficher"></label>
+              </div>
+
+              <div class="chr-labels-grid__name">Date limite</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="dateLimiteLabel" placeholder="Date limite" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle chr-labels-grid__toggle--center">
+                <label nz-checkbox formControlName="showDateLimite" title="Afficher"></label>
+              </div>
+
+              <div class="chr-labels-grid__name">Criticité</div>
+              <nz-form-item class="chr-labels-grid__input">
+                <nz-form-control><input nz-input formControlName="criticiteLabel" placeholder="Niveau d'urgence" /></nz-form-control>
+              </nz-form-item>
+              <div class="chr-labels-grid__toggle chr-labels-grid__toggle--center">
+                <label nz-checkbox formControlName="showCriticite" title="Afficher"></label>
+              </div>
+            </div>
+
+            <div class="chr-sub-section">
+              <div class="chr-sub-section__title">Affectations automatiques</div>
+              <div class="chr-grid-2">
+                <nz-form-item>
+                  <nz-form-label>Première affectation</nz-form-label>
+                  <nz-form-control>
+                    <nz-select formControlName="premiereAffectation" class="chr-full">
+                      @for (opt of affectationOptions; track opt.value) {
+                        <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Deuxième affectation</nz-form-label>
+                  <nz-form-control>
+                    <nz-select formControlName="deuxiemeAffectation" class="chr-full">
+                      @for (opt of affectationOptions; track opt.value) {
+                        <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+              <nz-form-item style="max-width: 220px">
+                <nz-form-label>Nb. jours pour la date limite</nz-form-label>
+                <nz-form-control>
+                  <nz-input-number formControlName="nbJoursDateLimite" [nzMin]="0" [nzMax]="999" class="chr-full" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </nz-tab>
+
+        <!-- ── TAB 3: Comportement ────────────────────────── -->
+        <nz-tab [nzTitle]="tab3Title">
+
+          <div class="chr-tab-body">
+            <div class="chr-behav-section">
+              <div class="chr-behav-section__title">Visibilité &amp; accès</div>
+              <div class="chr-behav-row">
+                <div class="chr-behav-row__label">Visibilité</div>
+                <nz-radio-group formControlName="isPublic" class="chr-radio-inline">
+                  <label nz-radio [nzValue]="true">Public</label>
+                  <label nz-radio [nzValue]="false">Privé</label>
+                </nz-radio-group>
+              </div>
+              <div class="chr-behav-row">
+                <div class="chr-behav-row__label">Accès par</div>
+                <nz-radio-group formControlName="acces" class="chr-radio-inline">
+                  <label nz-radio nzValue="SERVICE">Service</label>
+                  <label nz-radio nzValue="UTILISATEUR">Utilisateur</label>
+                </nz-radio-group>
+              </div>
+              <div class="chr-grid-2">
+                <nz-form-item>
+                  <nz-form-label>Hiérarchie</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="hierarchie" placeholder="Code hiérarchie" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Ordre de tri</nz-form-label>
+                  <nz-form-control>
+                    <nz-input-number formControlName="tri" [nzMin]="1" [nzMax]="999" style="width: 100px" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            </div>
+
+            <div class="chr-behav-section">
+              <div class="chr-behav-section__title">Calcul de dates</div>
+              <div class="chr-flags-grid">
+                <label nz-checkbox formControlName="sansJoursFeries"><span class="chr-flag-label">Sans les jours fériés</span></label>
+                <label nz-checkbox formControlName="enJoursOuvres"><span class="chr-flag-label">En jours ouvrés uniquement</span></label>
+                <label nz-checkbox formControlName="clotureCopies"><span class="chr-flag-label">Clôture des copies</span></label>
+              </div>
+            </div>
+
+            <div class="chr-behav-section">
+              <div class="chr-behav-section__title">Champs disponibles</div>
+              <div class="chr-flags-grid">
+                <label nz-checkbox formControlName="hasPriorite"><span class="chr-flag-label">Priorité</span></label>
+                <label nz-checkbox formControlName="hasNature"><span class="chr-flag-label">Nature</span></label>
+                <label nz-checkbox formControlName="hasDoleances"><span class="chr-flag-label">Doléances</span></label>
+                <label nz-checkbox formControlName="affichageTickets"><span class="chr-flag-label">Affichage Tickets</span></label>
+              </div>
+            </div>
+
+            <div class="chr-behav-section">
+              <div class="chr-behav-section__title">Descriptif</div>
+              <nz-form-item>
+                <nz-form-control>
+                  <textarea nz-input formControlName="descriptif"
+                    [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+                    placeholder="Description interne du chrono…"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+          </div>
+        </nz-tab>
+
+        <!-- ── TAB 4: Avancé ──────────────────────────────── -->
+        <nz-tab [nzTitle]="tab4Title">
+
+          <div class="chr-tab-body">
+            <div class="chr-adv-section">
+              <div class="chr-adv-section__title">Co-émetteur</div>
+              <div class="chr-field-with-toggle">
+                <nz-form-item style="flex:1">
+                  <nz-form-label>Libellé co-émetteur</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="coEmetteur" placeholder="Co-émetteur" />
+                  </nz-form-control>
+                </nz-form-item>
+                <div class="chr-field-toggle-wrap">
+                  <div class="chr-field-toggle-label">Afficher</div>
+                  <label nz-checkbox formControlName="showCoEmetteur"></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="chr-adv-section">
+              <div class="chr-adv-section__title">Valeur spécifique</div>
+              <nz-form-item>
+                <nz-form-label>Spécifique</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="specifique" placeholder="Valeur spécifique…" />
+                </nz-form-control>
+              </nz-form-item>
+            </div>
+
+            <div class="chr-adv-section">
+              <div class="chr-adv-section__title chr-adv-section__title--toggle"
+                   (click)="tripletExpanded.set(!tripletExpanded())"
+                   role="button" tabindex="0">
+                Triplet associé
+                <span nz-icon nzType="down"
+                      class="chr-chevron"
+                      [class.chr-chevron--open]="tripletExpanded()"></span>
+              </div>
+              @if (tripletExpanded()) {
+                <div class="chr-grid-2">
+                  <nz-form-item>
+                    <nz-form-label>Nom</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="tripletNom" /></nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>Prénom</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="tripletPrenom" /></nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>Fonction</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="tripletFonction" /></nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>Organisme</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="tripletOrganisme" /></nz-form-control>
+                  </nz-form-item>
+                </div>
+              }
+            </div>
+          </div>
+        </nz-tab>
+
+      </nz-tabs>
+
+    </form>
+  </ng-container>
+
+</nz-drawer>

@@ -1,0 +1,137 @@
+@import 'styles/tokens';
+
+.mdp-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+}
+
+// ── Action buttons ─────────────────────────────────────────────────────────
+
+.mdp-actions {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+
+  &__label {
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    margin-right: $space-1;
+  }
+
+  &__btn {
+    border-radius: 6px !important;
+    font-size: 12px !important;
+
+    &--ar  { color: #3730a3 !important; border-color: #c7d2fe !important; background: #eef2ff !important; }
+    &--rep { color: #92400e !important; border-color: #fde68a !important; background: #fffbeb !important; }
+    &--bor { color: #065f46 !important; border-color: #6ee7b7 !important; background: #ecfdf5 !important; }
+  }
+}
+
+// ── Empty state ────────────────────────────────────────────────────────────
+
+.mdp-empty {
+  text-align: center;
+  padding: $space-10 $space-6;
+  color: $color-text-secondary;
+  background: #f8faff;
+  border: 2px dashed #c7d2fe;
+  border-radius: 10px;
+
+  p { margin: $space-3 0 0; font-size: 13px; }
+}
+
+// ── Document card ──────────────────────────────────────────────────────────
+
+.mdp-doc {
+  border: 1px solid $surface-border;
+  border-radius: 10px;
+  overflow: hidden;
+  background: $surface-card;
+  transition: border-color 0.15s;
+
+  &--active { border-color: #818cf8; }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    padding: $space-3 $space-4;
+    cursor: pointer;
+    background: $color-neutral-50;
+    user-select: none;
+
+    &:hover { background: #f0f4ff; }
+  }
+
+  &__tag { font-size: 10px !important; }
+
+  &__maquette {
+    font-size: 12px;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  &__spacer { flex: 1; }
+
+  &__del { color: #ef4444 !important; }
+
+  &__chevron {
+    font-size: 12px;
+    color: $color-text-secondary;
+  }
+
+  &__body {
+    padding: $space-4;
+    border-top: 1px solid $surface-border;
+  }
+
+  &__title-row {
+    margin-bottom: $space-3;
+  }
+
+  &__title-input {
+    font-size: 13px !important;
+    font-weight: $font-weight-medium !important;
+    border-color: #e5e7eb !important;
+  }
+
+  &__editor {
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    overflow: hidden;
+
+    :ng-deep .ql-toolbar {
+      border-top: none !important;
+      border-left: none !important;
+      border-right: none !important;
+      border-bottom: 1px solid #e5e7eb !important;
+      background: #f8fafc;
+
+      // Without explicit size, SVG elements default to 300px browser-intrinsic size.
+      // Must use !important: global quill.snow.css rules beat component :ng-deep without it.
+      svg { width: 18px !important; height: 18px !important; display: inline-block !important; vertical-align: middle !important; }
+
+      .ql-picker-label { display: flex !important; align-items: center !important; gap: 4px; }
+    }
+
+    :ng-deep .ql-container {
+      border: none !important;
+      font-family: inherit;
+    }
+
+    // Tailwind preflight is DISABLED (corePlugins.preflight: false in tailwind.config.js)
+    // so browser default `p { margin: 1em 0 }` leaks into the editor.
+    // Must reset explicitly — cannot rely on quill.snow.css specificity alone.
+    :ng-deep .ql-editor {
+      min-height: 200px;
+      font-size: 13px;
+      line-height: 1.6;
+
+      p, ol, ul, pre, blockquote { margin: 0 !important; padding: 0 !important; }
+    }
+  }
+}

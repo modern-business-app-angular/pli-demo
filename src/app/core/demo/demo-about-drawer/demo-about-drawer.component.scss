@@ -1,0 +1,163 @@
+.about {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  color: #141414;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.about__section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.about__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #000091;
+}
+
+.about__lead {
+  margin: 0;
+  font-size: 15px;
+}
+
+.about__muted {
+  margin: 0;
+  color: #595959;
+}
+
+.about__list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &--muted {
+    color: #595959;
+  }
+}
+
+.about__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  nz-tag {
+    margin: 0;
+  }
+}
+
+.flow {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.flow__step {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  padding: 0 0 14px;
+
+  &:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 13px;
+    top: 28px;
+    bottom: 0;
+    width: 2px;
+    background: #e3e3fd;
+  }
+}
+
+.flow__index {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #000091;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.flow__body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 3px;
+}
+
+.flow__name {
+  font-weight: 600;
+}
+
+.flow__text {
+  color: #595959;
+  font-size: 13px;
+}
+
+.about__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
+  }
+
+  th {
+    color: #595959;
+    font-weight: 600;
+    background: #fafafa;
+  }
+
+  code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: #f0f2f5;
+    font-size: 12.5px;
+  }
+}
+
+.about__sub {
+  display: block;
+  color: #767676;
+  font-size: 12px;
+}
+
+.about__actions {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.about__saved {
+  flex-basis: 100%;
+  font-size: 12.5px;
+}
+
+.about__version {
+  margin: 0;
+  color: #767676;
+  font-size: 12px;
+  text-align: right;
+}

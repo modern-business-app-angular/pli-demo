@@ -1,0 +1,571 @@
+@import 'styles/tokens';
+
+// ============================================================
+// Nouveau courrier entrant — form wizard
+// Design system: Bleu France #000091, 15px base, 48px targets
+// ============================================================
+
+:host {
+  display: block;
+}
+
+// ── Page shell ────────────────────────────────────────────────
+.cen-page {
+  padding: $space-6;
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+// ── Page header ───────────────────────────────────────────────
+.cen-header {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  padding-bottom: $space-4;
+  border-bottom: 2px solid $color-brand-500;  // Bleu France accent
+}
+
+.cen-header__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 $space-3;
+  background: transparent;
+  border: 1px solid $color-neutral-300;
+  border-radius: $radius-base;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  text-decoration: none;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $color-neutral-100;
+    color: $color-text-primary;
+    border-color: $color-neutral-400;
+  }
+
+  svg { flex-shrink: 0; }
+}
+
+.cen-header__title {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;        // #141414 — 17:1 ✓
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.cen-header__step-label {
+  margin-left: auto;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;      // #595959 — 7:1 ✓
+  font-weight: $font-weight-medium;
+}
+
+// ── Step progress bar ─────────────────────────────────────────
+// Custom horizontal step rail — replaces nz-steps default styling
+.cen-steps-rail {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  background: $surface-card;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-lg;
+  padding: $space-4 $space-5;
+  overflow: hidden;
+}
+
+.cen-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+  cursor: default;
+
+  // Connecting line between steps
+  &:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: calc(50% + 20px);
+    right: calc(-50% + 20px);
+    height: 2px;
+    background: $color-neutral-200;
+    z-index: 0;
+    transition: background $transition-base;
+  }
+
+  &--done:not(:last-child)::after {
+    background: $color-brand-500;    // Bleu France connecting line when done
+  }
+}
+
+.cen-step__circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  border: 2px solid $color-neutral-200;
+  background: $surface-card;
+  color: $color-neutral-500;
+  z-index: 1;
+  transition: all $transition-base;
+
+  .cen-step--done & {
+    background: $color-brand-500;
+    border-color: $color-brand-500;
+    color: #fff;
+  }
+
+  .cen-step--active & {
+    background: $surface-card;
+    border-color: $color-brand-500;
+    color: $color-brand-500;
+    font-weight: $font-weight-bold;
+    box-shadow: 0 0 0 4px rgba(0, 0, 145, 0.10);
+  }
+}
+
+.cen-step__check {
+  width: 16px;
+  height: 16px;
+}
+
+.cen-step__label {
+  font-size: 12px;
+  font-weight: $font-weight-medium;
+  color: $color-neutral-500;
+  text-align: center;
+  white-space: nowrap;
+  transition: color $transition-base;
+
+  .cen-step--done & {
+    color: $color-brand-500;
+  }
+
+  .cen-step--active & {
+    color: $color-text-primary;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ── Form card ─────────────────────────────────────────────────
+.cen-card {
+  background: $surface-card;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-lg;
+  padding: $space-8 $space-8 $space-6;
+  box-shadow: $shadow-sm;
+}
+
+// ── Form layout ───────────────────────────────────────────────
+.cen-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  // NZ-ZORRO label overrides — force accessible color + 15px
+  ::ng-deep .ant-form-item-label > label {
+    font-size: $font-size-base;      // 15px
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;      // #141414 — 17:1 ✓
+    height: auto;
+    padding-bottom: 4px;
+  }
+
+  ::ng-deep .ant-form-item-explain-error {
+    font-size: $font-size-sm;
+    color: $color-error-dark;        // #c62828 — accessible red ✓
+  }
+
+  ::ng-deep .ant-form-item {
+    margin-bottom: $space-5;
+  }
+}
+
+.cen-section-title {
+  font-size: $font-size-lg;          // 17px
+  font-weight: $font-weight-semibold;
+  color: $color-text-primary;        // #141414 ✓
+  margin: 0 0 $space-5;
+  padding-bottom: $space-3;
+  border-bottom: 1px solid $color-neutral-200;
+}
+
+.cen-section-divider {
+  margin: $space-2 0 $space-4;
+  border: none;
+  border-top: 1px solid $color-neutral-100;
+}
+
+.cen-subsection-label {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $color-text-secondary;      // #595959 — 7:1 ✓
+  margin: $space-3 0 $space-3;
+
+  &__opt {
+    font-weight: $font-weight-regular;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+}
+
+.cen-hint {
+  font-size: $font-size-base;        // 15px
+  color: $color-text-secondary;      // #595959 — 7:1 ✓
+  margin-bottom: $space-5;
+  line-height: $line-height-relaxed;
+}
+
+.cen-row {
+  display: flex;
+  gap: $space-4;
+
+  ::ng-deep nz-form-item {
+    margin-bottom: $space-5;
+  }
+}
+
+.cen-col-2 { flex: 2; min-width: 0; }
+.cen-col-1 { flex: 1; min-width: 0; }
+
+// Full-width controls
+.cen-full { width: 100%; }
+
+// ── Source toggle (typeahead vs manual) ───────────────────────
+.cen-switcher {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-5;
+  font-size: $font-size-base;        // 15px ✓
+  color: $color-text-secondary;
+
+  .cen-switcher__label {
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+}
+
+// ── Tags / mots-clés ──────────────────────────────────────────
+.cen-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: $touch-target-min;
+  padding: 6px 0;
+
+  &__input {
+    width: 130px;
+    height: 32px;
+  }
+}
+
+.cen-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: $color-brand-50;       // #e3e3fd light blue
+  color: $color-brand-700;           // #000063 — 12:1 ✓
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-medium;
+  cursor: default;
+}
+
+.cen-tag__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: $color-brand-700;
+  padding: 0;
+  line-height: 1;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba(0, 0, 145, 0.15);
+  }
+}
+
+.cen-tag-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  height: 28px;
+  background: transparent;
+  border: 1px dashed $color-neutral-300;
+  border-radius: $radius-full;
+  cursor: pointer;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &:hover {
+    border-color: $color-brand-400;
+    color: $color-brand-500;
+    background: $color-brand-50;
+  }
+}
+
+// ── Triplet option in select ──────────────────────────────────
+.cen-triplet-option {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0;
+
+  &__name {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  &__detail {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;    // #595959 — 7:1 ✓ (was #8c8c8c, too low)
+  }
+}
+
+// ── Character counter ─────────────────────────────────────────
+.cen-char-count {
+  font-size: $font-size-sm;          // 13px (was 11px — too small)
+  color: $color-text-secondary;      // #595959 — 7:1 ✓
+  font-weight: $font-weight-regular;
+  margin-left: 6px;
+}
+
+.cen-char-count--warn {
+  color: $color-warning-dark;        // accessible amber
+  font-weight: $font-weight-semibold;
+}
+
+// ── Favori row ────────────────────────────────────────────────
+.cen-favori-row {
+  margin-bottom: $space-5;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+}
+
+// ── Upload type selector ───────────────────────────────────────
+.cen-upload-type-row {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  margin-bottom: $space-4;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+}
+
+// ── Upload zone ───────────────────────────────────────────────
+.cen-upload-zone {
+  ::ng-deep .ant-upload.ant-upload-drag {
+    border: 2px dashed $color-brand-300;
+    border-radius: $radius-md;
+    background: $color-brand-50;
+    transition: all $transition-base;
+
+    &:hover {
+      border-color: $color-brand-500;
+      background: darken($color-brand-50, 2%);
+    }
+  }
+
+  ::ng-deep .ant-upload-drag-icon .anticon {
+    color: $color-brand-500;
+    font-size: 40px;
+  }
+
+  ::ng-deep .ant-upload-text {
+    font-size: $font-size-base;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+  }
+
+  ::ng-deep .ant-upload-hint {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Error alert ───────────────────────────────────────────────
+.cen-error {
+  margin-top: $space-4;
+  border-radius: $radius-base;
+  border: 1px solid lighten($color-error, 30%);
+  background: $color-error-light;
+  padding: $space-3 $space-4;
+  display: flex;
+  align-items: flex-start;
+  gap: $space-3;
+  font-size: $font-size-base;
+  color: $color-error-dark;         // #c62828 — 6.2:1 on white ✓
+}
+
+// ── Footer navigation ─────────────────────────────────────────
+.cen-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: $space-5;
+  border-top: 1px solid $color-neutral-100;
+  margin-top: $space-2;
+}
+
+.cen-footer__step-info {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+}
+
+.cen-footer__actions {
+  display: flex;
+  gap: $space-3;
+  align-items: center;
+}
+
+// Prev button — secondary style
+.cen-btn-prev {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: $touch-target;             // 48px
+  padding: 0 $space-5;
+  background: transparent;
+  border: 1px solid $color-neutral-300;
+  border-radius: $radius-base;
+  cursor: pointer;
+  font-size: $font-size-base;
+  font-weight: $font-weight-medium;
+  color: $color-text-secondary;
+  transition: all $transition-fast;
+
+  &:hover {
+    background: $color-neutral-100;
+    color: $color-text-primary;
+    border-color: $color-neutral-400;
+  }
+}
+
+// Next / Submit button — Bleu France primary
+.cen-btn-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: $touch-target;             // 48px
+  padding: 0 $space-6;
+  background: $color-brand-500;      // #000091 Bleu France
+  border: none;
+  border-radius: $radius-base;
+  cursor: pointer;
+  font-size: $font-size-base;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+  transition: background $transition-fast, box-shadow $transition-fast;
+
+  &:hover {
+    background: $color-brand-600;
+    box-shadow: $shadow-md;
+  }
+
+  &:focus-visible {
+    outline: 3px solid $color-brand-500;
+    outline-offset: 2px;
+  }
+
+  &:disabled, &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// Submit button (last step) — slightly larger
+.cen-btn-submit {
+  @extend .cen-btn-next;
+  padding: 0 $space-8;
+
+  ::ng-deep .anticon {
+    font-size: 16px;
+  }
+}
+
+// ── Success screen ────────────────────────────────────────────
+.cen-success {
+  background: $surface-card;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-lg;
+  padding: $space-12 $space-8;
+  text-align: center;
+  box-shadow: $shadow-sm;
+}
+
+.cen-success__icon {
+  width: 64px;
+  height: 64px;
+  background: $badge-done-bg;        // #dffae5
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto $space-5;
+  color: $badge-done-text;           // #0d4a22
+}
+
+.cen-success__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-bold;
+  color: $color-text-primary;
+  margin: 0 0 $space-2;
+}
+
+.cen-success__chrono {
+  font-family: $font-family-mono;
+  font-size: $font-size-xl;
+  font-weight: $font-weight-bold;
+  color: $color-brand-500;
+  letter-spacing: 0.04em;
+}
+
+.cen-success__sub {
+  font-size: $font-size-base;
+  color: $color-text-secondary;
+  margin: $space-2 0 $space-8;
+}
+
+.cen-success__actions {
+  display: flex;
+  justify-content: center;
+  gap: $space-3;
+}
+
+.cen-success__btn-primary {
+  @extend .cen-btn-next;
+}
+
+.cen-success__btn-secondary {
+  @extend .cen-btn-prev;
+}

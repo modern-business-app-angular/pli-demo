@@ -1,0 +1,330 @@
+<div class="dmd-page">
+
+  <!-- ── Top bar ─────────────────────────────────────────────── -->
+  <div class="dmd-topbar">
+    <button nz-button nzType="text" class="dmd-back-btn" (click)="goBack()">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Retour à la boîte de réception
+    </button>
+
+    <div class="dmd-nav">
+      <button
+        nz-button nzType="text" nzSize="small"
+        [disabled]="!hasPrev()"
+        nz-tooltip nzTooltipTitle="Demande précédente"
+        (click)="goToPrev()"
+      >
+        <span nz-icon nzType="left" nzTheme="outline"></span>
+        Précédent
+      </button>
+      <button
+        nz-button nzType="text" nzSize="small"
+        [disabled]="!hasNext()"
+        nz-tooltip nzTooltipTitle="Demande suivante"
+        (click)="goToNext()"
+      >
+        Suivant
+        <span nz-icon nzType="right" nzTheme="outline"></span>
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="dmd-loading">
+      <nz-spin nzSize="large" nzTip="Chargement…"></nz-spin>
+    </div>
+  } @else if (demande(); as dem) {
+    <div class="dmd-layout">
+
+      <!-- ── Email viewer ─────────────────────────────────────── -->
+      <main class="dmd-viewer">
+        <div class="dmd-email-card">
+          <!-- Subject -->
+          <h2 class="dmd-subject">{{ dem.objet }}</h2>
+
+          <!-- Meta row -->
+          <div class="dmd-meta-row">
+            <div class="dmd-meta-item">
+              <span class="dmd-meta-label">De</span>
+              <span class="dmd-meta-value">
+                {{ dem.emetteurNom ?? dem.emetteur }}
+                @if (dem.emetteurNom) {
+                  <span class="dmd-meta-email">&lt;{{ dem.emetteur }}&gt;</span>
+                }
+              </span>
+            </div>
+            <div class="dmd-meta-item">
+              <span class="dmd-meta-label">À</span>
+              <span class="dmd-meta-value">{{ dem.destinataire }}</span>
+            </div>
+            <div class="dmd-meta-item">
+              <span class="dmd-meta-label">Le</span>
+              <span class="dmd-meta-value">{{ dem.dateReception | date:'dd MMMM yyyy à HH:mm':'':'fr' }}</span>
+            </div>
+            <div class="dmd-meta-item">
+              <nz-tag [nzColor]="typeColor(dem.type)">
+                <span nz-icon [nzType]="typeIcon(dem.type)" nzTheme="outline"></span>
+                {{ typeLabel(dem.type) }}
+              </nz-tag>
+            </div>
+          </div>
+
+          <div class="dmd-divider"></div>
+
+          <!-- Body -->
+          <div class="dmd-body" [innerHTML]="dem.corps"></div>
+
+          <!-- Reply preview -->
+          @if (dem.reponse) {
+            <div class="dmd-reply-preview">
+              <div class="dmd-reply-preview__header">
+                <span nz-icon nzType="send" nzTheme="outline"></span>
+                Réponse envoyée le {{ dem.reponse.date | date:'dd/MM/yyyy HH:mm' }} par {{ dem.reponse.par }}
+              </div>
+              <div class="dmd-reply-preview__body">{{ dem.reponse.corps }}</div>
+            </div>
+          }
+        </div>
+      </main>
+
+      <!-- ── Sidebar ──────────────────────────────────────────── -->
+      <aside class="dmd-sidebar">
+
+        <!-- Statut -->
+        <div class="dmd-sidebar-card">
+          <div class="dmd-sidebar-card__title">Statut</div>
+          <span
+            class="dmd-statut-badge"
+            [class.dmd-statut-badge--nouveau]="dem.statut === 'nouveau'"
+            [class.dmd-statut-badge--en-cours]="dem.statut === 'en_cours'"
+            [class.dmd-statut-badge--traite]="dem.statut === 'traite'"
+          >
+            {{ statutLabel(dem.statut) }}
+          </span>
+        </div>
+
+        <!-- Actions -->
+        <div class="dmd-sidebar-card">
+          <div class="dmd-sidebar-card__title">Actions</div>
+          <div class="dmd-sidebar-actions">
+            @if (dem.statut !== 'traite') {
+              <button
+                nz-button nzType="primary" nzBlock
+                (click)="openTraiter()"
+                [nzLoading]="store.isSaving()"
+              >
+                <span nz-icon nzType="check-square" nzTheme="outline"></span>
+                Traiter
+              </button>
+            }
+            <button
+              nz-button nzType="default" nzBlock
+              (click)="openRepondre()"
+              [nzLoading]="store.isSaving()"
+            >
+              <span nz-icon nzType="mail" nzTheme="outline"></span>
+              Répondre
+            </button>
+          </div>
+        </div>
+
+        <!-- Élément lié -->
+        @if (dem.elementRef) {
+          <div class="dmd-sidebar-card">
+            <div class="dmd-sidebar-card__title">Élément créé</div>
+            <div class="dmd-element-ref">
+              <span nz-icon nzType="link" nzTheme="outline"></span>
+              <span class="dmd-element-ref__code">{{ dem.elementRef }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Réponse info -->
+        @if (dem.reponse) {
+          <div class="dmd-sidebar-card">
+            <div class="dmd-sidebar-card__title">Réponse envoyée</div>
+            <div class="dmd-reponse-info">
+              <div class="dmd-reponse-info__row">
+                <span class="dmd-reponse-info__label">Par</span>
+                <span>{{ dem.reponse.par }}</span>
+              </div>
+              <div class="dmd-reponse-info__row">
+                <span class="dmd-reponse-info__label">Le</span>
+                <span>{{ dem.reponse.date | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+      </aside>
+    </div>
+  }
+
+  <!-- ── Traiter drawer ──────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="traiterDrawerVisible()"
+    nzTitle="Traiter la demande"
+    nzPlacement="right"
+    [nzWidth]="720"
+    [nzClosable]="true"
+    [nzFooter]="traiterFooter"
+    (nzOnClose)="closeTraiter()"
+  >
+    <ng-container *nzDrawerContent>
+      @if (demande(); as dem) {
+        <div class="dem-drawer-form" [formGroup]="traiterForm">
+
+          <div class="dem-section-head">
+            <span nz-icon nzType="mail" nzTheme="outline"></span>
+            Identité de la demande
+          </div>
+          <div class="dem-demande-preview">
+            <div class="dem-preview-row">
+              <span class="dem-preview-label">De</span>
+              <span class="dem-preview-value">{{ dem.emetteurNom ?? dem.emetteur }}</span>
+            </div>
+            <div class="dem-preview-row">
+              <span class="dem-preview-label">Objet</span>
+              <span class="dem-preview-value dem-preview-value--objet">{{ dem.objet }}</span>
+            </div>
+          </div>
+
+          <div class="dem-section-head dem-section-head--convert">
+            <span nz-icon nzType="apartment" nzTheme="outline"></span>
+            Convertir en Élément
+          </div>
+
+          <div class="dem-grid-2">
+            <nz-form-item>
+              <nz-form-label nzRequired>Nature</nz-form-label>
+              <nz-form-control nzErrorTip="Requis">
+                <nz-select formControlName="nature" nzPlaceholder="Choisir une nature…" class="dem-full">
+                  @for (n of natures; track n) {
+                    <nz-option [nzValue]="n" [nzLabel]="n"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label nzRequired>Service destinataire</nz-form-label>
+              <nz-form-control nzErrorTip="Requis">
+                <nz-select formControlName="service" nzPlaceholder="Choisir un service…" class="dem-full">
+                  @for (s of services; track s) {
+                    <nz-option [nzValue]="s" [nzLabel]="s"></nz-option>
+                  }
+                </nz-select>
+              </nz-form-control>
+            </nz-form-item>
+          </div>
+
+          <nz-form-item>
+            <nz-form-label nzRequired>Priorité</nz-form-label>
+          </nz-form-item>
+          <div class="dem-priorite-cards">
+            @for (p of priorites; track p.value) {
+              <label
+                class="dem-priorite-card"
+                [class.dem-priorite-card--active]="traiterForm.get('priorite')?.value === p.value"
+                [class.dem-priorite-card--urgente]="p.value === 'urgente'"
+                [class.dem-priorite-card--bloquante]="p.value === 'bloquante'"
+              >
+                <input type="radio" formControlName="priorite" [value]="p.value" class="dem-vis-radio" />
+                <span nz-icon [nzType]="p.icon" nzTheme="outline" class="dem-priorite-card__icon"></span>
+                <span class="dem-priorite-card__label">{{ p.label }}</span>
+                <span class="dem-priorite-card__desc">{{ p.desc }}</span>
+              </label>
+            }
+          </div>
+
+          <nz-form-item>
+            <nz-form-label>Commentaire interne</nz-form-label>
+            <nz-form-control>
+              <textarea
+                nz-input
+                formControlName="commentaire"
+                placeholder="Notes pour le service destinataire…"
+                [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      }
+    </ng-container>
+    <ng-template #traiterFooter>
+      <div class="dem-drawer-footer">
+        <button nz-button nzType="default" (click)="closeTraiter()">Annuler</button>
+        <button
+          nz-button nzType="primary"
+          [nzLoading]="store.isSaving()"
+          [disabled]="traiterForm.invalid"
+          (click)="confirmTraiter()"
+        >
+          <span nz-icon nzType="check" nzTheme="outline"></span>
+          Confirmer
+        </button>
+      </div>
+    </ng-template>
+  </nz-drawer>
+
+  <!-- ── Répondre drawer ─────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="repondreDrawerVisible()"
+    nzTitle="Répondre par e-mail"
+    nzPlacement="right"
+    [nzWidth]="720"
+    [nzClosable]="true"
+    [nzFooter]="repondreFooter"
+    (nzOnClose)="closeRepondre()"
+  >
+    <ng-container *nzDrawerContent>
+      @if (demande(); as dem) {
+        <div class="dem-drawer-form" [formGroup]="repondreForm">
+          <div class="dem-reply-header">
+            <div class="dem-reply-meta">
+              <div class="dem-reply-meta-row">
+                <span class="dem-reply-meta-label">De</span>
+                <span class="dem-reply-meta-value">mairie&#64;accueil.fr</span>
+              </div>
+              <div class="dem-reply-meta-row">
+                <span class="dem-reply-meta-label">À</span>
+                <span class="dem-reply-meta-value">{{ dem.emetteur }}</span>
+              </div>
+              <div class="dem-reply-meta-row">
+                <span class="dem-reply-meta-label">Objet</span>
+                <span class="dem-reply-meta-value">RE: {{ dem.objet }}</span>
+              </div>
+            </div>
+          </div>
+
+          <nz-form-item>
+            <nz-form-label nzRequired>Votre réponse</nz-form-label>
+            <nz-form-control nzErrorTip="La réponse doit contenir au moins 10 caractères">
+              <textarea
+                nz-input
+                formControlName="corps"
+                placeholder="Madame, Monsieur,&#10;&#10;En réponse à votre message…"
+                [nzAutosize]="{ minRows: 10, maxRows: 20 }"
+              ></textarea>
+            </nz-form-control>
+          </nz-form-item>
+          <div class="dem-char-count">{{ repondreForm.get('corps')?.value?.length ?? 0 }} caractères</div>
+        </div>
+      }
+    </ng-container>
+    <ng-template #repondreFooter>
+      <div class="dem-drawer-footer">
+        <button nz-button nzType="default" (click)="closeRepondre()">Annuler</button>
+        <button
+          nz-button nzType="primary"
+          [nzLoading]="store.isSaving()"
+          [disabled]="repondreForm.invalid"
+          (click)="sendReponse()"
+        >
+          <span nz-icon nzType="send" nzTheme="outline"></span>
+          Envoyer
+        </button>
+      </div>
+    </ng-template>
+  </nz-drawer>
+
+</div>

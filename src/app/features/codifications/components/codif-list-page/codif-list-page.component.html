@@ -1,0 +1,184 @@
+<div class="cdf-page">
+
+  <!-- ── Header ────────────────────────────────────────────── -->
+  <header class="cdf-header">
+    <h2 class="cdf-header__title">{{ config.title }}</h2>
+    <div class="cdf-header__actions">
+      <input
+        nz-input
+        class="cdf-search"
+        placeholder="Rechercher…"
+        [(ngModel)]="searchModel"
+        (ngModelChange)="onSearch($event)"
+        [attr.aria-label]="'Rechercher dans ' + config.title" />
+
+      @if (config.canAdd) {
+        <button nz-button nzType="primary" (click)="openAdd()">
+          <svg class="cdf-btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Ajouter
+        </button>
+      }
+    </div>
+  </header>
+
+  <!-- ── Table ──────────────────────────────────────────────── -->
+  <nz-table
+    class="cdf-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        @for (col of config.columns; track col.field) {
+          <th
+            [nzWidth]="col.width ?? ''"
+            [nzSortFn]="col.sortable ? true : null">
+            {{ col.header }}
+          </th>
+        }
+        @if (config.canEdit || config.canDelete) {
+          <th nzWidth="110px">Actions</th>
+        }
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of items(); track getItemId(item)) {
+        <tr class="cdf-row">
+          @for (col of config.columns; track col.field) {
+            <td>
+              @if (col.type === 'boolean') {
+                @if ($any(item)[col.field]) {
+                  <nz-tag nzColor="success">Oui</nz-tag>
+                } @else {
+                  <nz-tag>Non</nz-tag>
+                }
+              } @else {
+                {{ getCellValue(item, col) }}
+              }
+            </td>
+          }
+          @if (config.canEdit || config.canDelete) {
+            <td class="cdf-actions">
+              @if (config.canEdit) {
+                <button
+                  nz-button
+                  nzSize="small"
+                  nzType="default"
+                  (click)="openEdit($any(item))"
+                  aria-label="Modifier"
+                  title="Modifier">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                </button>
+              }
+              @if (config.canDelete) {
+                <button
+                  nz-button
+                  nzSize="small"
+                  nzDanger
+                  nz-popconfirm
+                  nzPopconfirmTitle="Supprimer cet élément ?"
+                  nzOkText="Supprimer"
+                  nzCancelText="Annuler"
+                  (nzOnConfirm)="confirmDelete(getItemId(item))"
+                  aria-label="Supprimer"
+                  title="Supprimer">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                </button>
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+  <!-- ── Add / Edit modal ───────────────────────────────────── -->
+  <nz-modal
+    [(nzVisible)]="modalVisibleModel"
+    [nzTitle]="editingItem() ? 'Modifier — ' + config.title : 'Ajouter — ' + config.title"
+    [nzOkText]="editingItem() ? 'Enregistrer' : 'Ajouter'"
+    nzCancelText="Annuler"
+    [nzOkLoading]="isSaving()"
+    (nzOnOk)="saveModal()"
+    (nzOnCancel)="modalVisible.set(false)"
+    nzWidth="520px">
+
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="form" nzLayout="vertical">
+        @for (field of config.formFields; track field.name) {
+
+          <nz-form-item>
+            <nz-form-label [nzRequired]="field.required ?? false">{{ field.label }}</nz-form-label>
+            <nz-form-control
+              [nzErrorTip]="field.required ? field.label + ' est obligatoire' : 'Valeur invalide'">
+
+              @switch (field.type) {
+
+                @case ('text') {
+                  <input
+                    nz-input
+                    [formControlName]="field.name"
+                    [maxlength]="field.maxLength ?? 9999"
+                    [placeholder]="field.label + '…'" />
+                }
+
+                @case ('textarea') {
+                  <textarea
+                    nz-input
+                    [formControlName]="field.name"
+                    [maxlength]="field.maxLength ?? 9999"
+                    [nzAutosize]="{ minRows: 3, maxRows: 6 }">
+                  </textarea>
+                }
+
+                @case ('number') {
+                  <nz-input-number
+                    [formControlName]="field.name"
+                    class="cdf-full"
+                    nzMin="0" />
+                }
+
+                @case ('date') {
+                  <nz-date-picker
+                    [formControlName]="field.name"
+                    nzFormat="dd/MM/yyyy"
+                    class="cdf-full" />
+                }
+
+                @case ('select') {
+                  <nz-select
+                    [formControlName]="field.name"
+                    [nzPlaceHolder]="'Sélectionner…'"
+                    [nzAllowClear]="!field.required"
+                    nzShowSearch
+                    class="cdf-full">
+                    @for (opt of getFieldOptions(field); track opt.value) {
+                      <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+                    }
+                  </nz-select>
+                }
+
+                @case ('checkbox') {
+                  <label nz-checkbox [formControlName]="field.name">{{ field.label }}</label>
+                }
+
+                @case ('switch') {
+                  <nz-switch [formControlName]="field.name" />
+                }
+
+              }
+            </nz-form-control>
+          </nz-form-item>
+
+        }
+      </form>
+    </ng-container>
+  </nz-modal>
+
+</div>

@@ -1,0 +1,110 @@
+@import 'styles/tokens';
+
+:host {
+  display: block;
+  position: sticky;
+  top: 0;
+  z-index: $z-sticky;
+}
+
+// ── Top bar container ─────────────────────────────────────────
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;   // WCAG 2.5.5 — touch target height for action buttons
+  padding: 0 24px;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+
+// ── Breadcrumb trail ──────────────────────────────────────────
+.topbar__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.topbar__sep {
+  margin: 0 6px;
+  font-size: $font-size-sm;
+  color: $color-neutral-400;  // decorative separator — not body text
+  flex-shrink: 0;
+}
+
+.topbar__crumb {
+  font-size: $font-size-sm;  // 13px — readable minimum
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+
+  &--link {
+    color: $color-text-secondary;    // #595959 — 7:1 on white ✓
+    text-decoration: none;
+    transition: color $transition-fast;
+
+    &:hover {
+      color: $color-brand-500;       // #000091 Bleu France
+    }
+  }
+
+  &--current {
+    color: $color-text-primary;      // #141414 — 17:1 on white ✓
+    font-weight: $font-weight-medium;
+  }
+}
+
+// ── Right action buttons ──────────────────────────────────────
+.topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.topbar__btn {
+  position: relative;
+  width: 40px;   // close to 44px min — topbar is 40px total height
+  height: 36px;  // visually 36px, but parent is 40px (full topbar height)
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: $radius-base;
+  cursor: pointer;
+  color: $color-text-secondary;    // #595959 — 7:1 on white ✓
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: $color-neutral-100;
+    color: $color-text-primary;    // #141414
+  }
+}
+
+.topbar__btn-icon {
+  flex-shrink: 0;
+}
+
+.topbar__badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: $color-error;
+  color: #fff;
+  font-size: 9px;
+  font-weight: $font-weight-bold;
+  border-radius: $radius-full;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+}

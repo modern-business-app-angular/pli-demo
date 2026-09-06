@@ -1,0 +1,61 @@
+# Build output
+/dist
+/out-tsc
+/.angular
+/coverage
+/test-output
+/tmp
+
+# Dependencies
+/node_modules
+npm-debug.log*
+yarn-error.log*
+
+# Playwright
+/test-results
+/playwright-report
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Local environment
+.env
+.env.*
+
+# AI / agent tooling — never committed
+CLAUDE.md
+.claude.md
+AGENTS.md
+GEMINI.md
+.claude/
+.codex/
+.cursor/
+.gemini/
+.opencode/
+opencode.json
+.agents/
+.github/instructions/
+.github/copilot-instructions.md
+.aider*
+.windsurf*
+.windsurfrules
+.continue/
+.mcp.json
+.clinerules
+.roo/

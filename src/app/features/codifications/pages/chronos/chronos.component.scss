@@ -1,0 +1,541 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.chr-page { @include page-root; }
+
+// ── Header ────────────────────────────────────────────────────
+.chr-header {
+  @include page-header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &__left {
+    display: flex;
+    align-items: baseline;
+    gap: $space-3;
+  }
+
+  &__title { @include page-title; }
+
+  &__count {
+    font-size: $font-size-sm;
+    color: $color-neutral-400;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+}
+
+.chr-search { width: 240px; }
+
+// ── Table card ────────────────────────────────────────────────
+.chr-table {
+  @include table-card;
+
+  ::ng-deep {
+    @include table-ng-deep;
+    .ant-table-tbody > tr > td { padding: 12px 16px; }
+    .ant-table-tbody > tr      { cursor: pointer; }
+  }
+}
+
+.chr-cell-nom {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  flex-wrap: wrap;
+
+  &__lib {
+    font-size: 13.5px;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+  }
+}
+
+.chr-type-badge { font-size: 10px; font-weight: $font-weight-semibold; }
+.chr-badge      { font-size: 11px; font-weight: $font-weight-semibold; border-radius: $radius-full; }
+
+.chr-preview-pill {
+  display: inline-block;
+  font-family: $font-family-mono;
+  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  background: $color-neutral-100;
+  color: $color-text-primary;
+  border-radius: $radius-base;
+  padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+
+.chr-cell-mono      { font-family: $font-family-mono; font-size: 13px; color: $color-brand-600; }
+.chr-cell-secondary { font-size: $font-size-sm; color: $color-text-secondary; }
+
+.chr-actions {
+  display: flex;
+  gap: $space-1;
+  align-items: center;
+  white-space: nowrap;
+}
+.chr-actions ::ng-deep button.ant-btn-sm { @include action-btn-square; }
+
+// ── Drawer ────────────────────────────────────────────────────
+.chr-form { padding-bottom: $space-8; }
+
+.chr-drawer-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-2;
+}
+
+// ════════════════════════════════════════════════════════════
+// LIVE FORMAT PREVIEW — SIGNATURE ELEMENT
+// ════════════════════════════════════════════════════════════
+.chr-format-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-4;
+  padding: $space-5 $space-6;
+  background: linear-gradient(135deg, rgba(0, 0, 145, 0.03) 0%, #fff 65%);
+  border: 1px solid rgba(0, 0, 145, 0.1);
+  border-radius: $radius-lg;
+  margin-bottom: $space-5;
+  position: relative;
+  overflow: hidden;
+
+  // Decorative background arc
+  &::after {
+    content: '';
+    position: absolute;
+    right: -50px;
+    top: -50px;
+    width: 140px;
+    height: 140px;
+    border-radius: $radius-full;
+    background: rgba(0, 0, 145, 0.03);
+    pointer-events: none;
+  }
+
+  &__left {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    min-width: 0;
+  }
+
+  &__label {
+    font-size: 10px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: $color-neutral-400;
+  }
+
+  &__tokens {
+    display: flex;
+    align-items: center;
+    gap: $space-1;
+    flex-wrap: wrap;
+  }
+
+  &__right {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  &__nom {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: $color-text-primary;
+    line-height: 1.2;
+    margin-bottom: $space-1;
+  }
+}
+
+// ── Chrono tokens (the assembled number display) ──────────────
+.chr-token {
+  font-family: $font-family-mono;
+  font-size: 20px;
+  font-weight: $font-weight-bold;
+  border-radius: $radius-md;
+  padding: 6px 12px;
+  line-height: 1;
+  transition: all $transition-base;
+
+  &--prefix {
+    background: $color-brand-50;
+    color: $color-brand-700;
+    border: 1px solid $color-brand-200;
+  }
+
+  &--year {
+    background: $color-neutral-100;
+    color: $color-text-primary;
+    border: 1px solid $color-neutral-200;
+  }
+
+  &--num {
+    background: #fff;
+    color: $color-text-primary;
+    border: 1px solid $color-neutral-300;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+  }
+
+  &--suffix {
+    background: $color-brand-50;
+    color: $color-brand-700;
+    border: 1px solid $color-brand-200;
+  }
+
+  &--sep {
+    font-size: 18px;
+    color: $color-neutral-400;
+    padding: 0 4px;
+    background: none;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+// TABS LAYOUT
+// ════════════════════════════════════════════════════════════
+.chr-tabs, ::ng-deep nz-tabs.chr-tabs {
+  ::ng-deep .ant-tabs-nav {
+    margin-bottom: 0;
+
+    .ant-tabs-tab {
+      font-size: $font-size-sm;
+      color: $color-text-secondary;
+      padding: 10px $space-3;
+      gap: 6px;
+
+      .anticon { font-size: 13px; }
+    }
+
+    .ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: $color-brand-600;
+      font-weight: $font-weight-semibold;
+    }
+
+    .ant-tabs-ink-bar { background: $color-brand-500; }
+  }
+
+  ::ng-deep .ant-tabs-content-holder {
+    border-top: 1px solid $color-neutral-100;
+  }
+}
+
+.chr-tab-body {
+  padding: $space-5 0 $space-8;
+}
+
+// ── Grid layouts ──────────────────────────────────────────────
+.chr-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.chr-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 $space-4;
+}
+
+.chr-full { width: 100%; }
+
+// ── Format builder panel ──────────────────────────────────────
+.chr-format-builder {
+  padding: $space-4;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+  margin-bottom: $space-4;
+
+  &__title {
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $color-text-secondary;
+    margin-bottom: $space-3;
+  }
+}
+
+// ── Digits panel ──────────────────────────────────────────────
+.chr-digits-panel {
+  padding: $space-4;
+  background: $color-neutral-50;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: $space-4;
+    padding: $space-2 0;
+
+    & + & { border-top: 1px solid $color-neutral-100; }
+  }
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    width: 160px;
+    flex-shrink: 0;
+  }
+}
+
+// ── Inline radio ──────────────────────────────────────────────
+.chr-radio-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $space-1 $space-4;
+
+  ::ng-deep .ant-radio-wrapper {
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+
+    em {
+      font-style: normal;
+      font-family: $font-family-mono;
+      font-size: 11px;
+      color: $color-neutral-500;
+      margin-left: 3px;
+    }
+  }
+
+  ::ng-deep .ant-radio-wrapper-checked {
+    color: $color-brand-600;
+    font-weight: $font-weight-medium;
+  }
+}
+
+// ── Switch row ────────────────────────────────────────────────
+.chr-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-3 $space-4;
+  background: #fff;
+  border: 1px solid $color-neutral-200;
+  border-radius: $radius-md;
+  margin-top: $space-3;
+
+  &__label {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+
+    .anticon { color: $color-neutral-400; }
+  }
+}
+
+// ── Labels table grid ─────────────────────────────────────────
+.chr-labels-hint {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  margin-bottom: $space-4;
+}
+
+.chr-labels-grid {
+  display: grid;
+  grid-template-columns: 160px 1fr 56px;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+  overflow: hidden;
+  margin-bottom: $space-5;
+
+  // Header cells
+  &__hd {
+    padding: $space-2 $space-3;
+    background: $color-neutral-50;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: $color-text-secondary;
+    border-bottom: 1px solid $color-neutral-100;
+
+    &--center { text-align: center; }
+  }
+
+  // Field name cell
+  &__name {
+    display: flex;
+    align-items: center;
+    padding: $space-2 $space-3;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-primary;
+    border-bottom: 1px solid $color-neutral-100;
+    background: $color-neutral-50;
+
+    &:last-of-type { border-bottom: none; }
+  }
+
+  // Input cell
+  &__input {
+    padding: $space-2 $space-3 $space-2 0;
+    border-bottom: 1px solid $color-neutral-100;
+    margin-bottom: 0 !important;
+
+    ::ng-deep .ant-form-item-control-input { min-height: unset; }
+    ::ng-deep .ant-form-item { margin-bottom: 0; }
+  }
+
+  // Toggle cell
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid $color-neutral-100;
+    padding: $space-2;
+
+    &--center { justify-content: center; }
+  }
+
+  // Alternate row tint (every 2 data rows = 6 cells)
+  // Using CSS :nth-child is tricky with grid, rely on bg on name cell
+}
+
+// ── Sub-section (inside tabs) ─────────────────────────────────
+.chr-sub-section {
+  margin-top: $space-5;
+
+  &__title {
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $color-text-secondary;
+    margin-bottom: $space-3;
+    padding-bottom: $space-2;
+    border-bottom: 1px solid $color-neutral-100;
+  }
+}
+
+// ── Behaviour tab sections ────────────────────────────────────
+.chr-behav-section {
+  padding: $space-4;
+  background: #fff;
+  border: 1px solid $color-neutral-100;
+  border-radius: $radius-md;
+  margin-bottom: $space-3;
+
+  &__title {
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: $color-brand-500;
+    margin-bottom: $space-3;
+  }
+}
+
+.chr-behav-row {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+  margin-bottom: $space-3;
+
+  &__label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+    width: 80px;
+    flex-shrink: 0;
+  }
+}
+
+// ── Flags grid ────────────────────────────────────────────────
+.chr-flags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-2 $space-5;
+
+  ::ng-deep .ant-checkbox-wrapper { font-size: $font-size-sm; color: $color-text-secondary; }
+  ::ng-deep .ant-checkbox-wrapper-checked { color: $color-text-primary; font-weight: $font-weight-medium; }
+}
+
+.chr-flag-label { font-size: $font-size-sm; }
+
+// ── Advanced tab sections ──────────────────────────────────────
+.chr-adv-section {
+  margin-bottom: $space-5;
+
+  &__title {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-semibold;
+    color: $color-text-secondary;
+    margin-bottom: $space-3;
+    padding-bottom: $space-2;
+    border-bottom: 1px solid $color-neutral-100;
+
+    &--toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+
+      &:hover { color: $color-brand-500; }
+    }
+  }
+}
+
+.chr-chevron {
+  color: $color-neutral-400;
+  transition: transform $transition-fast;
+  flex-shrink: 0;
+
+  &--open { transform: rotate(180deg); }
+}
+
+// ── Field with toggle (advanced tab) ─────────────────────────
+.chr-field-with-toggle {
+  display: flex;
+  align-items: flex-end;
+  gap: $space-3;
+}
+
+.chr-field-toggle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-bottom: 9px;
+  flex-shrink: 0;
+}
+
+.chr-field-toggle-label {
+  font-size: 10px;
+  color: $color-text-secondary;
+  white-space: nowrap;
+}
+
+// ── NZ-ZORRO overrides inside drawer ─────────────────────────
+::ng-deep .ant-drawer-body {
+  .ant-form-item-label > label {
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    color: $color-text-secondary;
+  }
+
+  .ant-form-item { margin-bottom: $space-4; }
+
+  nz-select { width: 100%; }
+
+  nz-input-number { width: 100%; }
+}

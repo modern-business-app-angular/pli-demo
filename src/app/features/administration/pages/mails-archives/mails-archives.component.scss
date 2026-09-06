@@ -1,0 +1,131 @@
+@import 'styles/tokens';
+@import 'styles/patterns';
+
+:host { @include page-host; }
+
+.mar-page { @include page-root; }
+
+// ── Page header ───────────────────────────────────────────────
+.mar-header {
+  @include page-header;
+
+  &__title { @include page-title; }
+}
+
+// ── Filter card ───────────────────────────────────────────────
+.mar-filters {
+  flex-shrink: 0;
+  @include filter-card;
+}
+
+.mar-filters__row { @include filter-row; }
+
+.mar-filter-group {
+  @include filter-group;
+
+  &--grow { flex: 1; min-width: 200px; }
+}
+
+.mar-filter-label { @include filter-label; }
+
+.mar-filter-actions {
+  display: flex;
+  gap: $space-2;
+  align-self: flex-end;
+
+  ::ng-deep .ant-btn {
+    border-radius: $radius-base;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+  }
+}
+
+.mar-range-picker {
+  width: 240px;
+
+  ::ng-deep .ant-picker { @include input-border-override; }
+}
+
+.mar-select {
+  width: 180px;
+
+  ::ng-deep .ant-select-selector {
+    border-color: $color-neutral-300 !important;
+    border-radius: $radius-base !important;
+    font-size: $font-size-sm !important;
+  }
+}
+
+.mar-input {
+  width: 150px;
+
+  ::ng-deep .ant-input { @include input-border-override; }
+}
+
+// ── Table card ────────────────────────────────────────────────
+.mar-table {
+  @include table-card;
+
+  ::ng-deep { @include table-ng-deep; }
+}
+
+.mar-row {
+  font-size: $font-size-base;
+  transition: background $transition-fast;
+}
+
+// ── Cell styles ───────────────────────────────────────────────
+.mar-cell-objet {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13.5px;
+  font-weight: $font-weight-medium;
+  color: $color-text-primary;
+}
+
+.mar-cell-email {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.mar-cell-date {
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
+  white-space: nowrap;
+  font-family: $font-family-mono;
+  letter-spacing: 0.01em;
+}
+
+// Date suppression — error pill
+.mar-cell-deleted {
+  @include badge-error;
+  font-family: $font-family-mono;
+  gap: 4px;
+}
+
+.mar-cell-service {
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Origine tag override
+::ng-deep .ant-tag {
+  border-radius: $radius-sm;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  background: $color-neutral-100;
+  color: $color-text-secondary;
+  border: 1px solid $color-neutral-200;
+  padding: 2px 8px;
+}

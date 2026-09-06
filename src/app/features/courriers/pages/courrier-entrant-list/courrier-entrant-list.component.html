@@ -1,0 +1,201 @@
+<div class="cel-page" [formGroup]="filterForm">
+
+  <!-- ── Inline filter bar ──────────────────────────────────── -->
+  <div class="cel-bar">
+
+    <nz-input-group class="cel-bar__search" [nzPrefix]="searchPrefix">
+      <input
+        nz-input
+        formControlName="search"
+        placeholder="Rechercher par objet, référence, expéditeur..." />
+    </nz-input-group>
+    <ng-template #searchPrefix>
+      <span nz-icon nzType="search" class="cel-bar__search-icon"></span>
+    </ng-template>
+
+    <div class="cel-bar__filters">
+      <nz-select
+        formControlName="statut"
+        nzPlaceHolder="État"
+        [nzAllowClear]="true"
+        [nzSuffixIcon]="downIcon"
+        class="cel-bar__select"
+        (ngModelChange)="applyFilters()">
+        @for (opt of statutOptions; track opt.value) {
+          <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+        }
+      </nz-select>
+      <ng-template #downIcon><span nz-icon nzType="down"></span></ng-template>
+
+      <nz-range-picker
+        formControlName="dateRange"
+        nzFormat="dd/MM/yyyy"
+        [nzPlaceHolder]="['Période début', 'Période fin']"
+        class="cel-bar__range"
+        (ngModelChange)="applyFilters()" />
+
+      <nz-select
+        formControlName="chronoTypeId"
+        nzPlaceHolder="Type chrono"
+        [nzAllowClear]="true"
+        class="cel-bar__select"
+        (ngModelChange)="applyFilters()">
+        @for (ct of chronoTypes(); track ct.id) {
+          <nz-option [nzValue]="ct.id" [nzLabel]="ct.libelle" />
+        }
+      </nz-select>
+
+      @if (activeFilterCount() > 0) {
+        <button nz-button nzSize="small" type="button" (click)="clearFilters()" class="cel-bar__clear">
+          <span nz-icon nzType="close-circle"></span>
+          Réinitialiser
+        </button>
+      }
+    </div>
+
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────── -->
+  <nz-table
+    #table
+    class="cel-table"
+    [nzData]="store.items()"
+    [nzTotal]="store.total()"
+    [nzPageIndex]="store.page()"
+    [nzPageSize]="store.pageSize()"
+    [nzLoading]="store.isLoading()"
+    [nzFrontPagination]="false"
+    [nzShowSizeChanger]="true"
+    [nzPageSizeOptions]="[10, 20, 50]"
+    [nzShowTotal]="totalTpl"
+    nzTableLayout="fixed"
+    (nzPageIndexChange)="onPageChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)">
+
+    <ng-template #totalTpl let-total let-range="range">
+      {{ range[0] }}–{{ range[1] }} sur {{ total }} courrier{{ total > 1 ? 's' : '' }}
+    </ng-template>
+
+    <thead>
+      <tr>
+        <th nzWidth="145px"
+            [nzSortFn]="true"
+            (nzSortOrderChange)="onSortChange('numeroChrono', $event)">
+          N° CHRONO
+        </th>
+        <th nzWidth="130px"
+            [nzSortFn]="true"
+            nzDefaultSortOrder="descend"
+            (nzSortOrderChange)="onSortChange('dateArrivee', $event)">
+          DATE ARRIVÉE
+        </th>
+        <th [nzSortFn]="true"
+            (nzSortOrderChange)="onSortChange('objet', $event)">
+          OBJET
+        </th>
+        <th nzWidth="190px">EXPÉDITEUR</th>
+        <th nzWidth="120px"
+            [nzSortFn]="true"
+            (nzSortOrderChange)="onSortChange('statut', $event)">
+          ÉTAT
+        </th>
+        <th nzWidth="180px">ASSIGNÉ À</th>
+        <th nzWidth="64px" nzAlign="center">PJ</th>
+        <th nzWidth="90px" nzAlign="center"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @if (store.isEmpty()) {
+        <tr>
+          <td colspan="8">
+            <nz-empty
+              nzDescription="Aucun courrier trouvé"
+              [nzNotFoundContent]="store.hasActiveFilters() ? 'Essayez de modifier vos filtres' : null" />
+          </td>
+        </tr>
+      }
+      @for (courrier of store.items(); track courrier.id) {
+        <tr class="cel-row" [class.cel-row--mine]="courrier.ficheSuiveuse?.isCurrentUserRecipient">
+          <td>
+            <a class="cel-chrono" [routerLink]="[courrier.id]">{{ courrier.numeroChrono }}</a>
+          </td>
+          <td class="cel-date">{{ courrier.dateArrivee | date:'dd/MM/yyyy' }}</td>
+          <td>
+            <div class="cel-objet" [title]="courrier.objet">{{ courrier.objet }}</div>
+            @if (courrier.reference) {
+              <div class="cel-ref">Réf. {{ courrier.reference }}</div>
+            }
+          </td>
+          <td>
+            <div class="cel-expediteur__name" [title]="expediteurDisplay(courrier)">
+              {{ expediteurDisplay(courrier) }}
+            </div>
+            @if (courrier.expediteur?.organisme) {
+              <div class="cel-expediteur__org">{{ courrier.expediteur!.organisme }}</div>
+            }
+          </td>
+          <td>
+            <pli-courrier-status-badge [statut]="courrier.statut" />
+          </td>
+          <td>
+            @if (courrier.ficheSuiveuse?.destinataireNom) {
+              <div class="cel-assignee">
+                <span class="cel-assignee__avatar">
+                  {{ getInitials(courrier.ficheSuiveuse!.destinataireNom ?? '') }}
+                </span>
+                <div class="cel-assignee__info">
+                  <span class="cel-assignee__name">{{ courrier.ficheSuiveuse!.destinataireNom }}</span>
+                  @if (courrier.ficheSuiveuse?.serviceDestinataire) {
+                    <span class="cel-assignee__service">{{ courrier.ficheSuiveuse!.serviceDestinataire }}</span>
+                  }
+                </div>
+              </div>
+            } @else {
+              <span class="cel-empty">—</span>
+            }
+          </td>
+          <td nzAlign="center">
+            @if (courrier.nbPiecesJointes > 0) {
+              <span
+                class="cel-pj"
+                nz-tooltip
+                [nzTooltipTitle]="courrier.nbPiecesJointes + ' pièce(s) jointe(s)'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                {{ courrier.nbPiecesJointes }}
+              </span>
+            } @else {
+              <span class="cel-empty">—</span>
+            }
+          </td>
+          <td nzAlign="center">
+            <div class="cel-actions">
+              @if (canFaireSuivre(courrier)) {
+                <button
+                  class="cel-actions__btn cel-actions__btn--primary"
+                  type="button"
+                  title="Faire suivre ce courrier"
+                  nz-tooltip
+                  nzTooltipTitle="Faire suivre ce courrier"
+                  (click)="openFaireSuivreModal(courrier)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                </button>
+              }
+              <button
+                class="cel-actions__btn"
+                type="button"
+                title="Voir le détail"
+                nz-tooltip
+                nzTooltipTitle="Voir le détail"
+                [routerLink]="[courrier.id]">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+
+  </nz-table>
+
+</div>

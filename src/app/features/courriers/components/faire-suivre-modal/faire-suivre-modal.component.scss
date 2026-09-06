@@ -1,0 +1,60 @@
+.fs-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  &__info {
+    background: var(--pli-bg-secondary, #f5f5f5);
+    border-radius: 8px;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  &__info-row {
+    display: flex;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  &__info-label {
+    color: var(--pli-text-secondary, #8c8c8c);
+    min-width: 80px;
+    flex-shrink: 0;
+  }
+
+  &__info-value {
+    color: var(--pli-text-primary, #262626);
+    font-weight: 500;
+  }
+
+  &__chrono {
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--pli-primary, #0958d9);
+  }
+
+  &__form {
+    nz-form-item {
+      margin-bottom: 16px;
+    }
+  }
+
+  &__char-count {
+    text-align: right;
+    font-size: 11px;
+    color: var(--pli-text-secondary, #8c8c8c);
+    margin-top: 4px;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--pli-border, #f0f0f0);
+  }
+}

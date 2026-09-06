@@ -1,0 +1,107 @@
+@import 'styles/tokens';
+
+.chn-nav {
+  padding: $space-3 0 $space-6;
+}
+
+// ── Group ─────────────────────────────────────────────────────
+.chn-group {
+  padding: $space-2 0;
+
+  &__label {
+    display: block;
+    padding: $space-3 $space-4 $space-2;
+    font-size: 11px;
+    font-weight: $font-weight-semibold;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: $color-text-secondary;
+  }
+}
+
+// ── Nav item ──────────────────────────────────────────────────
+.chn-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $space-4;
+  height: 36px;
+  margin: 1px $space-2;
+  border-radius: $radius-base;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background $transition-fast, color $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    background: $color-brand-50;
+    color: $color-brand-500;
+  }
+
+  &--active {
+    background: $color-brand-50;
+    color: $color-brand-500;
+    font-weight: $font-weight-semibold;
+  }
+
+  &--wip {
+    color: $color-text-secondary;
+
+    &:hover { color: $color-text-primary; }
+    &.chn-item--active { color: $color-brand-500; }
+  }
+}
+
+// ── WIP badge ─────────────────────────────────────────────────
+.chn-wip-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: $radius-full;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.04em;
+  background: $color-neutral-100;
+  color: $color-text-secondary;
+  flex-shrink: 0;
+}
+
+// ── Count badge ───────────────────────────────────────────────
+.chn-count {
+  font-family: $font-family-mono;
+  font-size: 10px;
+  font-weight: $font-weight-semibold;
+  color: $color-neutral-500;
+  background: $color-neutral-100;
+  border-radius: $radius-full;
+  padding: 1px 6px;
+  min-width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  transition: background $transition-fast, color $transition-fast;
+
+  // Loading skeleton shimmer
+  &--loading {
+    width: 24px;
+    height: 14px;
+    background: linear-gradient(90deg, $color-neutral-100 25%, $color-neutral-200 50%, $color-neutral-100 75%);
+    background-size: 200% 100%;
+    animation: chn-shimmer 1.4s ease infinite;
+    padding: 0;
+    min-width: unset;
+  }
+}
+
+// Active item — tint the count badge
+.chn-item--active .chn-count {
+  background: rgba(0, 0, 145, 0.1);
+  color: $color-brand-600;
+}
+
+@keyframes chn-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

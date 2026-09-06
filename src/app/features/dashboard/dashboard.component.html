@@ -1,0 +1,294 @@
+<div class="tw-min-h-screen tw-bg-gray-50 tw-p-6 tw-space-y-5">
+
+  <!-- ── Greeting header ─────────────────────────────────────── -->
+  <div class="tw-flex tw-items-start tw-justify-between">
+    <div>
+      <h1 class="tw-text-2xl tw-font-semibold tw-text-gray-900 tw-tracking-tight">
+        Tableau de bord
+      </h1>
+      <p class="tw-text-sm tw-text-gray-500 tw-mt-0.5">
+        {{ today | date:'EEEE d MMMM yyyy':'':'fr' }} — Direction Générale
+      </p>
+    </div>
+    <div class="tw-flex tw-items-center tw-gap-2">
+      <a routerLink="/courriers/entrant"
+         class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-4 tw-py-2.5 tw-text-sm tw-font-medium tw-border tw-border-gray-200 tw-bg-white tw-rounded-lg tw-text-gray-700 hover:tw-bg-gray-50 hover:tw-border-gray-300 tw-transition-all tw-shadow-sm">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Recherche avancée
+      </a>
+      <a routerLink="/courriers/entrant/nouveau"
+         class="tw-inline-flex tw-items-center tw-gap-1.5 tw-px-4 tw-py-2.5 tw-text-sm tw-font-medium tw-rounded-lg tw-text-white tw-transition-all tw-shadow-sm dash-btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nouveau courrier
+      </a>
+    </div>
+  </div>
+
+  <!-- ── Stats cards ─────────────────────────────────────────── -->
+  <div class="tw-grid tw-grid-cols-4 tw-gap-4">
+
+    <!-- Boîte de réception (amber) — KPI PRIORITY -->
+    <a routerLink="/dashboard"
+       class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-5 tw-flex tw-flex-col tw-gap-3 hover:tw-shadow-md hover:tw-border-amber-200 tw-transition-all tw-cursor-pointer tw-group">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <span class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500">Ma boîte de réception</span>
+        <span class="tw-w-9 tw-h-9 tw-rounded-xl tw-bg-amber-50 tw-flex tw-items-center tw-justify-center tw-text-amber-500 group-hover:tw-bg-amber-100 tw-transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        </span>
+      </div>
+      <!-- KPI number — 40px bold for visual comfort -->
+      <div class="tw-flex tw-items-end tw-justify-between tw-mt-1">
+        <span class="kpi-value kpi-value--normal">89</span>
+        <span class="tw-text-xs tw-text-amber-600 tw-font-semibold tw-bg-amber-50 tw-px-2 tw-py-1 tw-rounded-full">+12 vs hier</span>
+      </div>
+      <div class="tw-text-sm tw-text-gray-500">courriers à traiter</div>
+      <div class="tw-w-full tw-bg-gray-100 tw-rounded-full tw-h-1.5">
+        <div class="dash-progress dash-progress--amber"></div>
+      </div>
+    </a>
+
+    <!-- Retards (red) — KPI PRIORITY -->
+    <a routerLink="/dashboard"
+       class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-5 tw-flex tw-flex-col tw-gap-3 hover:tw-shadow-md hover:tw-border-red-200 tw-transition-all tw-cursor-pointer tw-group">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <span class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500">Mes retards</span>
+        <span class="tw-w-9 tw-h-9 tw-rounded-xl tw-bg-red-50 tw-flex tw-items-center tw-justify-center tw-text-red-500 group-hover:tw-bg-red-100 tw-transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+      </div>
+      <!-- KPI number — 40px bold, colored red to signal urgency -->
+      <div class="tw-flex tw-items-end tw-justify-between tw-mt-1">
+        <span class="kpi-value kpi-value--urgent">4</span>
+        <span class="tw-text-xs tw-text-green-700 tw-font-semibold tw-bg-green-50 tw-px-2 tw-py-1 tw-rounded-full">-1 vs hier</span>
+      </div>
+      <div class="tw-text-sm tw-text-gray-500">délai dépassé</div>
+      <div class="tw-w-full tw-bg-gray-100 tw-rounded-full tw-h-1.5">
+        <div class="dash-progress dash-progress--red"></div>
+      </div>
+    </a>
+
+    <!-- Traités aujourd'hui (green) -->
+    <a routerLink="/dashboard"
+       class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-5 tw-flex tw-flex-col tw-gap-3 hover:tw-shadow-md hover:tw-border-green-200 tw-transition-all tw-cursor-pointer tw-group">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <span class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500">Traités aujourd'hui</span>
+        <span class="tw-w-9 tw-h-9 tw-rounded-xl tw-bg-green-50 tw-flex tw-items-center tw-justify-center tw-text-green-600 group-hover:tw-bg-green-100 tw-transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        </span>
+      </div>
+      <div class="tw-flex tw-items-end tw-justify-between tw-mt-1">
+        <span class="kpi-value kpi-value--normal">12</span>
+        <span class="tw-text-xs tw-text-green-700 tw-font-semibold tw-bg-green-50 tw-px-2 tw-py-1 tw-rounded-full">+3 vs hier</span>
+      </div>
+      <div class="tw-text-sm tw-text-gray-500">transmis ou clôturés</div>
+      <div class="tw-w-full tw-bg-gray-100 tw-rounded-full tw-h-1.5">
+        <div class="dash-progress dash-progress--green"></div>
+      </div>
+    </a>
+
+    <!-- En cours service (blue) -->
+    <a routerLink="/courriers/entrant"
+       class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-p-5 tw-flex tw-flex-col tw-gap-3 hover:tw-shadow-md hover:tw-border-blue-200 tw-transition-all tw-cursor-pointer tw-group">
+      <div class="tw-flex tw-items-center tw-justify-between">
+        <span class="tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500">En cours — service</span>
+        <span class="tw-w-9 tw-h-9 tw-rounded-xl tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 group-hover:tw-bg-blue-100 tw-transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </span>
+      </div>
+      <div class="tw-flex tw-items-end tw-justify-between tw-mt-1">
+        <span class="kpi-value kpi-value--normal">254</span>
+        <span class="tw-text-xs tw-text-blue-700 tw-font-semibold tw-bg-blue-50 tw-px-2 tw-py-1 tw-rounded-full">+8 vs semaine</span>
+      </div>
+      <div class="tw-text-sm tw-text-gray-500">Direction Générale</div>
+      <div class="tw-w-full tw-bg-gray-100 tw-rounded-full tw-h-1.5">
+        <div class="dash-progress dash-progress--blue"></div>
+      </div>
+    </a>
+
+  </div>
+
+  <!-- ── Main content area ────────────────────────────────────── -->
+  <div class="tw-grid tw-grid-cols-3 tw-gap-5">
+
+    <!-- ── Left: Recent courriers table (2/3) ─────────────────── -->
+    <div class="tw-col-span-2 tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden">
+
+      <div class="tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-4 tw-border-b tw-border-gray-100">
+        <div>
+          <h2 class="tw-text-base tw-font-semibold tw-text-gray-900">Derniers courriers reçus</h2>
+          <p class="tw-text-sm tw-text-gray-500 tw-mt-0.5">Courriers entrants des 7 derniers jours</p>
+        </div>
+        <a routerLink="/courriers/entrant"
+           class="tw-text-sm tw-text-blue-700 tw-font-medium hover:tw-underline tw-transition-all tw-flex tw-items-center tw-gap-1">
+          Voir tout
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+      </div>
+
+      <table class="tw-w-full">
+        <thead>
+          <tr class="tw-border-b tw-border-gray-100">
+            <th class="tw-px-6 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500 tw-bg-gray-50 tw-w-36">N° Chrono</th>
+            <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500 tw-bg-gray-50">Objet</th>
+            <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500 tw-bg-gray-50 tw-w-32">État</th>
+            <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500 tw-bg-gray-50 tw-w-36">Assigné à</th>
+            <th class="tw-px-4 tw-py-3 tw-text-left tw-text-xs tw-font-semibold tw-uppercase tw-tracking-wider tw-text-gray-500 tw-bg-gray-50 tw-w-24">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of recentCourriers; track c.id) {
+            <!-- Row height 60px via tw-h-[60px] on tr — padding on td ensures alignment -->
+            <tr class="dash-table-row tw-border-b tw-border-gray-50 hover:tw-bg-gray-50/80 tw-transition-colors tw-group"
+                [class.dash-row--urgent]="c.urgent">
+
+              <!-- N° Chrono — bold, pure black -->
+              <td class="tw-px-6 dash-td-cell">
+                <a [routerLink]="['/courriers/entrant', c.id]"
+                   class="tw-font-mono tw-text-sm tw-font-bold tw-text-black hover:tw-text-blue-700 hover:tw-underline tw-transition-colors">
+                  {{ c.numeroChrono }}
+                </a>
+              </td>
+
+              <!-- Objet — bold, pure black, truncated -->
+              <td class="tw-px-4 dash-td-cell tw-max-w-0">
+                <p class="tw-truncate tw-text-black tw-font-bold tw-text-sm tw-leading-tight">{{ c.objet }}</p>
+                <p class="tw-truncate tw-text-gray-500 tw-text-xs tw-mt-0.5">{{ c.expediteur }}@if (c.organisme) { — {{ c.organisme }}}</p>
+              </td>
+
+              <!-- État — full-width solid pill, no dot -->
+              <td class="tw-px-4 dash-td-cell">
+                <span class="dash-pill" [ngClass]="statutCls[c.statut]">
+                  {{ statutLabel[c.statut] }}
+                </span>
+              </td>
+
+              <!-- Assigné à -->
+              <td class="tw-px-4 dash-td-cell">
+                <div class="tw-flex tw-items-center tw-gap-2">
+                  <span class="tw-w-7 tw-h-7 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-bold tw-flex-shrink-0"
+                        [style.background]="c.assigneColor">
+                    {{ c.assigneInitiales }}
+                  </span>
+                  <span class="tw-text-sm tw-text-gray-800 tw-truncate">{{ c.assigneNom }}</span>
+                </div>
+              </td>
+
+              <!-- Date -->
+              <td class="tw-px-4 dash-td-cell tw-text-sm tw-text-gray-600 tw-whitespace-nowrap">
+                {{ c.dateArrivee | date:'dd/MM/yyyy' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="tw-flex tw-items-center tw-justify-between tw-px-6 tw-py-3 tw-border-t tw-border-gray-100 tw-bg-gray-50/40">
+        <span class="tw-text-sm tw-text-gray-500">7 résultats sur 254</span>
+        <a routerLink="/courriers/entrant"
+           class="tw-text-sm tw-font-medium tw-text-blue-700 hover:tw-text-blue-800 tw-transition-colors">
+          Voir tous les courriers →
+        </a>
+      </div>
+
+    </div>
+
+    <!-- ── Right column ────────────────────────────────────────── -->
+    <div class="tw-space-y-4">
+
+      <!-- Alertes actives -->
+      <div class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden">
+        <div class="tw-px-5 tw-py-4 tw-border-b tw-border-gray-100">
+          <h2 class="tw-text-base tw-font-semibold tw-text-gray-900">Alertes actives</h2>
+        </div>
+        <div class="tw-divide-y tw-divide-gray-50">
+          <a routerLink="/dashboard"
+             class="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-3.5 hover:tw-bg-red-50/50 tw-transition-colors">
+            <span class="tw-text-sm tw-text-gray-800">Courriers en retard</span>
+            <span class="tw-text-base tw-font-bold tw-text-red-700 tw-font-mono">4</span>
+          </a>
+          <a routerLink="/courriers/interne"
+             class="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-3.5 hover:tw-bg-amber-50/50 tw-transition-colors">
+            <span class="tw-text-sm tw-text-gray-800">Internes sans AR</span>
+            <span class="tw-text-base tw-font-bold tw-text-amber-700 tw-font-mono">48</span>
+          </a>
+          <a routerLink="/courriers/entrant"
+             class="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-3.5 hover:tw-bg-blue-50/50 tw-transition-colors">
+            <span class="tw-text-sm tw-text-gray-800">En cours service</span>
+            <span class="tw-text-base tw-font-semibold tw-text-blue-700 tw-font-mono">254</span>
+          </a>
+          <a routerLink="/demandes"
+             class="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-3.5 hover:tw-bg-violet-50/50 tw-transition-colors">
+            <span class="tw-text-sm tw-text-gray-800">Demandes en attente</span>
+            <span class="tw-text-base tw-font-semibold tw-text-violet-700 tw-font-mono">4 187</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Activité récente -->
+      <div class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden">
+        <div class="tw-flex tw-items-center tw-justify-between tw-px-5 tw-py-4 tw-border-b tw-border-gray-100">
+          <h2 class="tw-text-base tw-font-semibold tw-text-gray-900">Activité récente</h2>
+          <span class="tw-text-xs tw-text-gray-500">Aujourd'hui</span>
+        </div>
+        <div class="tw-p-4 tw-space-y-4">
+          @for (item of activity; track item.cible) {
+            <div class="tw-flex tw-items-start tw-gap-3">
+              <span class="tw-w-8 tw-h-8 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-white tw-text-xs tw-font-bold tw-flex-shrink-0"
+                    [style.background]="item.color">
+                {{ item.initiales }}
+              </span>
+              <div class="tw-min-w-0 tw-flex-1">
+                <p class="tw-text-sm tw-text-gray-800 tw-leading-snug">
+                  <span class="tw-font-semibold tw-text-gray-900">{{ item.user }}</span>
+                  {{ item.action }}
+                  <a [routerLink]="['/courriers/entrant']"
+                     class="tw-font-mono tw-text-blue-700 hover:tw-underline">{{ item.cible }}</a>
+                </p>
+                <p class="tw-text-xs tw-text-gray-500 tw-mt-0.5">{{ item.time }}</p>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Accès rapide -->
+      <div class="tw-bg-white tw-rounded-2xl tw-shadow-sm tw-border tw-border-gray-100 tw-overflow-hidden">
+        <div class="tw-px-5 tw-py-4 tw-border-b tw-border-gray-100">
+          <h2 class="tw-text-base tw-font-semibold tw-text-gray-900">Accès rapide</h2>
+        </div>
+        <div class="tw-p-3 tw-space-y-1">
+          <a routerLink="/courriers/entrant/nouveau"
+             class="tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-3 tw-rounded-xl hover:tw-bg-blue-50 tw-transition-colors tw-text-sm tw-text-gray-800 hover:tw-text-blue-800 tw-group">
+            <span class="tw-w-8 tw-h-8 tw-rounded-lg tw-bg-blue-50 tw-flex tw-items-center tw-justify-center tw-text-blue-600 group-hover:tw-bg-blue-100">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            Nouveau courrier entrant
+          </a>
+          <a routerLink="/demandes"
+             class="tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-3 tw-rounded-xl hover:tw-bg-violet-50 tw-transition-colors tw-text-sm tw-text-gray-800 hover:tw-text-violet-800 tw-group">
+            <span class="tw-w-8 tw-h-8 tw-rounded-lg tw-bg-violet-50 tw-flex tw-items-center tw-justify-center tw-text-violet-600 group-hover:tw-bg-violet-100">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </span>
+            Consulter les demandes
+          </a>
+          <a routerLink="/recherche"
+             class="tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-3 tw-rounded-xl hover:tw-bg-gray-100 tw-transition-colors tw-text-sm tw-text-gray-800 hover:tw-text-gray-900 tw-group">
+            <span class="tw-w-8 tw-h-8 tw-rounded-lg tw-bg-gray-100 tw-flex tw-items-center tw-justify-center tw-text-gray-600 group-hover:tw-bg-gray-200">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
+            Recherche avancée
+          </a>
+          <a routerLink="/protocole/contacts"
+             class="tw-flex tw-items-center tw-gap-3 tw-px-3 tw-py-3 tw-rounded-xl hover:tw-bg-teal-50 tw-transition-colors tw-text-sm tw-text-gray-800 hover:tw-text-teal-800 tw-group">
+            <span class="tw-w-8 tw-h-8 tw-rounded-lg tw-bg-teal-50 tw-flex tw-items-center tw-justify-center tw-text-teal-600 group-hover:tw-bg-teal-100">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </span>
+            Répertoire de contacts
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

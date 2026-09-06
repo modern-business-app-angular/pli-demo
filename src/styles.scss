@@ -1,0 +1,199 @@
+// ============================================================
+// Pli — Global Styles Entry Point
+// Load order matters:
+//   1. Design tokens (SCSS variables)
+//   2. Typography helpers
+//   3. Tailwind CSS layers (AFTER NG-ZORRO Less import in project.json)
+//   4. Global utility overrides
+// ============================================================
+
+// 1. Design tokens — available in all component SCSS via angular.json includePaths
+@import 'styles/tokens';
+
+// 2. Typography helpers
+@import 'styles/typography';
+
+// 3a. Accessibility utilities (badges, focus rings, touch targets)
+@import 'styles/a11y';
+
+// 3. Tailwind CSS (preflight disabled — NG-ZORRO owns base styles)
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// 4. Global layout & utility overrides
+// -------------------------------------------------------
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: $font-size-base;   // 15px — accessible base for older users
+  background-color: $surface-body;
+  color: $color-text-primary;   // #141414 — 17:1 contrast on white ✓
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// Custom scrollbar (Chromium)
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: $color-neutral-100;
+}
+::-webkit-scrollbar-thumb {
+  background: $color-neutral-300;
+  border-radius: $radius-full;
+  &:hover { background: $color-neutral-400; }
+}
+
+// NG-ZORRO global overrides
+.ant-layout {
+  background: $surface-body;
+}
+
+.ant-layout-sider {
+  box-shadow: $shadow-nav;
+}
+
+.ant-layout-header {
+  height: $layout-header-height;
+  line-height: $layout-header-height;
+  padding: 0 $space-6;
+  box-shadow: $shadow-sm;
+  position: sticky;
+  top: 0;
+  z-index: $z-fixed;
+}
+
+// .ant-layout-content global rule removed — padding/overflow is now
+// managed per-component via .pli-page-wrapper in main-layout.
+// This prevents the legacy rule from fighting the viewport-locked layout.
+.ant-layout-content {
+  padding: 0;
+  min-height: unset;
+  overflow: unset;
+}
+
+.ant-card {
+  border-radius: $radius-md;
+  box-shadow: $shadow-card;
+}
+
+.ant-table {
+  border-radius: $radius-md;
+  overflow: hidden;
+}
+
+.ant-form-item-label > label {
+  font-weight: $font-weight-medium;
+  color: $color-neutral-700;
+}
+
+// Accessibility focus ring — 3px, Bleu France, high visibility
+*:focus-visible {
+  outline: 3px solid $color-brand-500;   // #000091 — 19:1 on white ✓
+  outline-offset: 2px;
+}
+
+.ant-form-item-label > label {
+  color: $color-text-primary;   // #141414 — 17:1 ✓
+}
+
+// Page entry animation (used with Angular view transitions)
+@keyframes pli-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pli-page-enter {
+  animation: pli-fade-in 0.2s ease forwards;
+}
+
+// ── Viewport lock helpers ─────────────────────────────────────
+// pli-root has no component scss; ensure it fills the body
+pli-root {
+  display: block;
+  height: 100%;
+}
+
+// Angular's <router-outlet> renders as a DOM element AND inserts the
+// activated component as a sibling. We must hide the router-outlet element
+// itself so it doesn't participate in flex layout (otherwise it claims
+// flex: 1 space alongside the actual page component, pushing content down).
+router-outlet {
+  display: none;
+}
+
+// All routed page component hosts are direct flex children of .pli-page-wrapper.
+// Exclude router-outlet (now display: none) to avoid the 50/50 split bug.
+.pli-page-wrapper > *:not(router-outlet) {
+  flex: 1;
+  min-height: 0;
+}
+
+// ── Guided tour (driver.js) — brand overrides ────────────────
+.driver-popover.pli-tour {
+  border-radius: 10px;
+  padding: 18px 20px;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  box-shadow: 0 12px 32px rgba(0, 0, 145, 0.18);
+
+  .driver-popover-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #000091;
+  }
+
+  .driver-popover-description {
+    font-size: 14px;
+    line-height: 1.55;
+    color: #141414;
+
+    kbd {
+      padding: 1px 6px;
+      border: 1px solid #d9d9d9;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      background: #fafafa;
+      font-size: 12px;
+    }
+  }
+
+  .driver-popover-progress-text {
+    color: #767676;
+    font-size: 12px;
+  }
+
+  .driver-popover-navigation-btns button {
+    min-height: 36px;
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+    background: #fff;
+    color: #141414;
+    font-weight: 500;
+    text-shadow: none;
+
+    &:hover {
+      background: #f0f2f5;
+    }
+  }
+
+  .driver-popover-next-btn {
+    background: #000091 !important;
+    border-color: #000091 !important;
+    color: #fff !important;
+
+    &:hover {
+      background: #00007a !important;
+    }
+  }
+
+  .driver-popover-close-btn {
+    color: #767676;
+  }
+}

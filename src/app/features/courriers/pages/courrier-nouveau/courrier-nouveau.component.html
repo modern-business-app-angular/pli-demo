@@ -1,0 +1,401 @@
+<div class="cn-page">
+
+  <!-- ── Header ── -->
+  <div class="cn-header">
+    <button nz-button nzType="text" class="cn-header__back" [routerLink]="backRoute">
+      <span nz-icon nzType="arrow-left"></span>
+      Retour
+    </button>
+    <div class="cn-header__center">
+      <span class="cn-header__type-badge cn-header__type-badge--{{ config().type }}">
+        {{ config().type === 'entrant' ? 'Entrant' : config().type === 'sortant' ? 'Sortant' : 'Interne' }}
+      </span>
+      <span class="cn-header__title">Nouveau courrier</span>
+    </div>
+    <div class="cn-header__right">
+      <button nz-button nzType="primary" class="cn-header__save"
+        [nzLoading]="submitting()" (click)="submit()">
+        <span nz-icon nzType="save"></span>
+        Enregistrer
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Body: navigator + cards ── -->
+  <div class="cn-body">
+
+    <!-- Sticky navigator -->
+    <aside class="cn-nav">
+      @for (card of CARDS; track $index) {
+        <button class="cn-nav__item"
+          [class.cn-nav__item--active]="activeCardIndex() === $index"
+          [class.cn-nav__item--complete]="cardStates()[$index] === 'complete'"
+          [class.cn-nav__item--optional]="cardStates()[$index] === 'optional'"
+          (click)="scrollToCard($index)">
+          <span class="cn-nav__step">
+            @if (cardStates()[$index] === 'complete') {
+              <span nz-icon nzType="check"></span>
+            } @else {
+              {{ $index + 1 }}
+            }
+          </span>
+          <div class="cn-nav__info">
+            <span class="cn-nav__label">{{ card.title }}</span>
+            <span class="cn-nav__state">
+              @switch (cardStates()[$index]) {
+                @case ('complete') { <span class="cn-nav__state--ok">Complété</span> }
+                @case ('optional') { <span class="cn-nav__state--opt">Optionnel</span> }
+                @default           { <span class="cn-nav__state--req">Requis</span> }
+              }
+            </span>
+          </div>
+        </button>
+      }
+
+    </aside>
+
+    <!-- Scrollable content -->
+    <div class="cn-content">
+
+      <!-- ═══ Card 0: Identification ═══ -->
+      <div class="cn-card" #cardAnchor>
+        <div class="cn-card__header">
+          <span nz-icon nzType="file-text" class="cn-card__icon"></span>
+          <span class="cn-card__title">Identification</span>
+          <span class="cn-card__badge cn-card__badge--req">Requis</span>
+        </div>
+        <div class="cn-card__body">
+          <form nz-form [formGroup]="identificationForm" nzLayout="vertical">
+            <div class="cn-form-grid">
+
+              <nz-form-item>
+                <nz-form-label nzRequired>Type de chrono</nz-form-label>
+                <nz-form-control nzErrorTip="Sélectionnez un type">
+                  <nz-select formControlName="chronoTypeId" nzPlaceholder="Choisir…"
+                    (ngModelChange)="onChronoChange($event)">
+                    @for (ct of chronoTypes(); track ct.id) {
+                      <nz-option [nzValue]="ct.id" [nzLabel]="ct.libelle" />
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label nzRequired>{{ config().dateLabel }}</nz-form-label>
+                <nz-form-control nzErrorTip="Champ requis">
+                  <nz-date-picker formControlName="dateArrivee" nzFormat="dd/MM/yyyy" style="width:100%" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item class="cn-form-grid__full">
+                <nz-form-label nzRequired>Objet</nz-form-label>
+                <nz-form-control nzErrorTip="Champ requis">
+                  <input nz-input formControlName="objet" placeholder="Objet du courrier" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label>Date d'expédition</nz-form-label>
+                <nz-form-control>
+                  <nz-date-picker formControlName="dateExpedition" nzFormat="dd/MM/yyyy" style="width:100%" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label>Date limite</nz-form-label>
+                <nz-form-control>
+                  <nz-date-picker formControlName="dateLimite" nzFormat="dd/MM/yyyy" style="width:100%" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label>Référence</nz-form-label>
+                <nz-form-control>
+                  <input nz-input formControlName="reference" placeholder="Ex. REF-2026-001" />
+                </nz-form-control>
+              </nz-form-item>
+
+              @if (showNature) {
+                <nz-form-item>
+                  <nz-form-label>Nature</nz-form-label>
+                  <nz-form-control>
+                    <nz-select formControlName="natureId" nzAllowClear nzPlaceholder="Sélectionner…">
+                      @for (n of natures(); track n.id) {
+                        <nz-option [nzValue]="n.id" [nzLabel]="n.libelle" />
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              }
+
+              @if (showPriorite) {
+                <nz-form-item>
+                  <nz-form-label>Priorité</nz-form-label>
+                  <nz-form-control>
+                    <nz-select formControlName="prioriteId" nzAllowClear nzPlaceholder="Sélectionner…">
+                      @for (p of priorites(); track p.id) {
+                        <nz-option [nzValue]="p.id" [nzLabel]="p.libelle" />
+                      }
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              }
+
+              <nz-form-item class="cn-form-grid__full">
+                <nz-form-label>Commentaire</nz-form-label>
+                <nz-form-control>
+                  <textarea nz-input formControlName="commentaire"
+                    [nzAutosize]="{ minRows: 2, maxRows: 5 }"
+                    placeholder="Observations, notes internes…"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+
+              <!-- Tags -->
+              <nz-form-item class="cn-form-grid__full">
+                <nz-form-label>Tags</nz-form-label>
+                <nz-form-control>
+                  <div class="cn-tags">
+                    @for (tag of tags(); track tag) {
+                      <nz-tag nzMode="closeable" (nzOnClose)="removeTag(tag)">{{ tag }}</nz-tag>
+                    }
+                    <input class="cn-tags__input" placeholder="Ajouter un tag…"
+                      [value]="tagInput()"
+                      (input)="tagInput.set($any($event.target).value)"
+                      (keydown.enter)="addTag(); $event.preventDefault()" />
+                  </div>
+                </nz-form-control>
+              </nz-form-item>
+
+              <!-- Adresse d'intervention -->
+              <div class="cn-form-grid__full cn-subsection">
+                <div class="cn-subsection__title">
+                  Adresse d'intervention
+                  <span class="cn-subsection__opt">(optionnel)</span>
+                </div>
+                <div class="cn-form-grid">
+                  <nz-form-item class="cn-form-grid__full">
+                    <nz-form-label>Adresse</nz-form-label>
+                    <nz-form-control>
+                      <input nz-input formControlName="adresse" placeholder="Numéro et voie" />
+                    </nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>Code postal</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="cp" /></nz-form-control>
+                  </nz-form-item>
+                  <nz-form-item>
+                    <nz-form-label>Ville</nz-form-label>
+                    <nz-form-control><input nz-input formControlName="ville" /></nz-form-control>
+                  </nz-form-item>
+                </div>
+              </div>
+
+            </div><!-- /cn-form-grid -->
+
+            <!-- Dynamic ChampSpec fields -->
+            <pli-champ-spec-renderer
+              [formGroup]="identificationForm"
+              [champs]="champSpecs()" />
+
+          </form>
+        </div>
+      </div>
+
+      <!-- ═══ Card 1: Expéditeur ═══ -->
+      <div class="cn-card" #cardAnchor>
+        <div class="cn-card__header">
+          <span nz-icon nzType="user" class="cn-card__icon"></span>
+          <span class="cn-card__title">{{ config().partieLabel }}</span>
+          <span class="cn-card__badge cn-card__badge--opt">Optionnel</span>
+        </div>
+        <div class="cn-card__body">
+          <form nz-form [formGroup]="expediteurForm" nzLayout="vertical">
+
+            <!-- Toggle: Répertoire / Manuel -->
+            <div class="cn-toggle-row">
+              <button nz-button
+                [nzType]="!useManualExpediteur() ? 'primary' : 'default'"
+                nzSize="small" (click)="useManualExpediteur.set(false)">
+                <span nz-icon nzType="team"></span>
+                Depuis le répertoire
+              </button>
+              <button nz-button
+                [nzType]="useManualExpediteur() ? 'primary' : 'default'"
+                nzSize="small" (click)="useManualExpediteur.set(true)">
+                <span nz-icon nzType="edit"></span>
+                Saisie manuelle
+              </button>
+            </div>
+
+            @if (!useManualExpediteur()) {
+              <nz-form-item>
+                <nz-form-label>Rechercher dans le répertoire</nz-form-label>
+                <nz-form-control>
+                  <nz-select
+                    formControlName="tripletId"
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceholder="Nom, organisme…"
+                    [nzFilterOption]="noFilter"
+                    (nzOnSearch)="searchTriplets($event)"
+                    [nzLoading]="tripletLoading()">
+                    @for (t of tripletResults(); track t.id) {
+                      <nz-option [nzValue]="t.id" [nzLabel]="t.label">
+                        <div class="cn-triplet__label">{{ t.label }}</div>
+                        <div class="cn-triplet__detail">{{ t.details }}</div>
+                      </nz-option>
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+            } @else {
+              <div class="cn-form-grid">
+                <nz-form-item>
+                  <nz-form-label nzRequired>Nom</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="nom" placeholder="Nom de famille" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Prénom</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="prenom" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Organisme</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="organisme" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Fonction</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="fonction" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Email</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="email" type="email" />
+                  </nz-form-control>
+                </nz-form-item>
+                <nz-form-item>
+                  <nz-form-label>Téléphone</nz-form-label>
+                  <nz-form-control>
+                    <input nz-input formControlName="telephone" />
+                  </nz-form-control>
+                </nz-form-item>
+              </div>
+            }
+          </form>
+        </div>
+      </div>
+
+      <!-- ═══ Card 2: Traitement ═══ -->
+      <div class="cn-card" #cardAnchor>
+        <div class="cn-card__header">
+          <span nz-icon nzType="apartment" class="cn-card__icon"></span>
+          <span class="cn-card__title">Traitement</span>
+          <span class="cn-card__badge cn-card__badge--req">Requis</span>
+        </div>
+        <div class="cn-card__body">
+          <form nz-form [formGroup]="traitementForm" nzLayout="vertical">
+            <div class="cn-form-grid">
+
+              <nz-form-item class="cn-form-grid__full">
+                <nz-form-label nzRequired>Action de traitement</nz-form-label>
+                <nz-form-control nzErrorTip="Sélectionnez une action">
+                  <nz-select formControlName="actionId" nzPlaceholder="Choisir une action…"
+                    (ngModelChange)="onActionChange($event)">
+                    @for (a of actions(); track a.id) {
+                      <nz-option [nzValue]="a.id" [nzLabel]="a.libelle" />
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label>Responsable</nz-form-label>
+                <nz-form-control>
+                  <nz-select
+                    formControlName="personnelId"
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceholder="Rechercher un agent…"
+                    [nzFilterOption]="noFilter"
+                    (nzOnSearch)="searchPersonnel($event)"
+                    [nzLoading]="personnelLoading()"
+                    (ngModelChange)="onPersonnelSelect($event)">
+                    @for (p of personnelResults(); track p.id) {
+                      <nz-option [nzValue]="p.id" [nzLabel]="p.nom + (p.prenom ? ' ' + p.prenom : '')" />
+                    }
+                  </nz-select>
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label>Date limite de traitement</nz-form-label>
+                <nz-form-control>
+                  <nz-date-picker formControlName="dateLimite" nzFormat="dd/MM/yyyy" style="width:100%" />
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item class="cn-form-grid__full">
+                <nz-form-label>Commentaire de traitement</nz-form-label>
+                <nz-form-control>
+                  <textarea nz-input formControlName="commentaire"
+                    [nzAutosize]="{ minRows: 2, maxRows: 4 }"
+                    placeholder="Instructions pour le responsable…"></textarea>
+                </nz-form-control>
+              </nz-form-item>
+
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ═══ Card 3: Documents liés ═══ -->
+      <div class="cn-card" #cardAnchor>
+        <div class="cn-card__header">
+          <span nz-icon nzType="solution" nzTheme="outline" class="cn-card__icon cn-card__icon--docs"></span>
+          <span class="cn-card__title">Documents liés</span>
+          <span class="cn-card__badge cn-card__badge--opt">Optionnel</span>
+          @if (documents().length > 0) {
+            <span class="cn-card__count">{{ documents().length }}</span>
+          }
+        </div>
+        <div class="cn-card__body">
+          <pli-maquette-document-panel
+            [courrierSnapshot]="formSnapshot()"
+            (documentsChange)="onDocumentsChange($event)" />
+        </div>
+      </div>
+
+      <!-- ═══ Card 4: Pièces jointes ═══ -->
+      <div class="cn-card" #cardAnchor>
+        <div class="cn-card__header">
+          <span nz-icon nzType="paper-clip" class="cn-card__icon"></span>
+          <span class="cn-card__title">Pièces jointes</span>
+          <span class="cn-card__badge cn-card__badge--opt">Optionnel</span>
+          @if (fileList().length > 0) {
+            <span class="cn-card__count">{{ fileList().length }}</span>
+          }
+        </div>
+        <div class="cn-card__body">
+          <nz-upload
+            nzType="drag"
+            [nzMultiple]="true"
+            [nzBeforeUpload]="noop"
+            class="cn-upload">
+            <p class="ant-upload-drag-icon"><span nz-icon nzType="inbox"></span></p>
+            <p class="ant-upload-text">Glissez vos fichiers ici</p>
+            <p class="ant-upload-hint">Ou cliquez pour sélectionner — PDF, Word, images acceptés</p>
+          </nz-upload>
+        </div>
+      </div>
+
+    </div><!-- /cn-content -->
+  </div><!-- /cn-body -->
+
+</div>

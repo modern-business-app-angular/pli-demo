@@ -1,0 +1,293 @@
+<div class="sb">
+
+  <!-- Logo -->
+  <div class="sb__logo">
+    <div class="sb__logo-mark">P</div>
+    @if (!isCollapsed()) {
+      <span class="sb__logo-text">Pli <span class="sb__logo-v">démo</span></span>
+    }
+  </div>
+
+  <!-- Command palette trigger -->
+  <button class="sb__cmd" type="button" data-tour="palette" (click)="openCommandPalette()">
+    <svg class="sb__cmd-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    @if (!isCollapsed()) {
+      <span class="sb__cmd-text">Rechercher ou créer…</span>
+      <span class="sb__cmd-kbd">⌘K</span>
+    }
+  </button>
+
+  <!-- Navigation -->
+  <nav class="sb__nav">
+
+    <!-- ── PERSONNEL ─────────────────────────────────────── -->
+    <div class="sb__section">
+      @if (!isCollapsed()) {
+        <div class="sb__section-label">Personnel</div>
+      }
+
+      <a class="sb__item" routerLink="/dashboard" routerLinkActive="sb__item--active">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </span>
+        @if (!isCollapsed()) { <span class="sb__item-label">Tableau de bord</span> }
+      </a>
+
+      <a class="sb__item" routerLink="/courriers/entrant" routerLinkActive="sb__item--active" [title]="isCollapsed() ? 'Ma boîte de réception' : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+        </span>
+        @if (!isCollapsed()) {
+          <span class="sb__item-label">Ma boîte de réception</span>
+          <span class="sb__badge sb__badge--amber">10</span>
+        }
+      </a>
+
+    </div>
+
+    <div class="sb__divider"></div>
+
+    <!-- ── MON SERVICE ────────────────────────────────────── -->
+    <div class="sb__section">
+      <!-- Expandable group header showing service name -->
+      <div
+        class="sb__item sb__item--group"
+        data-tour="service"
+        (click)="toggleService()"
+        [title]="isCollapsed() ? (authStore.serviceName() || 'Mon service') : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+        </span>
+        @if (!isCollapsed()) {
+          <span class="sb__item-label sb__item-label--service">{{ authStore.serviceName() || 'Mon service' }}</span>
+          <svg class="sb__chevron" [class.sb__chevron--open]="serviceOpen()" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        }
+      </div>
+      @if (!isCollapsed()) {
+        <div class="sb__subnav" [class.sb__subnav--open]="serviceOpen()">
+          <a class="sb__subitem" routerLink="/courriers/entrant" [queryParams]="{ vue: 'service' }" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Boîte aux lettres</span>
+            <span class="sb__subitem-count">10</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/entrant" [queryParams]="{ vue: 'service', statut: 'E' }" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">En cours service</span>
+            <span class="sb__subitem-count">6</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/entrant" [queryParams]="{ vue: 'service', retard: '1' }" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot sb__subitem-dot--warn"></span>
+            <span class="sb__subitem-label">En retard</span>
+            <span class="sb__subitem-count sb__subitem-count--red">2</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/interne" [queryParams]="{ vue: 'service', sansAR: '1' }" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot sb__subitem-dot--warn"></span>
+            <span class="sb__subitem-label">Internes sans AR</span>
+            <span class="sb__subitem-count sb__subitem-count--amber">3</span>
+          </a>
+        </div>
+      }
+    </div>
+
+    <div class="sb__divider"></div>
+
+    <!-- ── MODULES ─────────────────────────────────────────── -->
+    <div class="sb__section">
+      @if (!isCollapsed()) {
+        <div class="sb__section-label">Modules</div>
+      }
+
+      <!-- Courriers (expandable) -->
+      <div
+        class="sb__item sb__item--group"
+        [class.sb__item--active]="!isCollapsed() && courriersOpen()"
+        routerLinkActive
+        #rlaC="routerLinkActive"
+        [class.sb__item--route-active]="rlaC.isActive"
+        data-tour="courriers"
+        (click)="toggleCourriers()"
+        [title]="isCollapsed() ? 'Courriers' : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </span>
+        @if (!isCollapsed()) {
+          <span class="sb__item-label">Courriers</span>
+          <svg class="sb__chevron" [class.sb__chevron--open]="courriersOpen()" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        }
+      </div>
+      @if (!isCollapsed()) {
+        <div class="sb__subnav" [class.sb__subnav--open]="courriersOpen()">
+          <a class="sb__subitem" routerLink="/courriers/entrant" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Entrants</span>
+            <span class="sb__subitem-count">10</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/sortant" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Sortants</span>
+            <span class="sb__subitem-count">5</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/interne" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Internes</span>
+            <span class="sb__subitem-count">3</span>
+          </a>
+          <a class="sb__subitem" routerLink="/courriers/recherche" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Recherche avancée</span>
+          </a>
+        </div>
+      }
+
+      <a class="sb__item" routerLink="/demandes" routerLinkActive="sb__item--active" [title]="isCollapsed() ? 'Demandes' : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </span>
+        @if (!isCollapsed()) {
+          <span class="sb__item-label">Demandes</span>
+          <span class="sb__badge sb__badge--gray">10</span>
+        }
+      </a>
+
+      <!-- Protocole (expandable) -->
+      <div
+        class="sb__item sb__item--group"
+        (click)="toggleProtocole()"
+        [title]="isCollapsed() ? 'Protocole' : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        @if (!isCollapsed()) {
+          <span class="sb__item-label">Protocole</span>
+          <svg class="sb__chevron" [class.sb__chevron--open]="protocoleOpen()" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        }
+      </div>
+      @if (!isCollapsed()) {
+        <div class="sb__subnav" [class.sb__subnav--open]="protocoleOpen()">
+          <a class="sb__subitem" routerLink="/protocole/contacts" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Contacts</span>
+            <span class="sb__tag">à venir</span>
+          </a>
+          <a class="sb__subitem" routerLink="/protocole/organismes" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Organismes</span>
+            <span class="sb__tag">à venir</span>
+          </a>
+          <a class="sb__subitem" routerLink="/protocole/diffusion" routerLinkActive="sb__subitem--active">
+            <span class="sb__subitem-dot"></span>
+            <span class="sb__subitem-label">Listes de diffusion</span>
+            <span class="sb__tag">à venir</span>
+          </a>
+        </div>
+      }
+
+      <a class="sb__item" routerLink="/courriers/recherche" routerLinkActive="sb__item--active" [title]="isCollapsed() ? 'Recherche' : ''">
+        <span class="sb__item-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </span>
+        @if (!isCollapsed()) { <span class="sb__item-label">Recherche</span> }
+      </a>
+    </div>
+
+    @if (authStore.isAdmin()) {
+      <div class="sb__divider"></div>
+      <div class="sb__section">
+        <!-- Administration (expandable) -->
+        <div
+          class="sb__item sb__item--group"
+          [class.sb__item--active]="!isCollapsed() && adminOpen()"
+          routerLinkActive
+          #rlaA="routerLinkActive"
+          [class.sb__item--route-active]="rlaA.isActive"
+          (click)="toggleAdmin()"
+          [title]="isCollapsed() ? 'Administration' : ''">
+          <span class="sb__item-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M12 2v2m-7.07 2.93l1.41 1.41M2 12h2m2.93 7.07l1.41-1.41M12 22v-2m7.07-2.93l-1.41-1.41M22 12h-2"/></svg>
+          </span>
+          @if (!isCollapsed()) {
+            <span class="sb__item-label">Administration</span>
+            <svg class="sb__chevron" [class.sb__chevron--open]="adminOpen()" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          }
+        </div>
+        @if (!isCollapsed()) {
+          <div class="sb__subnav" [class.sb__subnav--open]="adminOpen()">
+            <a class="sb__subitem" routerLink="/parametres/codifications" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Codifications</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/maquettes" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Maquettes</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/maintenance" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Maintenance</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/mails-archives" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Mails archivés</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/journal-mails" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Journal des mails</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/configuration" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Configuration</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/droits" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Profils &amp; droits</span>
+              <span class="sb__tag">à venir</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/recherches" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Modèles de recherche</span>
+            </a>
+            <a class="sb__subitem" routerLink="/parametres/champs" routerLinkActive="sb__subitem--active">
+              <span class="sb__subitem-dot"></span>
+              <span class="sb__subitem-label">Personnalisation des champs</span>
+            </a>
+          </div>
+        }
+      </div>
+    }
+
+  </nav>
+
+  <!-- Footer — user info + collapse toggle -->
+  <div class="sb__footer">
+    <div
+      class="sb__user"
+      data-tour="user"
+      nz-dropdown
+      [nzDropdownMenu]="userMenu"
+      nzTrigger="click"
+      nzPlacement="topLeft">
+      <div class="sb__avatar">{{ authStore.userInitials() }}</div>
+      @if (!isCollapsed()) {
+        <div class="sb__user-info">
+          <div class="sb__user-name">{{ authStore.userName() }}</div>
+          <div class="sb__user-role">{{ authStore.serviceName() }}</div>
+        </div>
+      }
+    </div>
+    <button class="sb__collapse-btn" type="button" (click)="toggleSidebar()" aria-label="Réduire ou développer la barre latérale" [title]="isCollapsed() ? 'Développer' : 'Réduire'">
+      <svg [class.sb__collapse-icon--flipped]="isCollapsed()" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+  </div>
+
+</div>
+
+<!-- User dropdown menu -->
+<nz-dropdown-menu #userMenu="nzDropdownMenu">
+  <ul nz-menu>
+    <li nz-menu-item disabled class="sb__menu-service-label">{{ authStore.serviceName() }}</li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item (click)="demo.openAbout()">À propos de cette démo</li>
+    <li nz-menu-item (click)="demo.resetDemo()">Réinitialiser les données de démo</li>
+    <li nz-menu-divider></li>
+    <li nz-menu-item nzDanger (click)="logout()">Se déconnecter</li>
+  </ul>
+</nz-dropdown-menu>

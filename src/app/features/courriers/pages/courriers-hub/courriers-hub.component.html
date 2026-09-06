@@ -1,0 +1,41 @@
+<div class="hub">
+
+  @if (!isFormRoute()) {
+    <!-- ── Header ─────────────────────────────────────────────── -->
+    <div class="hub__header">
+      <div class="hub__header-left">
+        <h1 class="hub__title">Courriers</h1>
+        <p class="hub__subtitle">Gestion des courriers entrants, sortants et internes</p>
+      </div>
+      <div class="hub__header-right">
+        <button nz-button type="button" routerLink="recherche">
+          <span nz-icon nzType="search" nzTheme="outline"></span>
+          Recherche avancée
+        </button>
+        <button nz-button nzType="primary" type="button" [routerLink]="activeTab() + '/nouveau'">
+          <span nz-icon nzType="plus"></span>
+          Nouveau courrier
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Tab bar ─────────────────────────────────────────────── -->
+    <nav class="hub__tabs" aria-label="Types de courriers">
+      <a class="hub__tab" routerLink="entrant" routerLinkActive="hub__tab--active" [routerLinkActiveOptions]="{ exact: false }">
+        Entrants<span class="hub__tab-count">10</span>
+      </a>
+      <a class="hub__tab" routerLink="sortant" routerLinkActive="hub__tab--active" [routerLinkActiveOptions]="{ exact: false }">
+        Sortants<span class="hub__tab-count">5</span>
+      </a>
+      <a class="hub__tab" routerLink="interne" routerLinkActive="hub__tab--active" [routerLinkActiveOptions]="{ exact: false }">
+        Internes<span class="hub__tab-count">3</span>
+      </a>
+    </nav>
+  }
+
+  <!-- ── Tab content ─────────────────────────────────────────── -->
+  <div class="hub__content">
+    <router-outlet />
+  </div>
+
+</div>

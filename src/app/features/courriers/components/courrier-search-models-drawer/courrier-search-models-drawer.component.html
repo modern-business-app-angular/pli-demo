@@ -1,0 +1,67 @@
+<nz-drawer
+  [nzVisible]="store.isModelsPanelOpen()"
+  nzTitle="Mes modèles de recherche"
+  nzWidth="380"
+  nzPlacement="right"
+  (nzOnClose)="store.toggleModelsPanel()">
+
+  <ng-container *nzDrawerContent>
+
+    <!-- ── Save current search ── -->
+    <div class="drawer-section">
+      <div class="drawer-title">Enregistrer la recherche actuelle</div>
+      <form [formGroup]="saveForm" class="save-form">
+        <input nz-input formControlName="nom"
+          placeholder="Nom du modèle…"
+          [class.ng-invalid-touched]="saveForm.get('nom')?.invalid && saveForm.get('nom')?.touched" />
+        <nz-select formControlName="visibility" class="cfp-full" style="width:100%">
+          @for (opt of visibilityOptions; track opt.value) {
+            <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+          }
+        </nz-select>
+        <button nz-button nzType="primary" nzSize="small"
+          (click)="saveCurrentSearch()" [nzLoading]="isSaving">
+          <span nz-icon nzType="save"></span>
+          Enregistrer
+        </button>
+      </form>
+    </div>
+
+    <!-- ── Saved models list ── -->
+    <div class="drawer-section">
+      <div class="drawer-title">Modèles enregistrés ({{ store.savedModels().length }})</div>
+
+      @if (store.savedModels().length === 0) {
+        <nz-empty nzDescription="Aucun modèle enregistré" />
+      } @else {
+        @for (model of store.savedModels(); track model.id) {
+          <div class="model-card">
+            <div class="model-card__name">{{ model.nom }}</div>
+            <div class="model-card__meta">
+              <nz-tag [nzColor]="visibilityColor(model.visibility)" style="font-size:10px; margin:0;">
+                {{ visibilityLabel(model.visibility) }}
+              </nz-tag>
+              <span>{{ model.filters.length }} filtre(s)</span>
+            </div>
+            <div class="model-card__actions">
+              <button nz-button nzType="primary" nzGhost nzSize="small" (click)="applyModel(model)">
+                <span nz-icon nzType="search"></span>
+                Appliquer
+              </button>
+              <button nz-button nzDanger nzSize="small"
+                nz-popconfirm
+                nzPopconfirmTitle="Supprimer ce modèle ?"
+                nzOkText="Supprimer"
+                nzCancelText="Annuler"
+                (nzOnConfirm)="deleteModel(model)">
+                <span nz-icon nzType="delete"></span>
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+
+  </ng-container>
+
+</nz-drawer>

@@ -1,0 +1,437 @@
+<nz-drawer
+  [nzVisible]="visible"
+  [nzTitle]="drawerTitle()"
+  nzWidth="1100px"
+  [nzClosable]="true"
+  (nzOnClose)="close()">
+
+  <ng-container *nzDrawerContent>
+    <div class="tcd-layout">
+
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <!-- PANEL 1 — CATALOGUE (dark IDE sidebar)                          -->
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <aside class="tcd-panel tcd-panel--catalog">
+
+        <!-- Header + mode toggle -->
+        <div class="tcd-cat-topbar">
+          <span class="tcd-cat-topbar__title">Catalogue</span>
+          <div class="tcd-mode-toggle">
+            <button
+              class="tcd-mode-toggle__btn"
+              [class.tcd-mode-toggle__btn--active]="catalogMode() === 'merge'"
+              (click)="catalogMode.set('merge')"
+              title="Mode MERGEFIELD (Publipostage Word)">
+              «…»
+            </button>
+            <button
+              class="tcd-mode-toggle__btn"
+              [class.tcd-mode-toggle__btn--active]="catalogMode() === 'mustache'"
+              (click)="catalogMode.set('mustache')"
+              title="Mode moustache {{'{{'}}…{{'}}'}}">
+              {{'{{…}}'}}
+            </button>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="tcd-search">
+          <span nz-icon nzType="search" class="tcd-search__icon"></span>
+          <input
+            class="tcd-search__input"
+            placeholder="Rechercher une balise…"
+            [ngModel]="searchQuery()"
+            (ngModelChange)="searchQuery.set($event)"
+            aria-label="Rechercher une balise" />
+          @if (searchQuery()) {
+            <button class="tcd-search__clear" (click)="searchQuery.set('')" aria-label="Effacer">
+              <span nz-icon nzType="close-circle"></span>
+            </button>
+          }
+        </div>
+
+        <!-- Loading -->
+        @if (isLoadingCatalog()) {
+          <div class="tcd-catalog-loading">
+            <nz-spin nzSize="small" />
+          </div>
+        }
+
+        <!-- Custom accordion (no NzCollapse — full CSS control on dark bg) -->
+        @if (!isLoadingCatalog()) {
+          <div class="tcd-accordion">
+            @if (filteredCategories().length === 0) {
+              <div class="tcd-empty-search">
+                <span nz-icon nzType="inbox" style="font-size:24px;opacity:.3;"></span>
+                <span>Aucune balise correspondante</span>
+              </div>
+            }
+            @for (cat of filteredCategories(); track cat.id) {
+              <div class="tcd-cat-item" [class.tcd-cat-item--open]="isCatExpanded(cat.id)">
+
+                <!-- Category header button -->
+                <button
+                  class="tcd-cat-hd"
+                  (click)="toggleCat(cat.id)"
+                  [attr.aria-expanded]="isCatExpanded(cat.id)">
+                  <span
+                    nz-icon
+                    [nzType]="cat.icon"
+                    class="tcd-cat-hd__icon"
+                    [style.color]="catAccent(cat.id)">
+                  </span>
+                  <span class="tcd-cat-hd__label">{{ cat.label }}</span>
+                  <span class="tcd-cat-hd__count">{{ cat.tags.length }}</span>
+                  <span class="tcd-cat-hd__chevron" nz-icon nzType="right"></span>
+                </button>
+
+                <!-- Tag list — shown only when expanded -->
+                @if (isCatExpanded(cat.id)) {
+                  <div class="tcd-tag-list">
+                    @for (tag of cat.tags; track tag.name) {
+                      <div class="tcd-tag-row" [title]="tag.description">
+                        <span class="tcd-tag-row__label">{{ tag.label }}</span>
+                        @if (catalogMode() === 'merge') {
+                          <button
+                            class="tcd-chip tcd-chip--merge"
+                            [class.tcd-chip--copied]="copiedTagKey() === tag.name + '-merge'"
+                            (click)="copyMergeField(tag)"
+                            [title]="'Copier ' + tag.mergeField">
+                            {{ tag.mergeField }}
+                          </button>
+                        } @else {
+                          <button
+                            class="tcd-chip tcd-chip--mustache"
+                            [class.tcd-chip--copied]="copiedTagKey() === tag.name + '-mustache'"
+                            (click)="copyMustache(tag)"
+                            [title]="'Copier ' + tag.mustache">
+                            {{ tag.mustache }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
+          </div>
+        }
+
+      </aside>
+
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <!-- PANEL 2 — ÉDITION WORD                                          -->
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <section class="tcd-panel tcd-panel--word">
+
+        <div class="tcd-panel-topbar">
+          <span class="tcd-panel-topbar__label">Édition Word</span>
+        </div>
+
+        <div class="tcd-word-scroll">
+
+          <!-- ── Open in Word ── -->
+          <div class="tcd-word-hero">
+            <div class="tcd-word-hero__icon">W</div>
+            <div class="tcd-word-hero__body">
+              <div class="tcd-word-hero__title">Ouvrir dans Microsoft Word</div>
+              <div class="tcd-word-hero__desc">
+                Sauvegarde automatique via WebDAV (désactivée dans la démo)
+              </div>
+            </div>
+            <button
+              nz-button nzType="primary"
+              class="tcd-word-open-btn"
+              (click)="openInWord()"
+              [disabled]="!maquette">
+              <span nz-icon nzType="export"></span>
+              Ouvrir
+            </button>
+          </div>
+
+          <!-- Status indicator -->
+          @if (wordOpenedAt()) {
+            <div class="tcd-status-pill" [class.tcd-status-pill--saved]="wordStatusLabel()">
+              <span class="tcd-status-pill__dot"></span>
+              @if (wordStatusLabel()) {
+                Modifié {{ wordStatusLabel() }}
+              } @else {
+                En attente de sauvegarde…
+              }
+            </div>
+          }
+
+          <div class="tcd-sep"></div>
+
+          <!-- ── CSV Data Source ── -->
+          <div class="tcd-word-section">
+            <div class="tcd-word-section__header">
+              <span nz-icon nzType="table" class="tcd-word-section__icon tcd-word-section__icon--green"></span>
+              <span>Source de données — Publipostage</span>
+            </div>
+            <p class="tcd-word-section__desc">
+              Téléchargez le catalogue CSV et liez-le dans Word pour accéder à tous les
+              champs via <strong>Publipostage → Insérer un champ de fusion</strong>.
+            </p>
+            <button nz-button nzType="default" (click)="downloadCatalogCsv()" class="tcd-csv-btn">
+              <span nz-icon nzType="download"></span>
+              pli&#8209;catalog.csv
+            </button>
+            <div class="tcd-csv-path">
+              <span class="tcd-csv-path__step">Publipostage</span>
+              <span class="tcd-csv-path__arrow">→</span>
+              <span class="tcd-csv-path__step">Sélectionner les destinataires</span>
+              <span class="tcd-csv-path__arrow">→</span>
+              <span class="tcd-csv-path__step">Utiliser une liste existante</span>
+            </div>
+          </div>
+
+          <div class="tcd-sep"></div>
+
+          <!-- ── Step guide ── -->
+          <div class="tcd-word-section">
+            <div class="tcd-word-section__header">
+              <span nz-icon nzType="ordered-list" class="tcd-word-section__icon"></span>
+              <span>Guide rapide</span>
+            </div>
+            <div class="tcd-steps">
+              <div class="tcd-step">
+                <div class="tcd-step__num">1</div>
+                <div class="tcd-step__line"></div>
+                <div class="tcd-step__body">
+                  <div class="tcd-step__title">Ouvrir dans Word</div>
+                  <div class="tcd-step__desc">Cliquez le bouton "Ouvrir" ci-dessus</div>
+                </div>
+              </div>
+              <div class="tcd-step">
+                <div class="tcd-step__num">2</div>
+                <div class="tcd-step__line"></div>
+                <div class="tcd-step__body">
+                  <div class="tcd-step__title">Lier le catalogue CSV</div>
+                  <div class="tcd-step__desc">
+                    Publipostage → Sélectionner les destinataires →
+                    Utiliser une liste existante <em>(une seule fois par maquette)</em>
+                  </div>
+                </div>
+              </div>
+              <div class="tcd-step">
+                <div class="tcd-step__num">3</div>
+                <div class="tcd-step__line"></div>
+                <div class="tcd-step__body">
+                  <div class="tcd-step__title">Insérer un champ de fusion</div>
+                  <div class="tcd-step__desc">
+                    Publipostage → Insérer un champ de fusion → choisissez dans la liste
+                  </div>
+                </div>
+              </div>
+              <div class="tcd-step tcd-step--last">
+                <div class="tcd-step__num tcd-step__num--done">✓</div>
+                <div class="tcd-step__body">
+                  <div class="tcd-step__title">Sauvegarder (Ctrl+S)</div>
+                  <div class="tcd-step__desc">Synchronisation automatique sur le serveur</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tcd-sep"></div>
+
+          <!-- ── Fallback ── -->
+          <nz-collapse [nzBordered]="false" class="tcd-fallback-collapse">
+            <nz-collapse-panel nzHeader="Édition sans Microsoft Word" [nzActive]="false">
+              <div class="tcd-fallback">
+                <button nz-button nzType="default" nzSize="small" (click)="downloadFallback()">
+                  <span nz-icon nzType="download"></span>
+                  Télécharger le fichier
+                </button>
+                <div
+                  class="tcd-upload-zone"
+                  (click)="reuploadInput.click()"
+                  (keydown.enter)="reuploadInput.click()"
+                  tabindex="0"
+                  role="button">
+                  <span nz-icon nzType="upload" class="tcd-upload-zone__icon"></span>
+                  @if (reuploadFile()) {
+                    <span class="tcd-upload-zone__filename">{{ reuploadFile()!.name }}</span>
+                  } @else {
+                    <span>Déposer le fichier modifié ici</span>
+                  }
+                </div>
+                <input
+                  #reuploadInput
+                  type="file"
+                  accept=".doc,.docx,.dotx,.odt"
+                  class="tcd-hidden-input"
+                  (change)="onReuploadChange($event)"
+                  aria-label="Re-uploader la maquette" />
+              </div>
+            </nz-collapse-panel>
+          </nz-collapse>
+
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <!-- PANEL 3 — ANALYSE DES BALISES                                   -->
+      <!-- ════════════════════════════════════════════════════════════════ -->
+      <section class="tcd-panel tcd-panel--analysis">
+
+        <div class="tcd-panel-topbar">
+          <span class="tcd-panel-topbar__label">Analyse des balises</span>
+        </div>
+
+        <div class="tcd-analysis-scroll">
+
+          <!-- Analyze button -->
+          <button
+            nz-button nzType="primary" nzGhost
+            class="tcd-analyze-btn"
+            (click)="analyzeDocument()"
+            [nzLoading]="parseResult().status === 'parsing'"
+            [disabled]="!maquette">
+            <span nz-icon nzType="scan"></span>
+            Analyser les balises du document
+          </button>
+
+          <!-- Idle -->
+          @if (parseResult().status === 'idle') {
+            <div class="tcd-idle-state">
+              <div class="tcd-idle-state__icon">&lt;/&gt;</div>
+              <p>Lancez l'analyse pour détecter les balises <code>«MERGEFIELD»</code> et <code>{{'{{'}}…{{'}}'}}</code> présentes dans le fichier Word.</p>
+            </div>
+          }
+
+          <!-- Parsing -->
+          @if (parseResult().status === 'parsing') {
+            <div class="tcd-parsing-state">
+              <nz-spin nzTip="Analyse du document en cours…" />
+            </div>
+          }
+
+          <!-- Error -->
+          @if (parseResult().status === 'error') {
+            <nz-alert
+              nzType="error"
+              [nzMessage]="parseResult().errorMessage ?? 'Erreur lors de l\'analyse'"
+              [nzShowIcon]="true">
+            </nz-alert>
+          }
+
+          <!-- Results -->
+          @if (parseResult().status === 'done') {
+
+            <!-- Mode + Breakdown -->
+            <div class="tcd-result-summary">
+              <div class="tcd-mode-row">
+                <span class="tcd-mode-row__label">Mode détecté</span>
+                <nz-tag [nzColor]="detectModeColor(parseResult().detectedMode)" class="tcd-mode-tag">
+                  {{ detectModeBadge(parseResult().detectedMode) }}
+                </nz-tag>
+              </div>
+
+              @if (parseResult().foundTags.length > 0) {
+                <!-- Visual breakdown bar -->
+                <div class="tcd-bar-wrap">
+                  <div class="tcd-bar">
+                    @if (validTags().length > 0) {
+                      <div
+                        class="tcd-bar__seg tcd-bar__seg--valid"
+                        [style.flex-grow]="validTags().length"
+                        [title]="validTags().length + ' valide(s)'">
+                      </div>
+                    }
+                    @if (unknownTags().length > 0) {
+                      <div
+                        class="tcd-bar__seg tcd-bar__seg--unknown"
+                        [style.flex-grow]="unknownTags().length"
+                        [title]="unknownTags().length + ' inconnue(s)'">
+                      </div>
+                    }
+                  </div>
+                  <div class="tcd-bar-legend">
+                    @if (validTags().length > 0) {
+                      <span class="tcd-bar-legend__item tcd-bar-legend__item--valid">
+                        <span class="tcd-bar-legend__dot"></span>
+                        {{ validTags().length }} valide{{ validTags().length > 1 ? 's' : '' }}
+                      </span>
+                    }
+                    @if (unknownTags().length > 0) {
+                      <span class="tcd-bar-legend__item tcd-bar-legend__item--unknown">
+                        <span class="tcd-bar-legend__dot"></span>
+                        {{ unknownTags().length }} inconnue{{ unknownTags().length > 1 ? 's' : '' }}
+                      </span>
+                    }
+                    @if (unusedTags().length > 0) {
+                      <span class="tcd-bar-legend__item tcd-bar-legend__item--unused">
+                        {{ unusedTags().length }} non utilisée{{ unusedTags().length > 1 ? 's' : '' }}
+                      </span>
+                    }
+                  </div>
+                </div>
+              } @else {
+                <div class="tcd-no-tags">
+                  <span nz-icon nzType="inbox"></span>
+                  Aucune balise trouvée dans ce document
+                </div>
+              }
+            </div>
+
+            <!-- Valid tags -->
+            @if (validTags().length > 0) {
+              <div class="tcd-result-block tcd-result-block--valid">
+                <div class="tcd-result-block__hd">
+                  <span class="tcd-result-block__icon">✓</span>
+                  <span>Balises valides</span>
+                  <span class="tcd-result-count">{{ validTags().length }}</span>
+                </div>
+                <div class="tcd-chips">
+                  @for (name of validTags(); track name) {
+                    <span class="tcd-badge tcd-badge--valid">{{ name }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Unknown tags -->
+            @if (unknownTags().length > 0) {
+              <div class="tcd-result-block tcd-result-block--unknown">
+                <div class="tcd-result-block__hd">
+                  <span class="tcd-result-block__icon">⚠</span>
+                  <span>Balises inconnues</span>
+                  <span class="tcd-result-count">{{ unknownTags().length }}</span>
+                </div>
+                <p class="tcd-block-hint">Non reconnues dans le catalogue — vérifiez l'orthographe exacte.</p>
+                <div class="tcd-chips">
+                  @for (name of unknownTags(); track name) {
+                    <span class="tcd-badge tcd-badge--unknown">{{ name }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Unused tags -->
+            @if (unusedTags().length > 0) {
+              <div class="tcd-result-block tcd-result-block--unused">
+                <div class="tcd-result-block__hd">
+                  <span class="tcd-result-block__icon">○</span>
+                  <span>Non utilisées dans ce document</span>
+                  <span class="tcd-result-count">{{ unusedTags().length }}</span>
+                </div>
+                <div class="tcd-chips tcd-chips--faded">
+                  @for (name of unusedTags(); track name) {
+                    <span class="tcd-badge tcd-badge--unused">{{ name }}</span>
+                  }
+                </div>
+              </div>
+            }
+
+          }
+
+        </div>
+      </section>
+
+    </div>
+  </ng-container>
+
+</nz-drawer>

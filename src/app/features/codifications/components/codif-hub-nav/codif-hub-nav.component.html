@@ -1,0 +1,25 @@
+<nav class="chn-nav" aria-label="Navigation codifications">
+  @for (group of groups; track group.label) {
+    <div class="chn-group">
+      <span class="chn-group__label">{{ group.label }}</span>
+
+      @for (item of group.items; track item.path) {
+        <a
+          class="chn-item"
+          [class.chn-item--wip]="item.wip"
+          [routerLink]="item.path"
+          routerLinkActive="chn-item--active"
+          [title]="item.wip ? item.label + ' (en cours de développement)' : item.label">
+          {{ item.label }}
+          @if (item.wip) {
+            <span class="chn-wip-badge">WIP</span>
+          } @else if (!statsLoading() && counts()[item.path] !== undefined) {
+            <span class="chn-count">{{ counts()[item.path] }}</span>
+          } @else if (statsLoading()) {
+            <span class="chn-count chn-count--loading"></span>
+          }
+        </a>
+      }
+    </div>
+  }
+</nav>

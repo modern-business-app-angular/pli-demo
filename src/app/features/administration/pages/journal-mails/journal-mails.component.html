@@ -1,0 +1,131 @@
+<div class="jml-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="jml-header">
+    <h2 class="jml-header__title">Journal des mails</h2>
+  </header>
+
+  <!-- ── Filter bar ───────────────────────────────────────────── -->
+  <div class="jml-filters">
+    <div class="jml-filters__row">
+
+      <div class="jml-filter-group">
+        <label class="jml-filter-label">Période</label>
+        <nz-range-picker [(ngModel)]="dateRange" nzFormat="dd/MM/yyyy" class="jml-range-picker" />
+      </div>
+
+      <div class="jml-filter-group jml-filter-group--grow">
+        <label class="jml-filter-label">Objet d'email</label>
+        <input nz-input [(ngModel)]="filterObjet" placeholder="Objet…" />
+      </div>
+
+      <div class="jml-filter-group">
+        <label class="jml-filter-label">Type</label>
+        <nz-select [(ngModel)]="filterType" class="jml-select" nzAllowClear nzPlaceHolder="Tous">
+          @for (opt of typeOptions; track opt.value) {
+            <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+          }
+        </nz-select>
+      </div>
+
+      <div class="jml-filter-group">
+        <label class="jml-filter-label">Emetteur</label>
+        <input nz-input class="jml-input" [(ngModel)]="filterEmetteur" placeholder="Emetteur…" />
+      </div>
+
+      <div class="jml-filter-group">
+        <label class="jml-filter-label">Destinataire</label>
+        <input nz-input class="jml-input" [(ngModel)]="filterDestinataire" placeholder="Destinataire…" />
+      </div>
+
+      <div class="jml-filter-actions">
+        <button nz-button nzType="primary" (click)="search()">Rechercher</button>
+        <button nz-button nzType="default" (click)="reset()">Réinitialiser</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="jml-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th>Objet</th>
+        <th nzWidth="150px" [nzSortFn]="true">Date</th>
+        <th nzWidth="200px">Emetteur</th>
+        <th nzWidth="200px">Destinataire</th>
+        <th nzWidth="80px">Type</th>
+        <th nzWidth="140px">Poste</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (mail of items(); track mail.id) {
+        <tr class="jml-row" (click)="openDetail(mail)">
+          <td class="jml-cell-objet">{{ mail.objet }}</td>
+          <td class="jml-cell-date">{{ formatDate(mail.date) }}</td>
+          <td class="jml-cell-email">{{ mail.emetteur }}</td>
+          <td class="jml-cell-email">{{ mail.destinataire }}</td>
+          <td><span class="jml-type-badge">{{ mail.type }}</span></td>
+          <td class="jml-cell-mono">{{ mail.machine ?? '—' }}</td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+  <!-- ── Detail Drawer ─────────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="drawerVisible()"
+    nzPlacement="right"
+    nzWidth="560px"
+    [nzTitle]="selectedMail() ? selectedMail()!.objet : 'Détail du mail'"
+    (nzOnClose)="drawerVisible.set(false)">
+
+    @if (selectedMail(); as mail) {
+      <div class="jml-detail">
+        <div class="jml-detail__meta">
+          <div class="jml-detail__row">
+            <span class="jml-detail__label">Date</span>
+            <span>{{ formatDate(mail.date) }}</span>
+          </div>
+          <div class="jml-detail__row">
+            <span class="jml-detail__label">Type</span>
+            <span class="jml-type-badge">{{ mail.type }}</span>
+          </div>
+          <div class="jml-detail__row">
+            <span class="jml-detail__label">Emetteur</span>
+            <span class="jml-cell-email">{{ mail.emetteur }}</span>
+          </div>
+          <div class="jml-detail__row">
+            <span class="jml-detail__label">Destinataire</span>
+            <span class="jml-cell-email">{{ mail.destinataire }}</span>
+          </div>
+          @if (mail.machine) {
+            <div class="jml-detail__row">
+              <span class="jml-detail__label">Poste</span>
+              <span class="jml-cell-mono">{{ mail.machine }}</span>
+            </div>
+          }
+        </div>
+
+        @if (mail.contenu) {
+          <div class="jml-detail__content">
+            <span class="jml-detail__label">Contenu</span>
+            <div class="jml-detail__body" [innerHTML]="mail.contenu"></div>
+          </div>
+        }
+      </div>
+    }
+
+  </nz-drawer>
+
+</div>

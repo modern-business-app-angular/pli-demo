@@ -1,0 +1,113 @@
+@import 'styles/tokens';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.hub {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  background: $surface-body;
+}
+
+// ── Header ────────────────────────────────────────────────────
+.hub__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 28px 28px 0;
+  background: $surface-card;
+}
+
+.hub__header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hub__title {
+  font-size: $font-size-2xl;
+  font-weight: $font-weight-semibold;
+  color: $color-neutral-800;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.hub__subtitle {
+  font-size: $font-size-sm;
+  color: $color-neutral-500;
+  margin: 0;
+}
+
+.hub__header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 4px;
+  flex-shrink: 0;
+}
+
+// ── Tab bar ───────────────────────────────────────────────────
+.hub__tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 28px 0;
+  background: $surface-card;
+  border-bottom: 1px solid $surface-border;
+}
+
+.hub__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  padding: 6px 14px;
+  font-size: 13.5px;
+  font-weight: $font-weight-medium;
+  color: $color-neutral-500;
+  text-decoration: none;
+  border-radius: $radius-full;
+  margin-bottom: 8px;
+  transition: color $transition-fast, background $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    color: $color-neutral-800;
+    background: $color-neutral-100;
+  }
+
+  &--active {
+    background: $color-info;
+    color: #fff;
+
+    .hub__tab-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+  }
+}
+
+.hub__tab-count {
+  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  font-family: $font-family-mono;
+  color: $color-neutral-400;
+  background: $color-neutral-100;
+  padding: 0 6px;
+  border-radius: $radius-full;
+  margin-left: 6px;
+  line-height: 18px;
+  transition: background $transition-fast, color $transition-fast;
+}
+
+// ── Content ───────────────────────────────────────────────────
+.hub__content {
+  flex: 1;
+  overflow-y: auto;
+}

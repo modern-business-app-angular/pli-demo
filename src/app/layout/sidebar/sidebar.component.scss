@@ -1,0 +1,438 @@
+@import 'styles/tokens';
+
+$sb-item-h: 48px;  // WCAG 2.5.5 — minimum touch target
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+// ── Root container ──────────────────────────────────────────
+.sb {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: $surface-sidebar;
+  overflow: hidden;
+}
+
+// ── Logo ─────────────────────────────────────────────────────
+.sb__logo {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.sb__logo-mark {
+  width: 32px;
+  height: 32px;
+  background: $color-accent-400;
+  border-radius: $radius-sm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: $font-weight-bold;
+  color: $color-brand-900;
+  flex-shrink: 0;
+  font-family: $font-family-mono;
+}
+
+.sb__logo-text {
+  font-size: 15px;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.sb__logo-v {
+  color: $color-accent-400;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  margin-left: 2px;
+  vertical-align: super;
+}
+
+// ── Command palette trigger ──────────────────────────────────
+.sb__cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 10px;
+  padding: 7px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: $radius-base;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  transition: background $transition-fast, color $transition-fast, border-color $transition-fast;
+  flex-shrink: 0;
+  min-height: 34px;
+  width: calc(100% - 20px);
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.10);
+    color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(255, 255, 255, 0.14);
+  }
+}
+
+.sb__cmd-icon {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+.sb__cmd-text {
+  flex: 1;
+  white-space: nowrap;
+}
+
+.sb__cmd-kbd {
+  font-size: 10px;
+  font-family: $font-family-mono;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+// ── Navigation ───────────────────────────────────────────────
+.sb__nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.08) transparent;
+
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+  }
+}
+
+// ── Section ──────────────────────────────────────────────────
+.sb__section {
+  padding: 4px 0;
+}
+
+.sb__section-label {
+  padding: 8px 14px 4px;
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.40);  // slightly brighter on darker bg
+  white-space: nowrap;
+}
+
+// ── Nav item ─────────────────────────────────────────────────
+.sb__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  height: $sb-item-h;
+  margin: 1px 6px;
+  border-radius: $radius-base;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.75);   // lightened for dark bg readability
+  font-size: 14px;                     // minimum 14px for Visual Comfort
+  font-weight: $font-weight-regular;
+  text-decoration: none;
+  transition: background $transition-fast, color $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #ffffff;
+  }
+
+  &--active {
+    background: rgba(255, 255, 255, 0.10);
+    color: #fff;
+    font-weight: $font-weight-medium;
+
+    .sb__item-icon svg {
+      stroke: $color-accent-400;
+    }
+  }
+
+  &--group {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  &--route-active {
+    .sb__item-icon svg {
+      stroke: $color-accent-400;
+    }
+  }
+}
+
+.sb__item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.45);
+
+  svg {
+    transition: stroke $transition-fast;
+  }
+}
+
+.sb__item-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &--service {
+    font-size: 12.5px;
+    font-weight: $font-weight-medium;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 0.01em;
+  }
+}
+
+// ── Badges ───────────────────────────────────────────────────
+.sb__badge {
+  font-size: 11px;
+  font-weight: $font-weight-semibold;
+  padding: 1px 6px;
+  border-radius: $radius-full;
+  line-height: 16px;
+  flex-shrink: 0;
+
+  &--amber {
+    background: rgba(237, 183, 50, 0.18);
+    color: $color-accent-400;
+  }
+
+  &--red {
+    background: rgba(255, 77, 79, 0.18);
+    color: #ff6b6d;
+  }
+
+  &--gray {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.38);
+  }
+}
+
+// ── Chevron ──────────────────────────────────────────────────
+.sb__chevron {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.28);
+  transition: transform $transition-base;
+
+  &--open {
+    transform: rotate(90deg);
+  }
+}
+
+// ── Sub-nav ──────────────────────────────────────────────────
+.sb__subnav {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &--open {
+    max-height: 400px;  // accounts for 44px subitems × up to 8 items
+  }
+}
+
+.sb__subitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 40px;
+  height: 44px;  // touch target minimum
+  margin: 1px 6px;
+  border-radius: $radius-base;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.65);   // lightened for dark bg
+  font-size: 14px;                     // minimum 14px
+  text-decoration: none;
+  transition: background $transition-fast, color $transition-fast;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.07);
+    color: #ffffff;
+  }
+
+  &--active {
+    color: rgba(255, 255, 255, 0.9);
+
+    .sb__subitem-dot {
+      background: $color-accent-400;
+    }
+  }
+}
+
+.sb__subitem-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: $radius-full;
+  background: rgba(255, 255, 255, 0.22);
+  flex-shrink: 0;
+  transition: background $transition-fast;
+
+  &--warn {
+    background: rgba(237, 183, 50, 0.5);
+  }
+}
+
+.sb__subitem-label {
+  flex: 1;
+}
+
+.sb__subitem-count {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.28);
+  font-family: $font-family-mono;
+
+  &--red {
+    color: #ff6b6d;
+    font-weight: $font-weight-semibold;
+  }
+
+  &--amber {
+    color: $color-accent-400;
+    font-weight: $font-weight-semibold;
+  }
+}
+
+// ── Divider ──────────────────────────────────────────────────
+.sb__divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 4px 0;
+}
+
+// ── Footer ───────────────────────────────────────────────────
+.sb__footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.sb__user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  padding: 5px 6px;
+  border-radius: $radius-base;
+  cursor: pointer;
+  transition: background $transition-fast;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+.sb__avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: $radius-full;
+  background: $color-brand-400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.sb__user-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.sb__user-name {
+  font-size: 13px;
+  font-weight: $font-weight-medium;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb__user-role {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+// ── Collapse button ──────────────────────────────────────────
+.sb__collapse-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: $radius-base;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  transition: background $transition-fast, color $transition-fast;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  svg {
+    transition: transform $transition-base;
+  }
+}
+
+.sb__collapse-icon--flipped {
+  transform: rotate(180deg);
+}
+
+// ── User menu item style ──────────────────────────────────────
+.sb__menu-service-label {
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+// ── Demo: modules outside the demo scope ──────────────────────
+.sb__tag {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

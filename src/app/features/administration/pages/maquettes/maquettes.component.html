@@ -1,0 +1,247 @@
+<div class="maq-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="maq-header">
+    <h2 class="maq-header__title">Maquettes</h2>
+    <div class="maq-header__actions">
+      <input
+        nz-input
+        class="maq-search"
+        placeholder="Rechercher par nom…"
+        [(ngModel)]="searchModel"
+        (ngModelChange)="onSearch($event)"
+        aria-label="Rechercher une maquette" />
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <svg class="maq-btn-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Ajouter
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="maq-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th [nzSortFn]="true">Nom</th>
+        <th nzWidth="180px" [nzSortFn]="true">Type</th>
+        <th nzWidth="100px">Extension</th>
+        <th nzWidth="120px">Accès</th>
+        <th nzWidth="200px">Propriétaire</th>
+        <th nzWidth="120px">Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of items(); track item.id) {
+        <tr class="maq-row">
+          <td class="maq-cell-nom">
+            {{ item.nom }}
+            @if (item.filename) {
+              <span class="maq-filename">{{ item.filename }}</span>
+            }
+          </td>
+          <td>{{ getTypeLabel(item.type) }}</td>
+          <td><code class="maq-ext">{{ item.extension }}</code></td>
+          <td>
+            <nz-tag [nzColor]="getAccesColor(item.acces)">
+              {{ item.acces === 'PUBLIC' ? 'Public' : item.acces === 'SERVICE' ? 'Service' : 'Personnel' }}
+            </nz-tag>
+          </td>
+          <td class="maq-cell-owner">
+            @if (item.serviceNom) { {{ item.serviceNom }} }
+            @else if (item.personnelNom) { {{ item.personnelNom }} }
+            @else { — }
+          </td>
+          <td class="maq-actions">
+            <!-- Configure tags -->
+            <button
+              nz-button nzSize="small" nzType="default"
+              (click)="openTagConfig(item)"
+              aria-label="Configurer les balises" title="Configurer les balises">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            </button>
+            <!-- Preview -->
+            <button
+              nz-button nzSize="small" nzType="default"
+              (click)="previewMaquette(item)"
+              aria-label="Visualiser" title="Visualiser la maquette">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+            <!-- Edit -->
+            <button
+              nz-button nzSize="small" nzType="default"
+              (click)="openEdit(item)"
+              aria-label="Modifier" title="Modifier">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <!-- Duplicate -->
+            <button
+              nz-button nzSize="small" nzType="default"
+              (click)="duplicate(item)"
+              aria-label="Dupliquer" title="Dupliquer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+            </button>
+            <!-- Delete -->
+            <button
+              nz-button nzSize="small" nzDanger
+              nz-popconfirm
+              nzPopconfirmTitle="Supprimer cette maquette ?"
+              nzOkText="Supprimer"
+              nzCancelText="Annuler"
+              (nzOnConfirm)="confirmDelete(item.id)"
+              aria-label="Supprimer" title="Supprimer">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+  <!-- ── Add / Edit modal ──────────────────────────────────────── -->
+  <nz-modal
+    [(nzVisible)]="modalVisibleModel"
+    [nzTitle]="editingItem() ? 'Modifier — ' + (editingItem()?.nom ?? '') : 'Ajouter une maquette'"
+    [nzOkText]="editingItem() ? 'Enregistrer' : 'Ajouter'"
+    nzCancelText="Annuler"
+    [nzOkLoading]="isSaving()"
+    (nzOnOk)="saveModal()"
+    (nzOnCancel)="modalVisible.set(false)"
+    nzWidth="520px">
+
+    <ng-container *nzModalContent>
+      <form nz-form [formGroup]="form" nzLayout="vertical">
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Nom</nz-form-label>
+          <nz-form-control nzErrorTip="Le nom est obligatoire">
+            <input nz-input formControlName="nom" placeholder="Nom de la maquette…" maxlength="250" />
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Type</nz-form-label>
+          <nz-form-control nzErrorTip="Le type est obligatoire">
+            <nz-select formControlName="type" nzPlaceHolder="Sélectionner…" class="maq-full">
+              @for (opt of typeOptions; track opt.value) {
+                <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Accès</nz-form-label>
+          <nz-form-control nzErrorTip="L'accès est obligatoire">
+            <nz-radio-group formControlName="acces" class="maq-radio-group">
+              @for (opt of accesOptions; track opt.value) {
+                <label nz-radio [nzValue]="opt.value">{{ opt.label }}</label>
+              }
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- ── Fichier maquette ──────────────────────────────── -->
+        <nz-form-item>
+          <nz-form-label [nzRequired]="!editingItem()">
+            Fichier maquette
+          </nz-form-label>
+          <nz-form-control>
+
+            <!-- Existing file (edit mode, no new file selected) -->
+            @if (editingItem() && currentFilename() && !selectedFile()) {
+              <div class="maq-file-current">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="maq-file-icon">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+                <span class="maq-file-name">{{ currentFilename() }}</span>
+                <button type="button" class="maq-file-change" (click)="fileInput.click()">
+                  Remplacer
+                </button>
+              </div>
+            }
+
+            <!-- New file selected -->
+            @if (selectedFile()) {
+              <div class="maq-file-selected">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="maq-file-icon maq-file-icon--ok">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <polyline points="9 15 11 17 15 13"/>
+                </svg>
+                <span class="maq-file-name">{{ selectedFile()!.name }}</span>
+                <span class="maq-file-size">{{ (selectedFile()!.size / 1024).toFixed(0) }} Ko</span>
+                <button type="button" class="maq-file-clear" (click)="clearFile()">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              </div>
+            }
+
+            <!-- Upload zone (shown when no new file selected and either: add mode OR edit mode without current file) -->
+            @if (!selectedFile() && (!editingItem() || !currentFilename())) {
+              <div class="maq-upload-zone" (click)="fileInput.click()" (keydown.enter)="fileInput.click()" tabindex="0" role="button" aria-label="Sélectionner un fichier">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="maq-upload-icon">
+                  <polyline points="16 16 12 12 8 16"/>
+                  <line x1="12" y1="12" x2="12" y2="21"/>
+                  <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+                </svg>
+                <span class="maq-upload-label">Cliquer pour sélectionner un fichier</span>
+                <span class="maq-upload-hint">.doc, .docx, .dotx, .odt</span>
+              </div>
+            }
+
+            <input
+              #fileInput
+              type="file"
+              accept=".doc,.docx,.dotx,.odt"
+              class="maq-file-input"
+              (change)="onFileChange($event)"
+              aria-label="Fichier maquette" />
+
+          </nz-form-control>
+        </nz-form-item>
+
+      </form>
+    </ng-container>
+
+  </nz-modal>
+
+  <!-- ── Tag configuration drawer ──────────────────────────────── -->
+  <pli-tag-config-drawer
+    [maquette]="configuringMaquette()"
+    [visible]="tagConfigVisible()"
+    (visibleChange)="tagConfigVisible.set($event)">
+  </pli-tag-config-drawer>
+
+</div>

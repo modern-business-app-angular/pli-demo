@@ -1,0 +1,96 @@
+@import 'styles/tokens';
+
+// ── Primary action button ─────────────────────────────────────
+// Bleu France primary — replaces tw-bg-blue-600 inline class
+.dash-btn-primary {
+  background: $color-brand-500;  // #000091
+
+  &:hover {
+    background: $color-brand-600;
+  }
+}
+
+// ── KPI numbers — Visual Comfort standard ─────────────────────
+// 40px bold numerals for at-a-glance readability
+.kpi-value {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  font-family: $font-family-mono;
+  letter-spacing: -0.02em;
+
+  &--normal {
+    color: $color-text-primary;   // #141414
+  }
+
+  &--urgent {
+    color: #c62828;               // accessible red — 6.2:1 on white
+  }
+}
+
+// ── Progress bars — width classes replace inline style ────────
+.dash-progress {
+  height: 6px;
+  border-radius: $radius-full;
+  transition: width $transition-slow;
+
+  &--amber  { width: 65%; background: #f59e0b; }
+  &--red    { width: 15%; background: #f87171; }
+  &--green  { width: 48%; background: #4ade80; }
+  &--blue   { width: 82%; background: #60a5fa; }
+}
+
+// ── Table row — 60px height ────────────────────────────────────
+.dash-table-row {
+  height: 60px;
+}
+
+.dash-td-cell {
+  vertical-align: middle;
+}
+
+// ── Status pills — full-width label, no dot ───────────────────
+// All color pairs ≥7:1 contrast on white (WCAG AAA)
+.dash-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: $radius-full;
+  font-size: 12px;
+  font-weight: $font-weight-semibold;
+  white-space: nowrap;
+  min-width: 90px;
+  text-align: center;
+
+  // En cours — bg #fff4e1, text #7a3200 — 8.3:1 ✓
+  &--blue {
+    background: $badge-processing-bg;
+    color: $badge-processing-text;
+  }
+
+  // Transmis — bg #dffae5, text #0d4a22 — 9.3:1 ✓
+  &--green {
+    background: $badge-done-bg;
+    color: $badge-done-text;
+  }
+
+  // Terminé — bg #f5f5f5, text #434343 — 9.7:1 ✓
+  &--gray {
+    background: $badge-archived-bg;
+    color: $badge-archived-text;
+  }
+
+  // Clôturé — bg #fff0f0, text #821313 — 10.2:1 ✓
+  &--red {
+    background: $badge-urgent-bg;
+    color: $badge-urgent-text;
+  }
+}
+
+// ── Urgent row — left accent stripe ───────────────────────────
+.dash-row--urgent {
+  td:first-child {
+    border-left: 3px solid #d97706;
+  }
+}

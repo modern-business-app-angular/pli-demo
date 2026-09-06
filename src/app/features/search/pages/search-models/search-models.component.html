@@ -1,0 +1,355 @@
+<div class="srm-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────── -->
+  <header class="srm-header">
+    <div class="srm-header__left">
+      <h1 class="srm-header__title">Modèles de recherche</h1>
+      <span class="srm-header__count">{{ allModels().length }} modèle{{ allModels().length !== 1 ? 's' : '' }}</span>
+    </div>
+    <div class="srm-header__actions">
+      <nz-input-group [nzPrefix]="searchIcon" class="srm-search">
+        <input
+          nz-input
+          placeholder="Rechercher un modèle…"
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch($event)"
+        />
+      </nz-input-group>
+      <ng-template #searchIcon><span nz-icon nzType="search"></span></ng-template>
+      <button nz-button nzType="primary" (click)="openAdd()">
+        <span nz-icon nzType="plus" nzTheme="outline"></span>
+        Nouveau modèle
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Tab filter bar ─────────────────────────────────────────────── -->
+  <div class="srm-tab-bar">
+    @for (tab of [['all','Tous'],['public','Public'],['private','Privés'],['system','Système']]; track tab[0]) {
+      <button
+        class="srm-tab"
+        [class.srm-tab--active]="activeTab() === tab[0]"
+        (click)="setTab($any(tab[0]))"
+      >
+        {{ tab[1] }}
+        <span class="srm-tab__count">{{ tabCount($any(tab[0])) }}</span>
+      </button>
+    }
+  </div>
+
+  <!-- ── Table ───────────────────────────────────────────────────────── -->
+  <div class="srm-table">
+    <nz-table
+      #srmTable
+      [nzData]="models()"
+      [nzLoading]="isLoading()"
+      [nzSize]="'small'"
+      nzTableLayout="fixed"
+      [nzPageSize]="15"
+      [nzShowSizeChanger]="true"
+      [nzPageSizeOptions]="[10, 15, 30]"
+    >
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th nzWidth="150px">Type</th>
+          <th nzWidth="130px">Visibilité</th>
+          <th nzWidth="200px">Capacités</th>
+          <th nzWidth="80px" nzAlign="right"></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (model of srmTable.data; track model.id) {
+          <tr class="srm-row" (dblclick)="openEdit(model)">
+
+            <!-- Nom + libellé + system badge -->
+            <td>
+              <div class="srm-cell-nom">
+                <span class="srm-nom">{{ model.nom }}</span>
+                <span class="srm-libelle">{{ model.libelle }}</span>
+                @if (model.isSystem) {
+                  <span class="srm-system-badge">Système</span>
+                }
+              </div>
+            </td>
+
+            <!-- Type tag -->
+            <td>
+              <nz-tag [nzColor]="typeColor(model.type)" class="srm-type-tag">
+                {{ typeLabel(model.type) }}
+              </nz-tag>
+            </td>
+
+            <!-- Visibility -->
+            <td>
+              <div class="srm-vis-cell">
+                <span
+                  class="srm-vis-badge"
+                  [class.srm-vis-badge--public]="model.visibility === 'public'"
+                  [class.srm-vis-badge--private]="model.visibility === 'private'"
+                  [class.srm-vis-badge--service]="model.visibility === 'service'"
+                >
+                  <span nz-icon [nzType]="visibilityIcon(model.visibility)"></span>
+                  {{ visibilityLabel(model.visibility) }}
+                </span>
+                @if (model.visibility === 'service' && model.serviceNom) {
+                  <span class="srm-service-hint">{{ model.serviceNom }}</span>
+                }
+              </div>
+            </td>
+
+            <!-- Capabilities dots -->
+            <td>
+              <div
+                class="srm-caps-dots"
+                nz-tooltip
+                [nzTooltipTitle]="capsTooltip"
+              >
+                @for (key of ['alerte','colonnes','grouper','tableur','imprimer','filtrer','sql','mail','selection','nbLignes','favorite']; track key) {
+                  <span
+                    class="srm-cap-dot"
+                    [class.srm-cap-dot--on]="$any(model.capabilities)[key]"
+                  ></span>
+                }
+                <span class="srm-caps-count">{{ countEnabled(model) }}/11</span>
+              </div>
+              <ng-template #capsTooltip>
+                <div class="srm-caps-tooltip">
+                  @for (key of ['alerte','colonnes','grouper','tableur','imprimer','filtrer','sql','mail','selection','nbLignes','favorite']; track key) {
+                    @if ($any(model.capabilities)[key]) {
+                      <div>✓ {{ key }}</div>
+                    }
+                  }
+                </div>
+              </ng-template>
+            </td>
+
+            <!-- Actions -->
+            <td nzAlign="right">
+              <div class="srm-actions">
+                <button nz-button nzType="text" nzSize="small" nz-tooltip="Modifier" (click)="openEdit(model)">
+                  <span nz-icon nzType="edit" nzTheme="outline"></span>
+                </button>
+                @if (!model.isSystem) {
+                  <button
+                    nz-button nzType="text" nzSize="small"
+                    nz-popconfirm
+                    nzPopconfirmTitle="Supprimer ce modèle ?"
+                    nzPopconfirmPlacement="left"
+                    (nzOnConfirm)="delete(model)"
+                    class="srm-btn-danger"
+                  >
+                    <span nz-icon nzType="delete" nzTheme="outline"></span>
+                  </button>
+                }
+              </div>
+            </td>
+
+          </tr>
+        }
+      </tbody>
+    </nz-table>
+  </div>
+
+  <!-- ── Drawer ──────────────────────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="drawerVisible()"
+    [nzTitle]="drawerTitle()"
+    nzPlacement="right"
+    [nzWidth]="760"
+    [nzClosable]="true"
+    [nzFooter]="drawerFooter"
+    (nzOnClose)="closeDrawer()"
+  >
+    <ng-container *nzDrawerContent>
+      <div class="srm-form" [formGroup]="form">
+
+        <!-- ── Section 1 — Identité ──────────────────────────────── -->
+        <div class="srm-section-head">
+          <span nz-icon nzType="idcard" nzTheme="outline"></span>
+          Identité du modèle
+        </div>
+
+        <div class="srm-grid-2">
+          <nz-form-item>
+            <nz-form-label nzRequired>Nom</nz-form-label>
+            <nz-form-control nzErrorTip="Requis (max 128 car.)">
+              <input nz-input formControlName="nom" placeholder="ex: Courriers en retard" />
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
+            <nz-form-label nzRequired>Libellé court</nz-form-label>
+            <nz-form-control nzErrorTip="Requis">
+              <input nz-input formControlName="libelle" placeholder="ex: En retard" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <nz-form-item>
+          <nz-form-label nzRequired>Type de données</nz-form-label>
+          <nz-form-control nzErrorTip="Sélectionnez un type">
+            <nz-select formControlName="type" nzPlaceholder="Choisir le type d'entité…" class="srm-full">
+              @for (t of modelTypes; track t) {
+                <nz-option [nzValue]="t" [nzLabel]="typeLabel(t)"></nz-option>
+              }
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+
+        <!-- ── Section 2 — Visibilité ────────────────────────────── -->
+        <div class="srm-section-head srm-section-head--vis">
+          <span nz-icon nzType="eye" nzTheme="outline"></span>
+          Visibilité
+        </div>
+
+        <div class="srm-vis-cards" formGroupName="">
+          @for (vis of [['private','lock','Privé','Accessible uniquement par vous'],['public','global','Public','Visible par tous les utilisateurs'],['service','team','Service','Restreint à un service spécifique']]; track vis[0]) {
+            <label
+              class="srm-vis-card"
+              [class.srm-vis-card--active]="form.get('visibility')?.value === vis[0]"
+            >
+              <input type="radio" formControlName="visibility" [value]="vis[0]" class="srm-vis-radio" />
+              <span nz-icon [nzType]="vis[1]" nzTheme="outline" class="srm-vis-card__icon"></span>
+              <span class="srm-vis-card__label">{{ vis[2] }}</span>
+              <span class="srm-vis-card__desc">{{ vis[3] }}</span>
+            </label>
+          }
+        </div>
+
+        @if (showServiceSelect()) {
+          <nz-form-item class="srm-service-select">
+            <nz-form-label>Service</nz-form-label>
+            <nz-form-control>
+              <nz-select formControlName="serviceId" nzPlaceholder="Choisir un service…" nzAllowClear class="srm-full">
+                @for (s of services(); track s.id) {
+                  <nz-option [nzValue]="s.id" [nzLabel]="s.nom"></nz-option>
+                }
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        }
+
+        <!-- ── Section 3 — Capacités ─────────────────────────────── -->
+        <div class="srm-section-head srm-section-head--caps">
+          <span nz-icon nzType="tool" nzTheme="outline"></span>
+          Capacités
+          <span class="srm-section-head__hint">Activez les fonctionnalités disponibles</span>
+        </div>
+
+        @for (group of capGroups; track group.title) {
+          <div class="srm-cap-group srm-cap-group--{{ group.color }}">
+            <span class="srm-cap-group__title">{{ group.title }}</span>
+            <div class="srm-cap-cards">
+              @for (cap of group.items; track cap.key) {
+                <label
+                  class="srm-cap-card"
+                  [class.srm-cap-card--active]="form.get(cap.key)?.value"
+                >
+                  <div class="srm-cap-card__header">
+                    <div class="srm-cap-card__left">
+                      <span nz-icon [nzType]="cap.icon" nzTheme="outline" class="srm-cap-card__icon"></span>
+                      <span class="srm-cap-card__label">{{ cap.label }}</span>
+                    </div>
+                    <nz-switch [formControlName]="cap.key" nzSize="small"></nz-switch>
+                  </div>
+                  <p class="srm-cap-card__desc">{{ cap.desc }}</p>
+                </label>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- ── Section 4 — Colonnes ──────────────────────────────── -->
+        @if (availableCols().length > 0) {
+          <div class="srm-section-head srm-section-head--cols">
+            <span nz-icon nzType="table" nzTheme="outline"></span>
+            Colonnes
+            <span class="srm-section-head__hint">{{ colSummary() }}</span>
+            <button nz-button nzType="text" nzSize="small" class="srm-cols-reset" (click)="resetColumns()" nz-tooltip nzTooltipTitle="Réinitialiser aux valeurs par défaut">
+              <span nz-icon nzType="reload" nzTheme="outline"></span>
+            </button>
+          </div>
+
+          <!-- Visible columns — drag & drop -->
+          @if (visibleCols().length > 0) {
+            <p class="srm-col-section-label">Colonnes visibles <span class="srm-col-section-hint">(glisser pour réordonner)</span></p>
+            <div
+              class="srm-col-drag-list"
+              cdkDropList
+              (cdkDropListDropped)="dropColumn($event)"
+            >
+              @for (col of visibleCols(); track col.key) {
+                <div class="srm-col-row" cdkDrag>
+                  <span class="srm-col-drag-handle" cdkDragHandle>
+                    <span nz-icon nzType="holder" nzTheme="outline"></span>
+                  </span>
+                  <span class="srm-col-type-icon">
+                    <span nz-icon [nzType]="colDataTypeIcon(colDef(col.key)?.dataType ?? 'text')" nzTheme="outline"></span>
+                  </span>
+                  <span class="srm-col-label">{{ colDef(col.key)?.label ?? col.key }}</span>
+                  @if (colGroup(col.key)) {
+                    <span class="srm-col-relation-tag">{{ colGroup(col.key) }}</span>
+                  }
+                  <span class="srm-col-width-wrap">
+                    <nz-input-number
+                      class="srm-col-width-input"
+                      [ngModel]="colWidth(col.key)"
+                      (ngModelChange)="setColWidth(col.key, $event)"
+                      [nzMin]="40"
+                      [nzMax]="600"
+                      [nzStep]="10"
+                      nzPlaceHolder="auto"
+                      nzSize="small"
+                    ></nz-input-number>
+                    <span class="srm-col-width-unit">px</span>
+                  </span>
+                  <button nz-button nzType="text" nzSize="small" class="srm-col-hide-btn" (click)="hideColumn(col.key)" nz-tooltip nzTooltipTitle="Masquer cette colonne">
+                    <span nz-icon nzType="eye-invisible" nzTheme="outline"></span>
+                  </button>
+                  <!-- drag placeholder -->
+                  <div class="srm-col-drag-placeholder" *cdkDragPlaceholder></div>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Hidden columns — grouped by source entity -->
+          @if (hiddenColGroups().length > 0) {
+            <p class="srm-col-section-label srm-col-section-label--hidden">Colonnes masquées</p>
+            <div class="srm-col-hidden-groups">
+              @for (group of hiddenColGroups(); track group.label) {
+                <div class="srm-col-hidden-group">
+                  @if (group.label !== 'Base') {
+                    <span class="srm-col-group-label">
+                      <span nz-icon nzType="link" nzTheme="outline"></span>
+                      {{ group.label }}
+                    </span>
+                  }
+                  <div class="srm-col-hidden-list">
+                    @for (def of group.cols; track def.key) {
+                      <button class="srm-col-chip" (click)="showColumn(def.key)" nz-tooltip [nzTooltipTitle]="'Ajouter : ' + def.label">
+                        <span nz-icon nzType="plus" nzTheme="outline"></span>
+                        {{ def.label }}
+                      </button>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+
+      </div>
+    </ng-container>
+
+    <ng-template #drawerFooter>
+      <div class="srm-drawer-footer">
+        <button nz-button nzType="default" (click)="closeDrawer()">Annuler</button>
+        <button nz-button nzType="primary" [nzLoading]="isSaving()" [disabled]="form.invalid" (click)="save()">
+          Enregistrer
+        </button>
+      </div>
+    </ng-template>
+  </nz-drawer>
+
+</div>

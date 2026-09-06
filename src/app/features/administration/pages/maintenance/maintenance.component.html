@@ -1,0 +1,145 @@
+<div class="mnt-page">
+
+  <!-- ── Header ───────────────────────────────────────────────── -->
+  <header class="mnt-header">
+    <h2 class="mnt-header__title">Maintenance — Journal système</h2>
+  </header>
+
+  <!-- ── Filter bar ───────────────────────────────────────────── -->
+  <div class="mnt-filters">
+    <div class="mnt-filters__row">
+
+      <div class="mnt-filter-group">
+        <label class="mnt-filter-label">Période</label>
+        <nz-range-picker
+          [(ngModel)]="dateRange"
+          nzFormat="dd/MM/yyyy"
+          class="mnt-range-picker" />
+      </div>
+
+      <div class="mnt-filter-group">
+        <label class="mnt-filter-label">Type</label>
+        <nz-select [(ngModel)]="filterType" class="mnt-select" nzAllowClear nzPlaceHolder="Tous les types">
+          @for (opt of typeOptions; track opt.value) {
+            <nz-option [nzValue]="opt.value" [nzLabel]="opt.label" />
+          }
+        </nz-select>
+      </div>
+
+      <div class="mnt-filter-group">
+        <label class="mnt-filter-label">Poste</label>
+        <input nz-input class="mnt-input" [(ngModel)]="filterMachine" placeholder="Nom du poste…" />
+      </div>
+
+      <div class="mnt-filter-group">
+        <label class="mnt-filter-label">Utilisateur</label>
+        <input nz-input class="mnt-input" [(ngModel)]="filterUser" placeholder="Utilisateur…" />
+      </div>
+
+      <div class="mnt-filter-group mnt-filter-group--grow">
+        <label class="mnt-filter-label">Objet</label>
+        <input nz-input [(ngModel)]="filterObjet" placeholder="Recherche dans l'objet…" />
+      </div>
+
+      <div class="mnt-filter-actions">
+        <button nz-button nzType="primary" (click)="search()">Rechercher</button>
+        <button nz-button nzType="default" (click)="reset()">Réinitialiser</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Table ─────────────────────────────────────────────────── -->
+  <nz-table
+    class="mnt-table"
+    [nzData]="items()"
+    [nzLoading]="isLoading()"
+    nzSize="middle"
+    [nzFrontPagination]="true"
+    [nzPageSizeOptions]="[20, 50, 100]"
+    [nzPageSize]="20"
+    nzShowSizeChanger>
+
+    <thead>
+      <tr>
+        <th nzWidth="160px" [nzSortFn]="true">Date</th>
+        <th nzWidth="140px">Poste</th>
+        <th nzWidth="140px">Utilisateur</th>
+        <th nzWidth="80px">Type</th>
+        <th>Objet</th>
+        <th nzWidth="60px"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (entry of items(); track entry.id) {
+        <tr class="mnt-row" (click)="openDetail(entry)">
+          <td class="mnt-cell-date">{{ formatDate(entry.date) }}</td>
+          <td class="mnt-cell-mono">{{ entry.machine }}</td>
+          <td>{{ entry.utilisateur }}</td>
+          <td>
+            <nz-tag [nzColor]="getTypeColor(entry.type)">{{ entry.type }}</nz-tag>
+          </td>
+          <td class="mnt-cell-objet">{{ entry.objet }}</td>
+          <td class="mnt-actions" (click)="$event.stopPropagation()">
+            <button
+              nz-button nzSize="small" nzDanger
+              nz-popconfirm
+              nzPopconfirmTitle="Supprimer cette entrée ?"
+              nzOkText="Supprimer"
+              nzCancelText="Annuler"
+              (nzOnConfirm)="confirmDelete(entry.id)"
+              title="Supprimer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              </svg>
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </nz-table>
+
+  <!-- ── Detail Drawer ─────────────────────────────────────────── -->
+  <nz-drawer
+    [nzVisible]="drawerVisible()"
+    nzPlacement="right"
+    nzWidth="500px"
+    [nzTitle]="selectedEntry() ? 'Détail — ' + selectedEntry()!.objet : 'Détail'"
+    (nzOnClose)="drawerVisible.set(false)">
+
+    @if (selectedEntry(); as entry) {
+      <div class="mnt-detail">
+        <div class="mnt-detail__row">
+          <span class="mnt-detail__label">Date</span>
+          <span>{{ formatDate(entry.date) }}</span>
+        </div>
+        <div class="mnt-detail__row">
+          <span class="mnt-detail__label">Type</span>
+          <nz-tag [nzColor]="getTypeColor(entry.type)">{{ entry.type }}</nz-tag>
+        </div>
+        <div class="mnt-detail__row">
+          <span class="mnt-detail__label">Poste</span>
+          <span class="mnt-cell-mono">{{ entry.machine }}</span>
+        </div>
+        <div class="mnt-detail__row">
+          <span class="mnt-detail__label">Utilisateur</span>
+          <span>{{ entry.utilisateur }}</span>
+        </div>
+        <div class="mnt-detail__row">
+          <span class="mnt-detail__label">Objet</span>
+          <span>{{ entry.objet }}</span>
+        </div>
+        @if (entry.commentaire) {
+          <div class="mnt-detail__commentaire">
+            <span class="mnt-detail__label">Commentaire</span>
+            <pre class="mnt-detail__pre">{{ entry.commentaire }}</pre>
+          </div>
+        }
+      </div>
+    }
+
+  </nz-drawer>
+
+</div>

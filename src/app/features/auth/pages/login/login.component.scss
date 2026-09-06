@@ -1,0 +1,214 @@
+@import 'styles/tokens';
+
+.pli-login-page {
+  display: flex;
+  min-height: 100vh;
+  background: $surface-body;
+}
+
+// ── Brand panel (left) ──────────────────────────────────────────────────────
+.pli-login-brand {
+  flex: 0 0 45%;
+  background: $color-brand-500;
+  background-image:
+    radial-gradient(circle at 20% 80%, rgba(61, 114, 180, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(18, 36, 61, 0.4) 0%, transparent 50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: $space-12 $space-12;
+  position: relative;
+  overflow: hidden;
+
+  // Subtle geometric pattern overlay
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 300px;
+    height: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 60px;
+    left: -60px;
+    width: 240px;
+    height: 240px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+.pli-login-brand-content {
+  position: relative;
+  z-index: 1;
+}
+
+.pli-login-logo {
+  margin-bottom: $space-8;
+  display: flex;
+  align-items: baseline;
+  gap: $space-2;
+}
+
+.pli-login-logo-text {
+  font-size: 48px;
+  font-weight: $font-weight-bold;
+  color: #fff;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.pli-login-logo-version {
+  font-size: $font-size-xl;
+  font-weight: $font-weight-semibold;
+  color: $color-accent-400;
+}
+
+.pli-login-tagline {
+  font-size: $font-size-lg;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: $line-height-relaxed;
+  margin-bottom: $space-10;
+}
+
+.pli-login-features {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+}
+
+.pli-login-feature {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: $font-size-base;
+
+  span:first-child {
+    color: $color-accent-400;
+    font-weight: $font-weight-bold;
+    font-size: $font-size-lg;
+    width: 20px;
+    flex-shrink: 0;
+  }
+}
+
+.pli-login-brand-footer {
+  font-size: $font-size-sm;
+  color: rgba(255, 255, 255, 0.35);
+  position: relative;
+  z-index: 1;
+}
+
+// ── Form panel (right) ──────────────────────────────────────────────────────
+.pli-login-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-8;
+  background: $surface-body;
+}
+
+.pli-login-card {
+  width: 100%;
+  max-width: 400px;
+  background: $surface-card;
+  border-radius: $radius-lg;
+  padding: $space-10;
+  box-shadow: $shadow-lg;
+}
+
+.pli-login-title {
+  font-size: $font-size-3xl;
+  font-weight: $font-weight-bold;
+  color: $color-neutral-900;
+  margin: 0 0 $space-1;
+  line-height: $line-height-tight;
+}
+
+.pli-login-subtitle {
+  font-size: $font-size-base;
+  color: $color-neutral-500;
+  margin: 0 0 $space-6;
+}
+
+.pli-login-alert {
+  margin-bottom: $space-5;
+}
+
+.pli-login-form {
+  // Increase form item spacing
+  :global(.ant-form-item) {
+    margin-bottom: $space-5;
+  }
+}
+
+.pli-pwd-toggle {
+  cursor: pointer;
+  color: $color-neutral-400;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-brand-500;
+  }
+}
+
+.pli-login-btn {
+  height: 44px !important;
+  font-size: $font-size-md !important;
+  font-weight: $font-weight-semibold !important;
+  margin-top: $space-2;
+  background: $color-brand-500 !important;
+  border-color: $color-brand-500 !important;
+
+  &:hover:not(:disabled) {
+    background: $color-brand-400 !important;
+    border-color: $color-brand-400 !important;
+  }
+}
+
+// ── Demo footer (badge + explanation) ─────────────────────────
+.pli-login-brand-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.pli-login-brand-footer-text {
+  flex: 1 1 220px;
+  line-height: 1.5;
+}
+
+.pli-login-brand-link {
+  margin-left: 4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:hover {
+    color: #fff;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #edb732;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
